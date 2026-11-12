@@ -53,20 +53,33 @@ function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;documen
   el.hidden=false;document.body.classList.add("has-player");
   const n=P.queue.length;$("#pt").textContent=`🔊 ${n>1?`${Math.min(P.i+1,n)}/${n}문장${P.each>1?` (${P.k+1}/${P.each})`:""} · `:""}${REP===0?`무한 반복 (${P.round}회째)`:`${P.round}/${REP}회`}`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
-function stopPlay(){P.token++;P.active=false;try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
+function stopPlay(){P.token++;P.active=false;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   if((each||1)>=2)items=items.flatMap(it=>{const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it,n:1},{text:ko,ko:1,id:it.id,n:1},{...it,n:1}]:[it]});
   stopPlay();unlockAud();P.each=each||1;P.k=0;P.follow=!!follow;P.queue=items;P.i=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
+/* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
+function gapThen(tok,ms){const a=aud();let fired=false;const fb=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;setTimeout(()=>nextPlay(tok),ms)};
+  if(tok!==P.token)return;a.onended=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;nextPlay(tok)};a.onerror=fb;
+  try{a.src="audio/_gap"+ms+".mp3";a.playbackRate=1;a.defaultPlaybackRate=1;const pr=a.play();if(pr&&pr.catch)pr.catch(fb)}catch(e){fb()}}
+function msMeta(it){if(!("mediaSession" in navigator))return;try{
+  navigator.mediaSession.metadata=new MediaMetadata({title:it.ko?koSay(it.text):rep(it.text),artist:"라오스어 묶음 학습",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
+  if(!msMeta._h){msMeta._h=1;const ms=navigator.mediaSession;
+    ms.setActionHandler("pause",()=>{try{aud().pause();ms.playbackState="paused"}catch(e){}});
+    ms.setActionHandler("play",()=>{try{aud().play();ms.playbackState="playing"}catch(e){}});
+    try{ms.setActionHandler("stop",()=>stopPlay())}catch(e){}
+    try{ms.setActionHandler("nexttrack",()=>{if(!P.active)return;const tok=P.token;try{aud().pause()}catch(e){}P.k=0;P.i++;nextPlay(tok)})}catch(e){}
+    try{ms.setActionHandler("previoustrack",()=>{if(!P.active)return;const tok=P.token;try{aud().pause()}catch(e){}P.k=0;P.i=Math.max(0,P.i-1);nextPlay(tok)})}catch(e){}}
+  navigator.mediaSession.playbackState="playing"}catch(e){}}
 function nextPlay(tok){
   if(tok!==P.token)return;
   if(P.i>=P.queue.length){if(REP===0||P.round<REP){P.round++;P.i=0}else{stopPlay();return}}
   const it=P.queue[P.i];mark(it.id);showPlayer();
   if(AUD&&!it.noAud){let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;if(AUD[k]){const a=aud();let done=false;
-    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;if(P.k<(it.n||P.each)-1){P.k++}else{P.k=0;P.i++}setTimeout(()=>nextPlay(tok),P.i>=P.queue.length?900:450)};
+    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;if(P.k<(it.n||P.each)-1){P.k++}else{P.k=0;P.i++}gapThen(tok,P.i>=P.queue.length?900:450)};
     a.onended=fin;a.onerror=()=>{if(done||tok!==P.token)return;done=true;it.noAud=1;nextPlay(tok)};
     const go=src=>{if(tok!==P.token)return;try{a.src=src;a.playbackRate=RATE;a.defaultPlaybackRate=RATE;const pr=a.play();if(pr&&pr.catch)pr.catch(e=>{if(tok!==P.token)return;if(e&&e.name==="NotAllowedError"){stopPlay();ttsWarn();return}a.onerror()})}catch(e){a.onerror()}};
-    if(ABLOB[k])go(ABLOB[k]);else fetch("audio/"+k+".mp3").then(r=>{if(!r.ok)throw 0;return r.blob()}).then(bl=>{const u=URL.createObjectURL(bl);ABLOB[k]=u;go(u)}).catch(()=>a.onerror())
+    msMeta(it);go("audio/"+k+".mp3")
     return}}
   if(!hasSS){P.i++;setTimeout(()=>nextPlay(tok),50);return}
   try{const u=utterOf(it);
