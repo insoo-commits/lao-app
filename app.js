@@ -238,6 +238,7 @@ function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s
 document.addEventListener("click",e=>{
   const ko=e.target.closest(".hide-ko .ko");if(ko){ko.classList.toggle("show");return}
   const rd=e.target.closest(".hide-rd .line .t2,.hide-rd .entry-head .r");if(rd){rd.classList.toggle("show");return}
+  if(document.documentElement.classList.contains("audwait")&&e.target.closest(".speak,.line,.card .face,[data-playcards],[data-playbundle],[data-sayall],[data-playsec]")){e.preventDefault();return}
   if(!e.target.closest("button,input,label,a,select")){const ln=e.target.closest(".line");const sb=ln&&ln.querySelector("[data-say]");if(sb){sb.click();return}}
   const t=e.target.closest("button");if(!t)return;
   {const d=t.dataset;if((d.part||d.sub||d.goto||d.mode)&&P.active)stopPlay()}
@@ -315,3 +316,11 @@ document.addEventListener("click",function(e){if(e.target.closest&&e.target.clos
   for(var i=0;i<ss.length;i++){var r=ss[i].getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){e.preventDefault();e.stopPropagation();open(ss[i]);return}}},true);
 addEventListener("resize",close);
 })();
+
+;/* after launch: block play buttons with a "음성 준비 중" spinner until audio is ready (max 10 s) */
+(function(){if(!window.AUDIO_INDEX)return;const de=document.documentElement;de.classList.add("audwait");
+  const bar=document.createElement("div");bar.id="audwait";bar.innerHTML='<span class="sp"></span>음성 준비 중…';document.body.appendChild(bar);
+  const done=()=>{de.classList.remove("audwait");if(bar.parentNode)bar.parentNode.removeChild(bar)};
+  const swr=("serviceWorker" in navigator)?Promise.race([navigator.serviceWorker.ready,new Promise(r=>setTimeout(r,4000))]):Promise.resolve();
+  const first=()=>{const b=document.querySelector("[data-say]");const k=b&&keyOf({text:b.dataset.say});return Promise.all([blobUrl("_gap450"),blobUrl("_gap900")].concat(k?[blobUrl(k)]:[]))};
+  Promise.race([swr.then(first),new Promise(r=>setTimeout(r,10000))]).then(done,done)})();

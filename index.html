@@ -4,7 +4,7 @@
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="라오스어">
-<link rel="apple-touch-icon" href="icon-180.png"><script>(function(){var n=navigator,t=n.maxTouchPoints>0||"ontouchstart" in window;if((/iPad/.test(n.userAgent)||(/Macintosh/.test(n.userAgent)&&t))||(t&&Math.min(screen.width,screen.height)>=700))document.documentElement.classList.add("tab")})()</script><script src="audio/index.js" defer></script><script src="app.js?v=9.15" defer></script>
+<link rel="apple-touch-icon" href="icon-180.png"><script>(function(){var n=navigator,t=n.maxTouchPoints>0||"ontouchstart" in window;if((/iPad/.test(n.userAgent)||(/Macintosh/.test(n.userAgent)&&t))||(t&&Math.min(screen.width,screen.height)>=700))document.documentElement.classList.add("tab")})()</script><script src="audio/index.js" defer></script><script src="app.js?v=9.16" defer></script>
 <title>라오스어 묶음 학습</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -104,6 +104,10 @@ h1 .lo{font-weight:600;color:var(--accent)}
 .check{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
 .check input{accent-color:var(--accent);width:16px;height:16px}
 .speak{border:1px solid var(--line);background:var(--sheet);border-radius:999px;width:32px;height:32px;display:grid;place-items:center;flex:0 0 auto;color:var(--ink)}
+html.audwait .speak,html.audwait [data-playcards],html.audwait [data-playbundle]{opacity:.35;pointer-events:none}
+#audwait{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#audwait .sp{width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:bootspin .8s linear infinite}
+@keyframes bootspin{to{transform:rotate(360deg)}}
 .speak:hover{border-color:var(--accent);color:var(--accent)}
 @media (hover:none){.speak:hover{border-color:var(--line);color:var(--ink)}.speak.all:hover{border-color:var(--accent);color:var(--accent);background:none}}
 .speak.hold,.speak.hold:hover{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -271,7 +275,7 @@ html.tab .voice{font-size:18px}
 </style>
 
 </head><body>
-<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-12 v9.15</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
+<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-12 v9.16</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
 <div class="wrap" id="app" data-g="P5">
   <header>
     <div class="brand">
@@ -306,5 +310,5 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-12 v9.15</div>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-12 v9.16</div>
 </body></html>
