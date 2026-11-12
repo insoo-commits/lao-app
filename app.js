@@ -56,8 +56,8 @@ function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 
 function stopPlay(){P.token++;P.active=false;P.paused=false;P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
-  const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it},{...it}]}return [{...it}]});
-  const q=[];groups.forEach((g,gi)=>{const gs=q.length;g.forEach(x=>{x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
+  const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
+  const q=[];groups.forEach((g,gi)=>{const gs=q.length;g.forEach(x=>{x.nr=!!g[0].head;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
   stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.queue=q;P.i=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
@@ -80,7 +80,7 @@ function msMeta(it){if(!("mediaSession" in navigator))return;try{
   navigator.mediaSession.playbackState="playing"}catch(e){}}
 /* single item: repeat forever. list: each item REP times, then next; after the last, start over */
 function advQ(){const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
-  if(P.single||P.k<REP-1){P.k++;P.i=it.gs;return}P.k=0;P.i=it.ge+1}
+  if(P.single||(!it.nr&&P.k<REP-1)){P.k++;P.i=it.gs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){P.round++;P.i=0}
@@ -216,11 +216,11 @@ document.addEventListener("click",e=>{
   const rd=e.target.closest(".hide-rd .line .t2,.hide-rd .entry-head .r");if(rd){rd.classList.toggle("show");return}
   const t=e.target.closest("button");if(!t)return;
   {const d=t.dataset;if((d.part||d.sub||d.goto||d.mode)&&P.active)stopPlay()}
-  if(t.dataset.sayall){const en=t.closest(".entry");play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
+  if(t.dataset.sayall){const en=t.closest(".entry");play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id,head:1},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
   if(t.dataset.playsec){const sec=t.closest(".pairs,.dlg");play([...sec.querySelectorAll(".line")].map(sayItem).filter(Boolean),true,1);return}
   if(t.dataset.playcards){play([...document.querySelectorAll(".cards .card")].map(c=>{const b=c.querySelector(".card-foot [data-say]");return {text:b.dataset.say,rd:b.dataset.rd,id:c.id}}),true,2);return}
   if(t.dataset.playbundle){const sec=document.getElementById("bd-"+t.dataset.playbundle),items=[];
-    sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id})}else items.push(sayItem(el))});
+    sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
     play(items.filter(Boolean),true,2);return}
   if(t.dataset.say!==undefined){const ln=t.closest(".line");play([{text:t.dataset.say,rd:t.dataset.rd,id:ln?ln.id:null,m:isM(ln&&ln.id)}]);return}
   if(t.dataset.rep!==undefined){REP=+t.dataset.rep;store.set("lao-rep",REP);document.querySelectorAll("[data-rep]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rep===REP));showPlayer();return}
