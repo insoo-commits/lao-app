@@ -141,8 +141,8 @@ function renderBundle(id){
   b.w.forEach((w,wi)=>{const [lo,hint,rd,ko,ex]=w;
     h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${SPK}<span>예문 전체</span></button>${hint?`<span class="hint">${laoWrap(hint)}</span>`:""}</div>
     ${ex.map((e,ei)=>lineHTML(["g","s","r"][ei]||"n",ei===2?"실생활":`예문 ${ei+1}`,e[0],e[1],e[2],`ln-${id}-${wi}-${ei}`,lo)).join("")}</article>`});
-  if(b.pr.length)h+=`<div class="pairs"><span class="sec">짝 문장 비교</span>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
-  if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><span class="sec">짧은 대화</span>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
+  if(b.pr.length)h+=`<div class="pairs"><div class="sechd"><span class="sec">짝 문장 비교</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${SPK}<span>전체 예문</span></button></div>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
+  if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${SPK}<span>전체 예문</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
   if(b.sm&&b.sm[0])h+=`<div class="dlg smb"><span class="sec">한 문장에 모아 읽기</span>${lineHTML("n",null,b.sm[0],b.sm[1],b.sm[2],`sm-${id}`)}</div>`;
   if(b.nx.length)h+=`<div class="box"><h4>이어지는 묶음</h4>${b.nx.map(t=>`<p>${laoWrap(t).replace(/→\s*(P\d-\d{3})/g,(m,x)=>B[x]?`→ <button class="jump" data-goto="${x}">${x}</button>`:m)}</p>`).join("")}</div>`;
   return h+`</section>`;
@@ -212,6 +212,7 @@ document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
   {const d=t.dataset;if((d.part||d.sub||d.goto||d.mode)&&P.active)stopPlay()}
   if(t.dataset.sayall){const en=t.closest(".entry");play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
+  if(t.dataset.playsec){const sec=t.closest(".pairs,.dlg");play([...sec.querySelectorAll(".line")].map(sayItem).filter(Boolean),true,1);return}
   if(t.dataset.playcards){play([...document.querySelectorAll(".cards .card")].map(c=>{const b=c.querySelector(".card-foot [data-say]");return {text:b.dataset.say,rd:b.dataset.rd,id:c.id}}),true,2);return}
   if(t.dataset.playbundle){const sec=document.getElementById("bd-"+t.dataset.playbundle),items=[];
     sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id})}else items.push(sayItem(el))});
