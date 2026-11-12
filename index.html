@@ -4,7 +4,7 @@
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="라오스어">
-<link rel="apple-touch-icon" href="icon-180.png"><script src="audio/index.js" defer></script><script src="app.js?v=7" defer></script>
+<link rel="apple-touch-icon" href="icon-180.png"><script>(function(){var n=navigator,t=n.maxTouchPoints>0||"ontouchstart" in window;if((/iPad/.test(n.userAgent)||(/Macintosh/.test(n.userAgent)&&t))||(t&&Math.min(screen.width,screen.height)>=700))document.documentElement.classList.add("tab")})()</script><script src="audio/index.js" defer></script><script src="app.js?v=8" defer></script>
 <title>라오스어 묶음 학습</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -197,12 +197,76 @@ mark{background:transparent;color:var(--accent);font-weight:700;text-decoration:
 .voice b{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* iPad / tablet: scale whole UI up (iPhone unchanged) */
-@media (min-width:700px) and (any-pointer:coarse){html{zoom:1.5}}
+
+/* iPad: text 1.5x, layout width unchanged (html.tab set by script) */
+html.tab .cards{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+html.tab body{font-size:22.5px}
+html.tab .eyebrow{font-size:18px}
+html.tab h1{font-size:clamp(39px,5vw,54px)}
+html.tab .stats{font-size:18px}
+html.tab .stats b{font-size:24px}
+html.tab .search input{font-size:19.5px}
+html.tab .group{font-size:21px}
+html.tab .sub .code{font-size:16.5px}
+html.tab .sub .name{font-size:21px}
+html.tab .sub .prog{font-size:16.5px}
+html.tab .band h2{font-size:39px}
+html.tab .band h2 small{font-size:19.5px}
+html.tab .band .gname{font-size:18px}
+html.tab .seg button{font-size:21px}
+html.tab .seg-label{font-size:18.75px}
+html.tab .controls .seg button{font-size:18px}
+html.tab .controls .seg-label{font-size:16.5px}
+html.tab .controls .bsel{font-size:18px}
+html.tab .bsel{font-size:21px}
+html.tab .meter{font-size:19.5px}
+html.tab .bhead .bid{font-size:18px}
+html.tab .bhead .bt{font-size:25.5px}
+html.tab .bhead .bw{font-size:22.5px}
+html.tab .bintro{font-size:20.25px}
+html.tab .face .big{font-size:42px}
+html.tab .face .hint{font-size:18px}
+html.tab .face .rd{font-size:22.5px}
+html.tab .face .ko{font-size:25.5px}
+html.tab .face .ex{font-size:18.75px}
+html.tab .face .ex .lo{font-size:21px}
+html.tab .check{font-size:19.5px}
+html.tab .speak.all{font-size:18.75px}
+html.tab .player{font-size:21px}
+html.tab .toggle{font-size:19.5px}
+html.tab .entry-head .w{font-size:33px}
+html.tab .entry-head .r{font-size:21px}
+html.tab .entry-head .m{font-size:21px}
+html.tab .entry-head .hint{font-size:18px}
+html.tab .role{font-size:15.75px}
+html.tab .line .t1{font-size:25.5px}
+html.tab .line .t2{font-size:19.5px}
+html.tab .line .ko{font-size:20.25px}
+html.tab .box{font-size:21px}
+html.tab .box h4,html.tab .sec{font-size:18px}
+html.tab .box .lo,html.tab .tip-lo{font-size:22.5px}
+html.tab .jump{font-size:18.75px}
+html.tab .q-top{font-size:19.5px}
+html.tab .q-type{font-size:18px}
+html.tab .q-text{font-size:27px}
+html.tab .q-text .word{font-size:39px}
+html.tab .q-text .word.lo{font-size:51px}
+html.tab .q-text .sub-ko{font-size:21px}
+html.tab }
+.opt{font-size:22.5px}
+html.tab .opt.lo{font-size:31.5px}
+html.tab .feedback{font-size:21px}
+html.tab .ghost{font-size:19.5px}
+html.tab .result .score{font-size:69px}
+html.tab .hit .w{font-size:27px}
+html.tab .hit .m{font-size:20.25px}
+html.tab .hit .where{font-size:18px}
+html.tab .note{font-size:18px}
+html.tab .voice{font-size:18px}
 </style>
 
 </head><body>
-<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-12 v7</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
+<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-12 v8</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
 <div class="wrap" id="app" data-g="P5">
   <header>
     <div class="brand">
@@ -237,5 +301,5 @@ mark{background:transparent;color:var(--accent);font-weight:700;text-decoration:
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-12 v7</div>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-12 v8</div>
 </body></html>
