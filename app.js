@@ -252,3 +252,34 @@ b.onclick=async()=>{if(!("caches" in window))return;b.disabled=true;const c=awai
  const q=ks.slice();async function w(){while(q.length){const k=q.shift();const u="audio/"+k+".mp3";try{if(!(await c.match(u))){const r=await fetch(u);if(r.ok)await c.put(u,r)}}catch(e){}done++;if(done%50==0||done==ks.length)b.textContent="저장 중 "+done+"/"+ks.length}}
  await Promise.all([w(),w(),w(),w(),w(),w()]);b.textContent="음성 "+ks.length+"개 저장 완료";try{localStorage.setItem("lao-audio-saved","1")}catch(e){}};
 try{if(localStorage.getItem("lao-audio-saved"))b.textContent="음성 저장됨 (다시 확인)"}catch(e){}})();
+
+;/* custom dropdown list for touch devices: list text = same size as the select, list as wide as needed */
+(function(){var touch=navigator.maxTouchPoints>0||"ontouchstart" in window;if(!touch)return;
+document.documentElement.classList.add("cdd");
+var st=document.createElement("style");st.textContent='html.cdd select.bsel{pointer-events:none}'+
+'.ddbg{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.18)}'+
+'.ddl{position:fixed;z-index:61;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--sheet,var(--bg));color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:6px 0}'+
+'.ddl button{display:flex;gap:.5em;width:100%;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:.6em 1em;white-space:nowrap;cursor:pointer}'+
+'.ddl button .ck{width:1em;flex:0 0 1em;color:var(--accent)}.ddl button[aria-selected=true]{background:var(--accent-soft,rgba(0,0,0,.06));font-weight:600}';
+document.head.appendChild(st);
+function close(){var a=document.querySelectorAll(".ddbg,.ddl");for(var i=0;i<a.length;i++)a[i].parentNode.removeChild(a[i])}
+function open(sel){close();var r=sel.getBoundingClientRect(),cs=getComputedStyle(sel);
+  var bg=document.createElement("div");bg.className="ddbg";bg.onclick=close;
+  var l=document.createElement("div");l.className="ddl";l.setAttribute("role","listbox");l.style.fontSize=cs.fontSize;l.style.fontFamily=cs.fontFamily;
+  Array.prototype.forEach.call(sel.options,function(o){var b=document.createElement("button");b.type="button";b.setAttribute("role","option");b.setAttribute("aria-selected",o.selected?"true":"false");
+    b.innerHTML='<span class="ck">'+(o.selected?"✓":"")+'</span>';b.appendChild(document.createTextNode(o.textContent));
+    b.onclick=function(){close();if(sel.value!==o.value){sel.value=o.value;sel.dispatchEvent(new Event("change",{bubbles:true}))}};l.appendChild(b)});
+  document.body.appendChild(bg);document.body.appendChild(l);
+  var vw=document.documentElement.clientWidth,vh=innerHeight,m=8;
+  var w=Math.min(vw-2*m,Math.max(r.width,l.scrollWidth+2));l.style.width=w+"px";
+  if(l.scrollWidth>w+1){l.querySelectorAll("button").forEach(function(b){b.style.whiteSpace="normal"})}
+  var left=Math.min(Math.max(m,r.left),vw-m-w);l.style.left=left+"px";
+  var below=vh-r.bottom-m,above=r.top-m,h=l.scrollHeight;
+  if(h<=below||below>=above){l.style.top=(r.bottom+4)+"px";l.style.maxHeight=(below-4)+"px"}
+  else{var hh=Math.min(h,above-4);l.style.top=(r.top-4-hh)+"px";l.style.maxHeight=hh+"px"}
+  var cur=l.querySelector('[aria-selected=true]');if(cur&&cur.offsetTop>l.clientHeight-40)l.scrollTop=cur.offsetTop-l.clientHeight/2}
+document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest(".ddl,.ddbg"))return;
+  var x=e.clientX,y=e.clientY,ss=document.querySelectorAll("select.bsel");
+  for(var i=0;i<ss.length;i++){var r=ss[i].getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){e.preventDefault();e.stopPropagation();open(ss[i]);return}}},true);
+addEventListener("resize",close);
+})();
