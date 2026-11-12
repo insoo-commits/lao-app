@@ -4,7 +4,7 @@
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="라오스어">
-<link rel="apple-touch-icon" href="icon-180.png"><script>(function(){var n=navigator,t=n.maxTouchPoints>0||"ontouchstart" in window;if((/iPad/.test(n.userAgent)||(/Macintosh/.test(n.userAgent)&&t))||(t&&Math.min(screen.width,screen.height)>=700))document.documentElement.classList.add("tab")})()</script><script src="audio/index.js" defer></script><script src="app.js?v=9.17" defer></script>
+<link rel="apple-touch-icon" href="icon-180.png"><script>(function(){var n=navigator,t=n.maxTouchPoints>0||"ontouchstart" in window;if((/iPad/.test(n.userAgent)||(/Macintosh/.test(n.userAgent)&&t))||(t&&Math.min(screen.width,screen.height)>=700))document.documentElement.classList.add("tab")})()</script><script src="audio/index.js" defer></script><script src="app.js?v=9.18" defer></script>
 <title>라오스어 묶음 학습</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,6 +45,14 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 button,select{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+/* title banner: Laos at dusk (That Luang, Mekong, palms, dok champa) */
+header{position:relative;overflow:hidden;border-radius:16px;padding:22px 20px 18px;min-height:120px;color:#fff;
+  background:linear-gradient(90deg,rgba(14,20,44,.82) 0%,rgba(14,20,44,.55) 45%,rgba(14,20,44,.08) 80%),url(header.svg) 70% 50%/cover no-repeat,#1d2b55}
+header .eyebrow{color:rgba(255,255,255,.82)}
+header h1{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+header h1 .lo{color:#F6CB5A}
+header .stats{color:rgba(255,255,255,.8)}
+header .stats b{color:#fff}
 .brand{display:flex;flex-direction:column;gap:4px;min-width:0}
 .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:600}
 h1{font-family:var(--display);font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0;text-wrap:balance}
@@ -275,7 +283,7 @@ html.tab .voice{font-size:18px}
 </style>
 
 </head><body>
-<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-12 v9.17</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
+<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-13 v9.18</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
 <div class="wrap" id="app" data-g="P5">
   <header>
     <div class="brand">
@@ -310,5 +318,5 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-12 v9.17</div>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v9.18</div>
 </body></html>
