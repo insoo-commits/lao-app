@@ -50,29 +50,34 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
   else{u.text=it.rd;u.lang="ko-KR";if(VKO)u.voice=VKO;u.rate=RATE}return u}
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
-  el.hidden=false;document.body.classList.add("has-player");
+  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.paused?"재개":"일시정지"}
   const n=P.queue.length;$("#pt").textContent=`🔊 ${n>1?`${Math.min(P.i+1,n)}/${n}문장${P.each>1?` (${P.k+1}/${P.each})`:""} · `:""}${REP===0?`무한 반복 (${P.round}회째)`:`${P.round}/${REP}회`}`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
-function stopPlay(){P.token++;P.active=false;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
+function stopPlay(){P.token++;P.active=false;P.paused=false;P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   if((each||1)>=2)items=items.flatMap(it=>{const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it,n:1},{text:ko,ko:1,id:it.id,n:1},{...it,n:1}]:[it]});
   stopPlay();unlockAud();P.each=each||1;P.k=0;P.follow=!!follow;P.queue=items;P.i=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
+function setPaused(v){if(!P.active)return;P.paused=!!v;
+  if(!v&&P._resume){const r=P._resume;P._resume=null;r()}else try{if(v)aud().pause();else{const pr=aud().play();if(pr&&pr.catch)pr.catch(()=>{})}}catch(e){}
+  try{if(hasSS){if(v)speechSynthesis.pause();else speechSynthesis.resume()}}catch(e){}
+  try{navigator.mediaSession.playbackState=v?"paused":"playing"}catch(e){}
+  const b=document.getElementById("ppause");if(b)b.textContent=v?"재개":"일시정지"}
 function gapThen(tok,ms){const a=aud();let fired=false;const fb=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;setTimeout(()=>nextPlay(tok),ms)};
   if(tok!==P.token)return;a.onended=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;nextPlay(tok)};a.onerror=fb;
   try{a.src="audio/_gap"+ms+".mp3";a.playbackRate=1;a.defaultPlaybackRate=1;const pr=a.play();if(pr&&pr.catch)pr.catch(fb)}catch(e){fb()}}
 function msMeta(it){if(!("mediaSession" in navigator))return;try{
   navigator.mediaSession.metadata=new MediaMetadata({title:it.ko?koSay(it.text):rep(it.text),artist:"라오스어 묶음 학습",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
   if(!msMeta._h){msMeta._h=1;const ms=navigator.mediaSession;
-    ms.setActionHandler("pause",()=>{try{aud().pause();ms.playbackState="paused"}catch(e){}});
-    ms.setActionHandler("play",()=>{try{aud().play();ms.playbackState="playing"}catch(e){}});
+    ms.setActionHandler("pause",()=>setPaused(true));
+    ms.setActionHandler("play",()=>setPaused(false));
     try{ms.setActionHandler("stop",()=>stopPlay())}catch(e){}
     try{ms.setActionHandler("nexttrack",()=>{if(!P.active)return;const tok=P.token;try{aud().pause()}catch(e){}P.k=0;P.i++;nextPlay(tok)})}catch(e){}
     try{ms.setActionHandler("previoustrack",()=>{if(!P.active)return;const tok=P.token;try{aud().pause()}catch(e){}P.k=0;P.i=Math.max(0,P.i-1);nextPlay(tok)})}catch(e){}}
   navigator.mediaSession.playbackState="playing"}catch(e){}}
 function nextPlay(tok){
-  if(tok!==P.token)return;
+  if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){if(REP===0||P.round<REP){P.round++;P.i=0}else{stopPlay();return}}
   const it=P.queue[P.i];mark(it.id);showPlayer();
   if(AUD&&!it.noAud){let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;if(AUD[k]){const a=aud();let done=false;
@@ -215,6 +220,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.rep!==undefined){REP=+t.dataset.rep;store.set("lao-rep",REP);document.querySelectorAll("[data-rep]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rep===REP));showPlayer();return}
   if(t.dataset.rate!==undefined){RATE=+t.dataset.rate;store.set("lao-rate",RATE);document.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rate===RATE));return}
   if(t.id==="pstop"){stopPlay();return}
+  if(t.id==="ppause"){setPaused(!P.paused);return}
   if(t.dataset.part){const p=PARTS.find(p=>p.id===t.dataset.part);S.part=p.id;{const ls=S.lastSub[p.id];S.sub=(ls&&p.subs.some(x=>x.id===ls))?ls:p.subs[0].id};S.q="";$("#q").value="";S.quiz=null;S.flipped={};save();render();return}
   if(t.dataset.sub){S.sub=t.dataset.sub;S.quiz=null;S.flipped={};save();render();return}
   if(t.dataset.goto){goto(t.dataset.goto);return}

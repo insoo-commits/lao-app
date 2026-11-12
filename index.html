@@ -4,7 +4,7 @@
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="라오스어">
-<link rel="apple-touch-icon" href="icon-180.png"><script src="audio/index.js" defer></script><script src="app.js?v=4" defer></script>
+<link rel="apple-touch-icon" href="icon-180.png"><script src="audio/index.js" defer></script><script src="app.js?v=5" defer></script>
 <title>라오스어 묶음 학습</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,6 +113,8 @@ h1 .lo{font-weight:600;color:var(--accent)}
 .player{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--ink);color:var(--bg);font-size:14px;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .player .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .player button{flex:0 0 auto;border:0;background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 16px;font-weight:600}
+.player button.pcancel{background:transparent;color:var(--bg);border:1px solid currentColor}
+.player{gap:8px}.player .t{margin-right:4px}
 body.has-player .wrap{padding-bottom:110px}
 .toggle{white-space:nowrap;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
 .toggle input{accent-color:var(--accent)}
@@ -197,7 +199,7 @@ mark{background:transparent;color:var(--accent);font-weight:700;text-decoration:
 </style>
 
 </head><body>
-<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-12 v4</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
+<div id="boot" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf6ee;color:#8a5a12;font:600 16px -apple-system,system-ui,sans-serif"><div style="width:38px;height:38px;border:4px solid #e8dcc6;border-top-color:#8a5a12;border-radius:50%;animation:bootspin .9s linear infinite"></div><div>불러오는 중…</div><div style="font-size:12px;opacity:.6">2026-11-12 v5</div><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style></div>
 <div class="wrap" id="app" data-g="P5">
   <header>
     <div class="brand">
@@ -226,11 +228,11 @@ mark{background:transparent;color:var(--accent);font-weight:700;text-decoration:
     </div>
     <div class="body" id="view"></div>
   </section>
-  <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="pstop">정지</button></div>
+  <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">일시정지</button><button id="pstop" class="pcancel">취소</button></div>
   <p class="voice" id="voiceNote"></p>
   <p class="note">🔊 버튼은 기기에 설치된 라오스어 음성으로 읽어 줍니다. 라오스어 음성이 없는 기기에서는 한국어 독음을 한국어 음성으로 읽어 줘요(성조는 표현되지 않습니다). Windows의 Microsoft Edge에는 라오스어 음성이 있습니다. 아이패드·아이폰은 무음 모드를 꺼야 소리가 납니다. '외웠어요' 표시는 이 기기의 브라우저에만 저장됩니다. 이 파일은 인터넷 없이도 열립니다. 예문은 학습용으로 만든 문장이니 원어민과 함께 읽으며 다듬어 쓰세요.</p>
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-12 v4</div>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-12 v5</div>
 </body></html>
