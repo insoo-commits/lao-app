@@ -30,7 +30,7 @@ const AUD=window.AUDIO_INDEX||null;const hasSS="speechSynthesis" in window;const
 function akey(t){t=rep(String(t)).replace(/\s+/g," ").trim();let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 let AEL=null;const ABLOB={};function aud(){if(!AEL){AEL=new Audio();AEL.preload="auto";AEL.setAttribute("playsinline","")}return AEL}
 function unlockAud(){if(!AUD)return;const a=aud();if(a._u)return;a._u=1;try{a.src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//OEwAAAAAAAAAAAAEluZm8AAAAPAAAABwAAA2AAVVVVVVVVVVVVVVVVVVVxcXFxcXFxcXFxcXFxcY6Ojo6Ojo6Ojo6Ojo6Oqqqqqqqqqqqqqqqqqqqqx8fHx8fHx8fHx8fHx8fj4+Pj4+Pj4+Pj4+Pj4///////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQEIAAAAAAAAANgmVBi7QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//NExAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExFMAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKYAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";const p=a.play();if(p&&p.catch)p.catch(()=>{a._u=0})}catch(e){a._u=0}}
-let REP=store.get("lao-rep",1);if(![0,1,3,5].includes(REP))REP=1;
+let REP=store.get("lao-rep",1);if(![1,2,3,4,5].includes(REP))REP=1;
 let RATE=store.get("lao-rate",1);if(![0.8,1,1.2,1.5].includes(RATE))RATE=1;
 const P={queue:[],i:0,round:1,token:0,active:false};
 let VLO=null,VKO=null;
@@ -51,12 +51,14 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.paused?"재개":"일시정지"}
-  const n=P.queue.length;$("#pt").textContent=`🔊 ${n>1?`${Math.min(P.i+1,n)}/${n}문장${P.each>1?` (${P.k+1}/${P.each})`:""} · `:""}${REP===0?`무한 반복 (${P.round}회째)`:`${P.round}/${REP}회`}`}
+  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
 function stopPlay(){P.token++;P.active=false;P.paused=false;P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
-  if((each||1)>=2)items=items.flatMap(it=>{const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it,n:1},{text:ko,ko:1,id:it.id,n:1},{...it,n:1}]:[it]});
-  stopPlay();unlockAud();P.each=each||1;P.k=0;P.follow=!!follow;P.queue=items;P.i=0;P.round=1;P.active=true;const tok=P.token;
+  const single=items.length===1;
+  const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it},{...it}]}return [{...it}]});
+  const q=[];groups.forEach((g,gi)=>{const gs=q.length;g.forEach(x=>{x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
+  stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.queue=q;P.i=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
 function setPaused(v){if(!P.active)return;P.paused=!!v;
@@ -76,19 +78,22 @@ function msMeta(it){if(!("mediaSession" in navigator))return;try{
     try{ms.setActionHandler("nexttrack",()=>{if(!P.active)return;const tok=P.token;try{aud().pause()}catch(e){}P.k=0;P.i++;nextPlay(tok)})}catch(e){}
     try{ms.setActionHandler("previoustrack",()=>{if(!P.active)return;const tok=P.token;try{aud().pause()}catch(e){}P.k=0;P.i=Math.max(0,P.i-1);nextPlay(tok)})}catch(e){}}
   navigator.mediaSession.playbackState="playing"}catch(e){}}
+/* single item: repeat forever. list: each item REP times, then next; after the last, start over */
+function advQ(){const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
+  if(P.single||P.k<REP-1){P.k++;P.i=it.gs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
-  if(P.i>=P.queue.length){if(REP===0||P.round<REP){P.round++;P.i=0}else{stopPlay();return}}
+  if(P.i>=P.queue.length){P.round++;P.i=0}
   const it=P.queue[P.i];mark(it.id);showPlayer();
   if(AUD&&!it.noAud){let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;if(AUD[k]){const a=aud();let done=false;
-    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;if(P.k<(it.n||P.each)-1){P.k++}else{P.k=0;P.i++}gapThen(tok,P.i>=P.queue.length?900:450)};
+    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length?900:450)};
     a.onended=fin;a.onerror=()=>{if(done||tok!==P.token)return;done=true;it.noAud=1;nextPlay(tok)};
     const go=src=>{if(tok!==P.token)return;try{a.src=src;a.playbackRate=RATE;a.defaultPlaybackRate=RATE;const pr=a.play();if(pr&&pr.catch)pr.catch(e=>{if(tok!==P.token)return;if(e&&e.name==="NotAllowedError"){stopPlay();ttsWarn();return}a.onerror()})}catch(e){a.onerror()}};
     msMeta(it);go("audio/"+k+".mp3")
     return}}
   if(!hasSS){P.i++;setTimeout(()=>nextPlay(tok),50);return}
   try{const u=utterOf(it);
-    let done=false;const t0=Date.now();const fin=()=>{clearInterval(wd);if(done||tok!==P.token)return;done=true;if(P.k<(it.n||P.each)-1){P.k++}else{P.k=0;P.i++}setTimeout(()=>nextPlay(tok),P.i>=P.queue.length?900:450)};
+    let done=false;const t0=Date.now();const fin=()=>{clearInterval(wd);if(done||tok!==P.token)return;done=true;advQ();setTimeout(()=>nextPlay(tok),P.i>=P.queue.length?900:450)};
     u.onstart=()=>{P.err=0};
     u.onend=fin;u.onerror=ev=>{const er=ev&&ev.error;if(er==="interrupted"||er==="canceled"){fin();return}
       if(tok!==P.token)return;P.err=(P.err||0)+1;if(er==="not-allowed"||P.err>=3){stopPlay();ttsWarn();return}fin()};
