@@ -219,6 +219,7 @@ function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s
 document.addEventListener("click",e=>{
   const ko=e.target.closest(".hide-ko .ko");if(ko){ko.classList.toggle("show");return}
   const rd=e.target.closest(".hide-rd .line .t2,.hide-rd .entry-head .r");if(rd){rd.classList.toggle("show");return}
+  if(!e.target.closest("button,input,label,a,select")){const ln=e.target.closest(".line");const sb=ln&&ln.querySelector("[data-say]");if(sb){sb.click();return}}
   const t=e.target.closest("button");if(!t)return;
   {const d=t.dataset;if((d.part||d.sub||d.goto||d.mode)&&P.active)stopPlay()}
   if(t.dataset.sayall){const en=t.closest(".entry");play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id,head:1},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
@@ -238,6 +239,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.mode){S.mode=t.dataset.mode;S.quiz=null;save();render();return}
   if(t.dataset.qkind){S.qkind=t.dataset.qkind;render();return}
   if(t.dataset.reveal){S.reveal[t.dataset.reveal]=!S.reveal[t.dataset.reveal];render();return}
+  if(t.dataset.flip!==undefined&&P.active&&!P.single){const sb=t.closest(".card")&&t.closest(".card").querySelector(".card-foot [data-say]");if(sb){sb.click();return}}
   if(t.dataset.flip!==undefined){const k=t.dataset.flip;S.flipped[k]=!S.flipped[k];render();document.querySelector(`[data-flip="${CSS.escape(k)}"]`)?.focus();return}
   if(t.dataset.opt!==undefined&&S.quiz){const Q=S.quiz;if(Q.picked!==null)return;Q.picked=+t.dataset.opt;if(Q.qs[Q.i].opts[Q.picked]===Q.qs[Q.i].answer)Q.score++;render();return}
   if(t.id==="next"){S.quiz.i++;S.quiz.picked=null;render();return}
