@@ -53,7 +53,7 @@ function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;documen
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"재개":"일시정지"}
   const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
-function stopPlay(){P.token++;P.active=false;P.paused=false;P.hold=null;P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
+function stopPlay(){P.token++;P.active=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
@@ -80,10 +80,12 @@ function msMeta(it){if(!("mediaSession" in navigator))return;try{
   navigator.mediaSession.playbackState="playing"}catch(e){}}
 /* single item: repeat forever. list: each item REP times, then next; after the last, start over */
 /* tap one line while a list is playing: loop that line; the bottom "▶ 재생" button moves on to the next one */
+function holdMark(idx){document.querySelectorAll(".speak.hold").forEach(b=>b.classList.remove("hold"));try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur()}catch(e){}
+  const it=idx!=null&&P.queue[idx];const el=it&&document.getElementById(it.id);const b=el&&(el.querySelector(".card-foot [data-say]")||el.querySelector("[data-say]"));if(b)b.classList.add("hold")}
 function holdAt(idx){const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
-  P.paused=false;P._resume=null;P.hold=idx;P.i=idx;P.k=0;nextPlay(tok)}
+  P.paused=false;P._resume=null;P.hold=idx;P.i=idx;P.k=0;holdMark(idx);nextPlay(tok)}
 function releaseHold(){const it=P.queue[P.hold];const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
-  P.hold=null;P.paused=false;P._resume=null;P.k=0;P.i=it?it.ge+1:P.i+1;nextPlay(tok)}
+  P.hold=null;holdMark(null);P.paused=false;P._resume=null;P.k=0;P.i=it?it.ge+1:P.i+1;nextPlay(tok)}
 function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
   if(P.single||P.k<REP-1){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
