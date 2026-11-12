@@ -227,7 +227,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.playbundle){const sec=document.getElementById("bd-"+t.dataset.playbundle),items=[];
     sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
     play(items.filter(Boolean),true,2);return}
-  if(t.dataset.say!==undefined){const ln=t.closest(".line");if(P.active&&!P.single){const host=ln||t.closest(".card,.entry-head");const hid=host&&host.id;const idx=hid?P.queue.findIndex(x=>x.id===hid&&!x.ko):-1;if(idx>=0){holdAt(idx);return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:ln?ln.id:null,m:isM(ln&&ln.id)}]);return}
+  if(t.dataset.say!==undefined){const ln=t.closest(".line");if(P.active&&!P.single){const host=ln||t.closest(".card,.entry-head");const hid=host&&host.id;const idx=hid?P.queue.findIndex(x=>x.id===hid&&!x.ko):-1;if(idx>=0){if(P.hold===idx)releaseHold();else holdAt(idx);return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:ln?ln.id:null,m:isM(ln&&ln.id)}]);return}
   if(t.dataset.rep!==undefined){REP=+t.dataset.rep;store.set("lao-rep",REP);document.querySelectorAll("[data-rep]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rep===REP));showPlayer();return}
   if(t.dataset.rate!==undefined){RATE=+t.dataset.rate;store.set("lao-rate",RATE);document.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rate===RATE));return}
   if(t.id==="pstop"){stopPlay();return}
