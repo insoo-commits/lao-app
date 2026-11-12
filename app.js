@@ -51,9 +51,9 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"재개":"일시정지"}
-  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
+  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.loading?"⏳ 소리 준비 중…":P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
-function stopPlay(){P.token++;P.active=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
+function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
@@ -66,9 +66,17 @@ function setPaused(v){if(!P.active)return;P.paused=!!v;
   try{if(hasSS){if(v)speechSynthesis.pause();else speechSynthesis.resume()}}catch(e){}
   try{navigator.mediaSession.playbackState=v?"paused":"playing"}catch(e){}
   const b=document.getElementById("ppause");if(b)b.textContent=v?"재개":"일시정지"}
+/* audio comes as blobs (fast start on iPhone, avoids slow service-worker range requests); next clips are fetched ahead */
+const BLOBP={};
+function keyOf(it){if(!AUD||it.noAud)return null;let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;return AUD[k]?k:null}
+function blobUrl(k){if(ABLOB[k])return Promise.resolve(ABLOB[k]);if(BLOBP[k])return BLOBP[k];
+  return BLOBP[k]=fetch("audio/"+k+".mp3").then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>ABLOB[k]=URL.createObjectURL(b)).catch(e=>{delete BLOBP[k];throw e})}
+let LT=null;function loadStart(){clearTimeout(LT);LT=setTimeout(()=>{P.loading=true;showPlayer()},350)}
+function loadDone(){clearTimeout(LT);if(P.loading){P.loading=false;showPlayer()}}
+setTimeout(()=>{if(AUD){blobUrl("_gap450").catch(()=>{});blobUrl("_gap900").catch(()=>{})}},1500);
 function gapThen(tok,ms){const a=aud();let fired=false;const fb=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;setTimeout(()=>nextPlay(tok),ms)};
   if(tok!==P.token)return;a.onended=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;nextPlay(tok)};a.onerror=fb;
-  try{a.src="audio/_gap"+ms+".mp3";a.playbackRate=1;a.defaultPlaybackRate=1;const pr=a.play();if(pr&&pr.catch)pr.catch(fb)}catch(e){fb()}}
+  try{a.src=ABLOB["_gap"+ms]||("audio/_gap"+ms+".mp3");a.playbackRate=1;a.defaultPlaybackRate=1;const pr=a.play();if(pr&&pr.catch)pr.catch(fb)}catch(e){fb()}}
 function msMeta(it){if(!("mediaSession" in navigator))return;try{
   navigator.mediaSession.metadata=new MediaMetadata({title:it.ko?koSay(it.text):rep(it.text),artist:"라오스어 묶음 학습",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
   if(!msMeta._h){msMeta._h=1;const ms=navigator.mediaSession;
@@ -100,11 +108,12 @@ function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){P.round++;P.i=0}
   const it=P.queue[P.i];cardSync(it);mark(it.id);showPlayer();
-  if(AUD&&!it.noAud){let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;if(AUD[k]){const a=aud();let done=false;
+  if(AUD&&!it.noAud){const k=keyOf(it);if(k){const a=aud();let done=false;
     const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length?900:450)};
     a.onended=fin;a.onerror=()=>{if(done||tok!==P.token)return;done=true;it.noAud=1;nextPlay(tok)};
-    const go=src=>{if(tok!==P.token)return;try{a.src=src;a.playbackRate=RATE;a.defaultPlaybackRate=RATE;const pr=a.play();if(pr&&pr.catch)pr.catch(e=>{if(tok!==P.token)return;if(e&&e.name==="NotAllowedError"){stopPlay();ttsWarn();return}a.onerror()})}catch(e){a.onerror()}};
-    msMeta(it);go("audio/"+k+".mp3")
+    const go=src=>{if(tok!==P.token)return;loadDone();try{a.src=src;a.playbackRate=RATE;a.defaultPlaybackRate=RATE;const pr=a.play();if(pr&&pr.catch)pr.catch(e=>{if(tok!==P.token)return;if(e&&e.name==="NotAllowedError"){stopPlay();ttsWarn();return}a.onerror()})}catch(e){a.onerror()}};
+    msMeta(it);if(ABLOB[k])go(ABLOB[k]);else{loadStart();blobUrl(k).then(go,()=>go("audio/"+k+".mp3"))}
+    for(let j=1;j<=3;j++){const nx=P.queue[P.i+j];const nk=nx&&keyOf(nx);if(nk)blobUrl(nk).catch(()=>{})}
     return}}
   if(!hasSS){P.i++;setTimeout(()=>nextPlay(tok),50);return}
   try{const u=utterOf(it);
