@@ -53,7 +53,7 @@ function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;documen
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"재개":"일시정지"}
   const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
-function stopPlay(){P.token++;P.active=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
+function stopPlay(){P.token++;P.active=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
@@ -80,6 +80,14 @@ function msMeta(it){if(!("mediaSession" in navigator))return;try{
   navigator.mediaSession.playbackState="playing"}catch(e){}}
 /* single item: repeat forever. list: each item REP times, then next; after the last, start over */
 /* tap one line while a list is playing: loop that line; the bottom "▶ 재생" button moves on to the next one */
+/* word cards while playing: odd plays show the word side, even plays the meaning side; back to the word side when the word is done */
+function cardSync(it){const prev=P.cardKey;let key=null,flip=false;
+  if(it&&it.id&&String(it.id).startsWith("cd-")){const el=document.getElementById(it.id);const f=el&&el.querySelector("[data-flip]");key=f?f.dataset.flip:null;
+    if(key){if(P.lastGi!==it.gi||P.lastRound!==P.round||prev!==key)P.pc=0;P.lastGi=it.gi;P.lastRound=P.round;P.pc=(P.pc||0)+1;flip=P.pc%2===0}}
+  let ch=false;
+  if(prev&&prev!==key&&S.flipped[prev]){delete S.flipped[prev];ch=true}
+  if(key&&!!S.flipped[key]!==flip){if(flip)S.flipped[key]=true;else delete S.flipped[key];ch=true}
+  P.cardKey=key;if(ch){const y=scrollY;render();if(scrollY!==y)scrollTo(0,y);if(P.hold!=null)holdMark(P.hold)}}
 function holdMark(idx){document.querySelectorAll(".speak.hold").forEach(b=>b.classList.remove("hold"));try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur()}catch(e){}
   const it=idx!=null&&P.queue[idx];const el=it&&document.getElementById(it.id);const b=el&&(el.querySelector(".card-foot [data-say]")||el.querySelector("[data-say]"));if(b)b.classList.add("hold")}
 function holdAt(idx){const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
@@ -91,7 +99,7 @@ function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];i
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){P.round++;P.i=0}
-  const it=P.queue[P.i];mark(it.id);showPlayer();
+  const it=P.queue[P.i];cardSync(it);mark(it.id);showPlayer();
   if(AUD&&!it.noAud){let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;if(AUD[k]){const a=aud();let done=false;
     const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length?900:450)};
     a.onended=fin;a.onerror=()=>{if(done||tok!==P.token)return;done=true;it.noAud=1;nextPlay(tok)};
