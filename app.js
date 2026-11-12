@@ -57,7 +57,7 @@ function stopPlay(){P.token++;P.active=false;P.paused=false;P._resume=null;try{n
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
-  const q=[];groups.forEach((g,gi)=>{const gs=q.length;g.forEach(x=>{x.nr=!!g[0].head;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
+  const q=[];groups.forEach((g,gi)=>{const gs=q.length;g.forEach(x=>{x.rs=g.length===3&&g[1].ko?gs+2:gs;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
   stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.queue=q;P.i=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
@@ -80,7 +80,7 @@ function msMeta(it){if(!("mediaSession" in navigator))return;try{
   navigator.mediaSession.playbackState="playing"}catch(e){}}
 /* single item: repeat forever. list: each item REP times, then next; after the last, start over */
 function advQ(){const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
-  if(P.single||(!it.nr&&P.k<REP-1)){P.k++;P.i=it.gs;return}P.k=0;P.i=it.ge+1}
+  if(P.single||P.k<REP-1){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){P.round++;P.i=0}
