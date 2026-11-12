@@ -50,7 +50,7 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
   else{u.text=it.rd;u.lang="ko-KR";if(VKO)u.voice=VKO;u.rate=RATE}return u}
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
-  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 재생":P.paused?"재개":"일시정지"}
+  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"재개":"일시정지"}
   const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
 function stopPlay(){P.token++;P.active=false;P.paused=false;P.hold=null;P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
