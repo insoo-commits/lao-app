@@ -50,10 +50,10 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
   else{u.text=it.rd;u.lang="ko-KR";if(VKO)u.voice=VKO;u.rate=RATE}return u}
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
-  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.paused?"재개":"일시정지"}
-  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
+  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 재생":P.paused?"재개":"일시정지"}
+  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
-function stopPlay(){P.token++;P.active=false;P.paused=false;P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
+function stopPlay(){P.token++;P.active=false;P.paused=false;P.hold=null;P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
@@ -79,7 +79,12 @@ function msMeta(it){if(!("mediaSession" in navigator))return;try{
     try{ms.setActionHandler("previoustrack",()=>{if(!P.active)return;const tok=P.token;try{aud().pause()}catch(e){}P.k=0;P.i=Math.max(0,P.i-1);nextPlay(tok)})}catch(e){}}
   navigator.mediaSession.playbackState="playing"}catch(e){}}
 /* single item: repeat forever. list: each item REP times, then next; after the last, start over */
-function advQ(){const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
+/* tap one line while a list is playing: loop that line; the bottom "▶ 재생" button moves on to the next one */
+function holdAt(idx){const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
+  P.paused=false;P._resume=null;P.hold=idx;P.i=idx;P.k=0;nextPlay(tok)}
+function releaseHold(){const it=P.queue[P.hold];const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
+  P.hold=null;P.paused=false;P._resume=null;P.k=0;P.i=it?it.ge+1:P.i+1;nextPlay(tok)}
+function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
   if(P.single||P.k<REP-1){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
@@ -222,11 +227,11 @@ document.addEventListener("click",e=>{
   if(t.dataset.playbundle){const sec=document.getElementById("bd-"+t.dataset.playbundle),items=[];
     sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
     play(items.filter(Boolean),true,2);return}
-  if(t.dataset.say!==undefined){const ln=t.closest(".line");play([{text:t.dataset.say,rd:t.dataset.rd,id:ln?ln.id:null,m:isM(ln&&ln.id)}]);return}
+  if(t.dataset.say!==undefined){const ln=t.closest(".line");if(P.active&&!P.single){const host=ln||t.closest(".card,.entry-head");const hid=host&&host.id;const idx=hid?P.queue.findIndex(x=>x.id===hid&&!x.ko):-1;if(idx>=0){holdAt(idx);return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:ln?ln.id:null,m:isM(ln&&ln.id)}]);return}
   if(t.dataset.rep!==undefined){REP=+t.dataset.rep;store.set("lao-rep",REP);document.querySelectorAll("[data-rep]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rep===REP));showPlayer();return}
   if(t.dataset.rate!==undefined){RATE=+t.dataset.rate;store.set("lao-rate",RATE);document.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rate===RATE));return}
   if(t.id==="pstop"){stopPlay();return}
-  if(t.id==="ppause"){setPaused(!P.paused);return}
+  if(t.id==="ppause"){if(P.hold!=null)releaseHold();else setPaused(!P.paused);return}
   if(t.dataset.part){const p=PARTS.find(p=>p.id===t.dataset.part);S.part=p.id;{const ls=S.lastSub[p.id];S.sub=(ls&&p.subs.some(x=>x.id===ls))?ls:p.subs[0].id};S.q="";$("#q").value="";S.quiz=null;S.flipped={};save();render();return}
   if(t.dataset.sub){S.sub=t.dataset.sub;S.quiz=null;S.flipped={};save();render();return}
   if(t.dataset.goto){goto(t.dataset.goto);return}
