@@ -17,6 +17,9 @@
 .pairs,.dlg{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:16px;padding:14px 12px 12px;background:var(--sheet);box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .pairs>.sechd,.dlg>.sechd,.smb>.sec{border-left:4px solid var(--accent);padding:0 0 6px 10px;border-bottom:1px solid var(--line)}
 .pair+.pair{border-top:1px dashed var(--line);padding-top:8px}
+.entry,.pairs,.dlg{border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none;background:none;padding:16px 0 14px}
+.entry+.entry{margin-top:0}
+.entry,.pairs,.dlg{border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none;background:none;padding:16px 0 14px}.entry+.entry{margin-top:0}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
@@ -341,6 +344,6 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v11.8</div>
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=11.8";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v11.9</div>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=11.9";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
