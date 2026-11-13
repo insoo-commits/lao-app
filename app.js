@@ -95,7 +95,7 @@ function cardSync(it){const prev=P.cardKey;let key=null,flip=false;
   let ch=false;
   if(prev&&prev!==key&&S.flipped[prev]){delete S.flipped[prev];ch=true}
   if(key&&!!S.flipped[key]!==flip){if(flip)S.flipped[key]=true;else delete S.flipped[key];ch=true}
-  P.cardKey=key;if(ch){const y=scrollY;render();if(scrollY!==y)scrollTo(0,y);if(P.hold!=null)holdMark(P.hold)}}
+  P.cardKey=key;if(ch){const y=scrollY;render();if(scrollY!==y)scrollTo(0,y);if(P.hold!=null)holdMark(P.hold);else if(P.single&&P.active)holdMark(P.i)}}
 function holdMark(idx){document.querySelectorAll(".speak.hold").forEach(b=>b.classList.remove("hold"));try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur()}catch(e){}
   const it=idx!=null&&P.queue[idx];const el=it&&document.getElementById(it.id);const b=el&&(el.querySelector(".card-foot [data-say]")||el.querySelector("[data-say]"));if(b)b.classList.add("hold")}
 function holdAt(idx){const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
@@ -248,7 +248,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.playbundle){const sec=document.getElementById("bd-"+t.dataset.playbundle),items=[];
     sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
     play(items.filter(Boolean),true,2);return}
-  if(t.dataset.say!==undefined){const ln=t.closest(".line");if(P.active&&P.single){const q0=P.queue[0];if(q0&&q0.text===t.dataset.say&&(q0.id||null)===(ln?ln.id:null)){stopPlay();return}}if(P.active&&!P.single){const host=ln||t.closest(".card,.entry-head");const hid=host&&host.id;const idx=hid?P.queue.findIndex(x=>x.id===hid&&!x.ko):-1;if(idx>=0){if(P.hold===idx)releaseHold();else holdAt(idx);return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:ln?ln.id:null,m:isM(ln&&ln.id)}]);if(P.active&&t.classList.contains("speak")){t.classList.add("hold");try{t.blur()}catch(e){}}return}
+  if(t.dataset.say!==undefined){const ln=t.closest(".line");const sid=ln?ln.id:((t.closest(".card")||{}).id||null);if(P.active&&P.single){const q0=P.queue[0];if(q0&&q0.text===t.dataset.say&&(q0.id||null)===sid){stopPlay();return}}if(P.active&&!P.single){const host=ln||t.closest(".card,.entry-head");const hid=host&&host.id;const idx=hid?P.queue.findIndex(x=>x.id===hid&&!x.ko):-1;if(idx>=0){if(P.hold===idx)releaseHold();else holdAt(idx);return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:sid,m:isM(ln&&ln.id)}]);if(P.active&&t.classList.contains("speak")){t.classList.add("hold");try{t.blur()}catch(e){}}return}
   if(t.dataset.rep!==undefined){REP=+t.dataset.rep;store.set("lao-rep",REP);document.querySelectorAll("[data-rep]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rep===REP));showPlayer();return}
   if(t.dataset.rate!==undefined){RATE=+t.dataset.rate;store.set("lao-rate",RATE);document.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rate===RATE));return}
   if(t.id==="pstop"){stopPlay();return}
