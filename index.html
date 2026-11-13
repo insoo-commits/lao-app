@@ -170,7 +170,8 @@ html.audwait .speak,html.audwait [data-playcards],html.audwait [data-playbundle]
 .player .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .player button{flex:0 0 auto;border:0;background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 16px;font-weight:600}
 .player button.pcancel{background:transparent;color:var(--bg);border:1px solid currentColor}
-.player{gap:8px}.player .t{margin-right:4px}
+.player{gap:8px;font-size:13px}.player .t{margin-right:4px}
+.player button{height:30px;padding:0 13px;font-size:12.5px;line-height:1}
 body.has-player .wrap{padding-bottom:110px}
 .toggle{white-space:nowrap;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
 .toggle input{accent-color:var(--accent)}
@@ -292,7 +293,8 @@ html.tab .face .ex{font-size:18.75px}
 html.tab .face .ex .lo{font-size:21px}
 html.tab .check{font-size:19.5px}
 html.tab .speak.all{font-size:18.75px}
-html.tab .player{font-size:21px}
+html.tab .player{font-size:19.5px}
+html.tab .player button{height:45px;padding:0 19px;font-size:18.75px}
 html.tab .toggle{font-size:19.5px}
 html.tab .entry-head .w{font-size:33px}
 html.tab .entry-head .r{font-size:21px}
@@ -361,6 +363,6 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v12.39</div>
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.39";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v12.40</div>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.40";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
