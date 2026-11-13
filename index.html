@@ -166,12 +166,12 @@ html.audwait .speak,html.audwait [data-playcards],html.audwait [data-playbundle]
 .line.playing,.card.playing{box-shadow:0 0 0 2px var(--accent)}
 .entry-head.playing{background:var(--accent-soft);border-radius:8px;box-shadow:0 0 0 2px var(--accent)}
 .dlg-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.player{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--ink);color:var(--bg);font-size:14px;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.player{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--ink);color:var(--bg);font-size:14px;padding:7px max(16px,env(safe-area-inset-right,0px)) calc(7px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .player .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .player button{flex:0 0 auto;border:0;background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 16px;font-weight:600}
 .player button.pcancel{background:transparent;color:var(--bg);border:1px solid currentColor}
-.player{gap:8px;font-size:13px}.player .t{margin-right:4px}
-.player button{height:30px;padding:0 13px;font-size:12.5px;line-height:1}
+.player{gap:8px;font-size:12px}.player .t{margin-right:4px}
+.player button{height:26px;padding:0 11px;font-size:11.5px;line-height:1}
 body.has-player .wrap{padding-bottom:110px}
 .toggle{white-space:nowrap;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
 .toggle input{accent-color:var(--accent)}
@@ -293,8 +293,8 @@ html.tab .face .ex{font-size:18.75px}
 html.tab .face .ex .lo{font-size:21px}
 html.tab .check{font-size:19.5px}
 html.tab .speak.all{font-size:18.75px}
-html.tab .player{font-size:19.5px}
-html.tab .player button{height:45px;padding:0 19px;font-size:18.75px}
+html.tab .player{font-size:16px}
+html.tab .player button{height:36px;padding:0 15px;font-size:15.5px}
 html.tab .toggle{font-size:19.5px}
 html.tab .entry-head .w{font-size:33px}
 html.tab .entry-head .r{font-size:21px}
@@ -363,6 +363,6 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v12.40</div>
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.40";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v12.41</div>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.41";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
