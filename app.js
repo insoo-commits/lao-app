@@ -282,10 +282,23 @@ if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(
 (function(){const n=document.getElementById("voiceNote");if(!n||!window.AUDIO_INDEX)return;
 const ks=Object.keys(window.AUDIO_INDEX);const b=document.createElement("button");b.className="speak all";b.style.marginLeft="8px";
 b.textContent="음성 전체 저장 (오프라인용)";n.after(b);
-b.onclick=async()=>{if(!("caches" in window))return;b.disabled=true;const c=await caches.open("lao-audio-v2");let done=0;
- const q=ks.slice();async function w(){while(q.length){const k=q.shift();const u="audio/"+k+".mp3";try{if(!(await c.match(u))){const r=await fetch(u);if(r.ok)await c.put(u,r)}}catch(e){}done++;if(done%50==0||done==ks.length)b.textContent="저장 중 "+done+"/"+ks.length}}
- await Promise.all([w(),w(),w(),w(),w(),w()]);b.textContent="음성 "+ks.length+"개 저장 완료";try{localStorage.setItem("lao-audio-saved2","1")}catch(e){}};
-try{if(localStorage.getItem("lao-audio-saved2"))b.textContent="음성 저장됨 (다시 확인)"}catch(e){}})();
+/* clips are kept in IndexedDB (see sw.js); the old CacheStorage copy is moved over once, then deleted */
+let _db;const ADB=()=>_db||(_db=new Promise((res,rej)=>{const r=indexedDB.open("lao-audio",1);r.onupgradeneeded=()=>r.result.createObjectStore("c");r.onsuccess=()=>res(r.result);r.onerror=()=>{_db=null;rej(r.error)}}));
+const aput=(k,v)=>ADB().then(db=>new Promise(res=>{const tx=db.transaction("c","readwrite");tx.objectStore("c").put(v,k);tx.oncomplete=()=>res(true);tx.onerror=tx.onabort=()=>res(false)})).catch(()=>false);
+const akeys=()=>ADB().then(db=>new Promise(res=>{const q=db.transaction("c").objectStore("c").getAllKeys();q.onsuccess=()=>res(new Set(q.result));q.onerror=()=>res(new Set())})).catch(()=>new Set());
+let busy=false;
+b.onclick=async()=>{if(busy||!window.indexedDB)return;busy=true;b.disabled=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+ const have=await akeys();const q=ks.filter(k=>!have.has(k));let done=ks.length-q.length;const sw=!!(navigator.serviceWorker&&navigator.serviceWorker.controller);
+ async function w(){while(q.length){const k=q.shift();try{const r=await fetch("audio/"+k+".mp3");if(r.ok){const buf=await r.arrayBuffer();if(!sw)await aput(k,buf)}}catch(e){}done++;if(done%50==0||done==ks.length)b.textContent="저장 중 "+done+"/"+ks.length}}
+ b.textContent="저장 중 "+done+"/"+ks.length;await Promise.all([w(),w(),w(),w(),w(),w()]);
+ const left=ks.length-(await akeys()).size;b.textContent=left>0?"음성 저장: "+left+"개 남음 (다시 누르기)":"음성 "+ks.length+"개 저장 완료";b.disabled=false;busy=false;try{localStorage.setItem("lao-audio-saved3","1")}catch(e){}};
+try{if(localStorage.getItem("lao-audio-saved3"))b.textContent="음성 저장됨 (다시 확인)"}catch(e){}
+/* one-time move from the old audio cache (slow to open on iPhone) to IndexedDB */
+setTimeout(async()=>{if(!("caches" in window)||!window.indexedDB)return;try{if(!(await caches.has("lao-audio-v2")))return;
+  const c=await caches.open("lao-audio-v2");const reqs=await c.keys();let n=0;const tot=reqs.length;busy=true;b.disabled=true;
+  async function w(){while(reqs.length){const rq=reqs.shift();try{const m=await c.match(rq);if(m){const k=new URL(rq.url).pathname.split("/").pop().replace(/\.mp3$/,"");await aput(k,await m.arrayBuffer())}}catch(e){}n++;if(n%100==0||n==tot)b.textContent="음성 옮기는 중 "+n+"/"+tot+" (처음 한 번만)"}}
+  await Promise.all([w(),w(),w(),w()]);await caches.delete("lao-audio-v2");b.textContent=tot+"개 음성 옮김 완료";if(tot)try{localStorage.setItem("lao-audio-saved3","1")}catch(e){}busy=false;b.disabled=false}catch(e){busy=false;b.disabled=false}},4000);
+})();
 
 ;/* custom dropdown list for touch devices: list text = same size as the select, list as wide as needed */
 (function(){var touch=navigator.maxTouchPoints>0||"ontouchstart" in window;if(!touch)return;
