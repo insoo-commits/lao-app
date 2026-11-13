@@ -281,10 +281,10 @@ if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(
 (function(){const n=document.getElementById("voiceNote");if(!n||!window.AUDIO_INDEX)return;
 const ks=Object.keys(window.AUDIO_INDEX);const b=document.createElement("button");b.className="speak all";b.style.marginLeft="8px";
 b.textContent="음성 전체 저장 (오프라인용)";n.after(b);
-b.onclick=async()=>{if(!("caches" in window))return;b.disabled=true;const c=await caches.open("lao-audio-v1");let done=0;
+b.onclick=async()=>{if(!("caches" in window))return;b.disabled=true;const c=await caches.open("lao-audio-v2");let done=0;
  const q=ks.slice();async function w(){while(q.length){const k=q.shift();const u="audio/"+k+".mp3";try{if(!(await c.match(u))){const r=await fetch(u);if(r.ok)await c.put(u,r)}}catch(e){}done++;if(done%50==0||done==ks.length)b.textContent="저장 중 "+done+"/"+ks.length}}
- await Promise.all([w(),w(),w(),w(),w(),w()]);b.textContent="음성 "+ks.length+"개 저장 완료";try{localStorage.setItem("lao-audio-saved","1")}catch(e){}};
-try{if(localStorage.getItem("lao-audio-saved"))b.textContent="음성 저장됨 (다시 확인)"}catch(e){}})();
+ await Promise.all([w(),w(),w(),w(),w(),w()]);b.textContent="음성 "+ks.length+"개 저장 완료";try{localStorage.setItem("lao-audio-saved2","1")}catch(e){}};
+try{if(localStorage.getItem("lao-audio-saved2"))b.textContent="음성 저장됨 (다시 확인)"}catch(e){}})();
 
 ;/* custom dropdown list for touch devices: list text = same size as the select, list as wide as needed */
 (function(){var touch=navigator.maxTouchPoints>0||"ontouchstart" in window;if(!touch)return;
