@@ -181,7 +181,7 @@ const lineHTML=(cls,role,lo,rd,ko,id,w)=>{const ns=String(id).startsWith("pr-")?
 function renderBundle(id){
   const b=B[id];let h=`<section class="bundle" id="bd-${id}">${bhead(id,true)}`;
   if(b.tp.length)h+=`<div class="box"><h4>구별 포인트</h4>${b.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`;
-  h+=`<div class="row" style="justify-content:flex-end"><button class="speak all" data-playbundle="${id}">${SPK}<span>전체 반복</span></button></div>`;
+  h+=`<div class="row" style="justify-content:flex-end;padding-right:13px"><button class="speak all" data-playbundle="${id}">${SPK}<span>전체 반복</span></button></div>`;
   b.w.forEach((w,wi)=>{const [lo,hint,rd,ko,ex]=w;
     h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${SPK}<span>예문 반복</span></button>${hint?`<span class="hint">${laoWrap(hint)}</span>`:""}</div>
     ${ex.map((e,ei)=>lineHTML(["g","s","r"][ei]||"n",ei===2?"실생활":`예문 ${ei+1}`,e[0],e[1],e[2],`ln-${id}-${wi}-${ei}`,lo)).join("")}</article>`});
