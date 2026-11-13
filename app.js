@@ -110,7 +110,7 @@ function gapThen(tok,ms){const a=aud();let fired=false;const fb=()=>{if(fired)re
   if(tok!==P.token)return;a.onended=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;nextPlay(tok)};a.onerror=fb;
   try{a.src=ABLOB["_gap"+ms]||("audio/_gap"+ms+".mp3");a.playbackRate=1;a.defaultPlaybackRate=1;const pr=a.play();if(pr&&pr.catch)pr.catch(fb)}catch(e){fb()}}
 function msMeta(it){if(!("mediaSession" in navigator))return;try{
-  navigator.mediaSession.metadata=new MediaMetadata({title:it.ko?koSay(it.text):rep(it.text),artist:"KOR 2 LAO",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
+  navigator.mediaSession.metadata=new MediaMetadata({title:it.ko?koSay(it.text):rep(it.text),artist:"LAO Lang",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
   if(!msMeta._h){msMeta._h=1;const ms=navigator.mediaSession;
     ms.setActionHandler("pause",()=>setPaused(true));
     ms.setActionHandler("play",()=>setPaused(false));
