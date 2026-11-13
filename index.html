@@ -12,6 +12,10 @@
 .entry-head.playing{background:var(--play-soft)!important;box-shadow:0 0 0 3px var(--play)!important}
 .speak.hold,.speak.hold:hover{background:var(--play)!important;border-color:var(--play)!important;color:#fff!important}
 .line .nt{grid-column:1/-1;font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px;padding-top:3px;border-top:1px dashed var(--line)}.line .nt .lo{font-size:13px;color:var(--ink)}.nw{text-decoration:underline dotted;text-underline-offset:4px;text-decoration-color:var(--muted)}.nw sup{font-size:9px;color:var(--accent);margin-left:1px}.hide-ko .line .nt{filter:blur(5px)}
+
+.pairs,.dlg{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:16px;padding:14px 12px 12px;background:var(--sheet);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.pairs>.sechd,.dlg>.sechd,.smb>.sec{border-left:4px solid var(--accent);padding:0 0 6px 10px;border-bottom:1px solid var(--line)}
+.pair+.pair{border-top:1px dashed var(--line);padding-top:8px}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
@@ -336,6 +340,6 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v11.4</div>
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=11.4";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v11.5</div>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=11.5";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
