@@ -77,15 +77,15 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"재개":"일시정지"}
-  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.loading?"⏳ 소리 준비 중…":P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:(P.chain?`🔊 전체 · ${(SUBS[S.sub]?SUBS[S.sub].b.indexOf(S.bun[S.sub]):0)+1}/${SUBS[S.sub]?SUBS[S.sub].b.length:1}묶음 · ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`)}
+  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.loading?"⏳ 소리 준비 중…":P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:(P.chain?`🔊 전체 · ${S.bun[S.sub]||""} · ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`)}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
 function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec)return items;
   sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
   return items.filter(Boolean)}
 /* 전체 반복: after the last line of a bundle, move to the next bundle of the same 소분류 (after the last, back to the first) and keep going */
-function chainNext(){const sb=SUBS[S.sub];if(!sb)return stopPlay();const L=sb.b,cur=S.bun[S.sub]||L[0];const nx=L[(L.indexOf(cur)+1)%L.length];
-  S.bun[S.sub]=nx;S.mode="dlg";S.quiz=null;save();render();window.scrollTo({top:0});const items=bundleItems(nx);if(!items.length)return stopPlay();play(items,true,2,true)}
+function chainNext(){const sb=SUBS[S.sub];if(!sb)return stopPlay();const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),cur=S.bun[S.sub]||sb.b[0];const nx=L[(L.indexOf(cur)+1)%L.length];
+  const ns=Object.values(SUBS).find(x=>x.b.includes(nx));S.part=ns.part;S.sub=ns.id;S.lastSub[ns.part]=ns.id;S.bun[ns.id]=nx;S.mode="dlg";S.quiz=null;S.q="";$("#q").value="";save();render();window.scrollTo({top:0});const items=bundleItems(nx);if(!items.length)return stopPlay();play(items,true,2,true)}
 function play(items,follow,each,chain){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
