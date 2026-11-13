@@ -77,14 +77,20 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"재개":"일시정지"}
-  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.loading?"⏳ 소리 준비 중…":P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`}
+  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.loading?"⏳ 소리 준비 중…":P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:(P.chain?`🔊 전체 · ${(SUBS[S.sub]?SUBS[S.sub].b.indexOf(S.bun[S.sub]):0)+1}/${SUBS[S.sub]?SUBS[S.sub].b.length:1}묶음 · ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`)}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
 function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
-function play(items,follow,each){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
+function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec)return items;
+  sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
+  return items.filter(Boolean)}
+/* 전체 반복: after the last line of a bundle, move to the next bundle of the same 소분류 (after the last, back to the first) and keep going */
+function chainNext(){const sb=SUBS[S.sub];if(!sb)return stopPlay();const L=sb.b,cur=S.bun[S.sub]||L[0];const nx=L[(L.indexOf(cur)+1)%L.length];
+  S.bun[S.sub]=nx;S.mode="dlg";S.quiz=null;save();render();window.scrollTo({top:0});const items=bundleItems(nx);if(!items.length)return stopPlay();play(items,true,2,true)}
+function play(items,follow,each,chain){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
   const q=[];groups.forEach((g,gi)=>{const gs=q.length;g.forEach(x=>{x.rs=g.length===3&&g[1].ko?gs+2:gs;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
-  stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.queue=q;P.i=0;P.round=1;P.active=true;const tok=P.token;
+  stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.chain=!!chain&&!single;P.queue=q;P.i=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
 function setPaused(v){if(!P.active)return;P.paused=!!v;
@@ -132,7 +138,7 @@ function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];i
   if(P.single||P.k<REP-1){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
-  if(P.i>=P.queue.length){P.round++;P.i=0}
+  if(P.i>=P.queue.length){if(P.chain){chainNext();return}P.round++;P.i=0}
   const it=P.queue[P.i];cardSync(it);mark(it.id);showPlayer();
   if(AUD&&!it.noAud){const k=keyOf(it);if(k){const a=aud();let done=false;
     const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length?900:450)};
@@ -192,7 +198,7 @@ const lineHTML=(cls,role,lo,rd,ko,id,w)=>{const ns=String(id).startsWith("pr-")?
 function renderBundle(id){
   const b=B[id];let h=`<section class="bundle" id="bd-${id}">${bhead(id,true)}`;
   if(b.tp.length)h+=`<div class="box"><h4>구별 포인트</h4>${b.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`;
-  h+=`<div class="row" style="justify-content:flex-end"><button class="speak all" data-playbundle="${id}">${SPK}<span>전체 반복</span></button></div>`;
+  h+=`<div class="row" style="justify-content:flex-end;gap:8px"><button class="speak all" data-playbundle="${id}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${SPK}<span>전체 반복</span></button><button class="speak all" data-playbundle="${id}">${SPK}<span>묶음 반복</span></button></div>`;
   b.w.forEach((w,wi)=>{const [lo,hint,rd,ko,ex]=w;
     h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${SPK}<span>예문 반복</span></button>${hint?`<span class="hint">${laoWrap(hint)}</span>`:""}</div>
     ${ex.map((e,ei)=>lineHTML(["g","s","r"][ei]||"n",ei===2?"실생활":`예문 ${ei+1}`,e[0],e[1],e[2],`ln-${id}-${wi}-${ei}`,lo)).join("")}</article>`});
@@ -271,9 +277,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.sayall){const en=t.closest(".entry");play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id,head:1},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
   if(t.dataset.playsec){const sec=t.closest(".pairs,.dlg");play([...sec.querySelectorAll(".line")].map(sayItem).filter(Boolean),true,1);return}
   if(t.dataset.playcards){play([...document.querySelectorAll(".cards .card")].map(c=>{const b=c.querySelector(".card-foot [data-say]");return {text:b.dataset.say,rd:b.dataset.rd,id:c.id}}),true,2);return}
-  if(t.dataset.playbundle){const sec=document.getElementById("bd-"+t.dataset.playbundle),items=[];
-    sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
-    play(items.filter(Boolean),true,2);return}
+  if(t.dataset.playbundle){play(bundleItems(t.dataset.playbundle),true,2,!!t.dataset.chain);return}
   if(t.dataset.say!==undefined){const ln=t.closest(".line");const sid=ln?ln.id:((t.closest(".card")||{}).id||null);if(P.active&&P.single){const q0=P.queue[0];if(q0&&q0.text===t.dataset.say&&(q0.id||null)===sid){stopPlay();return}}if(P.active&&!P.single){const host=ln||t.closest(".card,.entry-head");const hid=host&&host.id;const idx=hid?P.queue.findIndex(x=>x.id===hid&&!x.ko):-1;if(idx>=0){if(P.hold===idx)releaseHold();else holdAt(idx);return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:sid,m:isM(ln&&ln.id)}]);if(P.active&&t.classList.contains("speak")){t.classList.add("hold");try{t.blur()}catch(e){}}return}
   if(t.dataset.rep!==undefined){REP=+t.dataset.rep;store.set("lao-rep",REP);document.querySelectorAll("[data-rep]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rep===REP));showPlayer();return}
   if(t.dataset.rate!==undefined){RATE=+t.dataset.rate;store.set("lao-rate",RATE);document.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.rate===RATE));return}
