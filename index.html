@@ -70,9 +70,9 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
 /* title banner: Laos (That Luang, Mekong, palms, dok champa); day art in light theme, dusk art in dark theme, edges fade into the page */
-:root{--hd-img:url(header-day.svg);--hd-ov:linear-gradient(90deg,rgba(243,244,242,.94) 0%,rgba(243,244,242,.7) 40%,rgba(243,244,242,0) 78%);--hd-fg:var(--ink);--hd-mut:var(--muted);--hd-lo:var(--accent);--hd-sh:0 1px 6px rgba(255,255,255,.6)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hd-img:url(header.svg);--hd-ov:linear-gradient(90deg,rgba(17,21,20,.92) 0%,rgba(17,21,20,.6) 40%,rgba(17,21,20,0) 78%);--hd-fg:#fff;--hd-mut:rgba(255,255,255,.8);--hd-lo:#F6CB5A;--hd-sh:0 1px 8px rgba(0,0,0,.45)}}
-:root[data-theme="dark"]{--hd-img:url(header.svg);--hd-ov:linear-gradient(90deg,rgba(17,21,20,.92) 0%,rgba(17,21,20,.6) 40%,rgba(17,21,20,0) 78%);--hd-fg:#fff;--hd-mut:rgba(255,255,255,.8);--hd-lo:#F6CB5A;--hd-sh:0 1px 8px rgba(0,0,0,.45)}
+:root{--hd-img:url(header-day.svg);--hd-ov:linear-gradient(90deg,rgba(243,244,242,.94) 0%,rgba(243,244,242,.7) 40%,rgba(243,244,242,0) 78%);--hd-fg:var(--ink);--hd-mut:var(--muted);--hd-lo:var(--accent);--hd-sh:0 1px 6px rgba(255,255,255,.6);--hd-pill:rgba(255,255,255,.82)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hd-img:url(header.svg);--hd-ov:linear-gradient(90deg,rgba(17,21,20,.92) 0%,rgba(17,21,20,.6) 40%,rgba(17,21,20,0) 78%);--hd-fg:#fff;--hd-mut:rgba(255,255,255,.8);--hd-lo:#F6CB5A;--hd-sh:0 1px 8px rgba(0,0,0,.45);--hd-pill:rgba(17,21,20,.72);--hd-two:#1b1b1b}}
+:root[data-theme="dark"]{--hd-img:url(header.svg);--hd-ov:linear-gradient(90deg,rgba(17,21,20,.92) 0%,rgba(17,21,20,.6) 40%,rgba(17,21,20,0) 78%);--hd-fg:#fff;--hd-mut:rgba(255,255,255,.8);--hd-lo:#F6CB5A;--hd-sh:0 1px 8px rgba(0,0,0,.45);--hd-pill:rgba(17,21,20,.72);--hd-two:#1b1b1b}
 header{position:relative;isolation:isolate;padding:22px 20px 18px;min-height:120px;color:var(--hd-fg)}
 header::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:16px;background:var(--hd-ov),var(--hd-img) 70% 50%/cover no-repeat;
   -webkit-mask-image:linear-gradient(to bottom,#000 62%,transparent 100%),linear-gradient(to right,#000 85%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,#000 62%,transparent 100%),linear-gradient(to right,#000 85%,transparent 100%);mask-composite:intersect}
@@ -81,9 +81,12 @@ header h1{color:var(--hd-fg);text-shadow:var(--hd-sh)}
 header h1 .lo{color:var(--hd-lo)}
 header .stats{color:var(--hd-mut)}
 header .stats b{color:var(--hd-fg)}
+h1 .wm{display:inline-flex;align-items:center;gap:.14em;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+h1 .wm .two{display:inline-grid;place-items:center;width:1.12em;height:1.12em;border-radius:50%;background:var(--hd-lo);color:var(--hd-two,#fff);font-size:.62em;font-weight:700;letter-spacing:0;text-shadow:none;transform:translateY(-.04em)}
+header .stats{align-self:flex-end;padding:8px 14px;border-radius:12px;background:var(--hd-pill);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .brand{display:flex;flex-direction:column;gap:4px;min-width:0}
 .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:600}
-h1{font-family:var(--display);font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-family:var(--display);font-size:clamp(30px,6vw,40px);line-height:1.15;margin:0;text-wrap:balance}
 h1 .lo{font-weight:600;color:var(--accent)}
 .stats{display:flex;gap:14px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .stats b{display:block;font-family:var(--display);font-size:16px;color:var(--ink);line-height:1.1}
@@ -318,7 +321,7 @@ html.tab .voice{font-size:18px}
   <header>
     <div class="brand">
       <span class="eyebrow">헷갈리는 라오스어, 묶어서 외우기</span>
-      <h1><span class="lo">ພາສາລາວ</span> KOR 2 LAO</h1>
+      <h1><span class="lo">ພາສາລາວ</span> <span class="wm" aria-label="KOR 2 LAO">KOR<span class="two">2</span>LAO</span></h1>
     </div>
     <div class="stats" id="stats"></div>
   </header>
@@ -348,6 +351,6 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v12.17</div>
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.17";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v12.18</div>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.18";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>

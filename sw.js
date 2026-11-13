@@ -1,4 +1,4 @@
-const SHELL="lao-shell-v12.17",AUD="lao-audio-v2";
+const SHELL="lao-shell-v12.18",AUD="lao-audio-v2";
 const FILES=["./","index.html","app.js","manifest.webmanifest","audio/index.js","icon-180.png","icon-192.png","icon-512.png","header.svg","header-day.svg"];
 /* Audio clips live in IndexedDB ("lao-audio" / store "c", key = clip name, value = ArrayBuffer).
    They used to live in CacheStorage, but with 16k entries iPhone needs 10-15 s just to open CacheStorage,
