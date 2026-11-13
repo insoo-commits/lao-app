@@ -191,7 +191,9 @@ mark{background:transparent;color:var(--accent);font-weight:700;text-decoration:
 .smb .line{grid-template-columns:1fr auto}.smb .line .t2,.smb .line .ko{grid-column:1}.smb .line .speak{grid-column:2;grid-row:1/4}
 .dlg{display:flex;flex-direction:column;gap:6px}
 .jump{border:0;background:var(--accent-soft);color:var(--accent);font-weight:700;border-radius:999px;padding:0 8px;font-size:12.5px}
-@media (max-width:560px){.line.r{margin-right:0}.line.g{margin-right:0}.line.s{margin-left:0}.role{width:auto}.pair{grid-template-columns:1fr}.pair .vs{justify-self:center}}
+@media (max-width:560px){.line.r{margin-right:0}.line.g{margin-right:0}.line.s{margin-left:0}.role{width:auto}}
+.line.r,.line.g{margin-right:0}.line.s{margin-left:0}.role{width:auto;min-width:3.6em}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.pair .vs{justify-self:center}}
 .quiz{display:flex;flex-direction:column;gap:14px;max-width:640px}
 .q-top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;gap:8px}
 .q-type{font-size:12px;letter-spacing:.06em;color:var(--accent);font-weight:700}
@@ -334,6 +336,6 @@ html.tab .voice{font-size:18px}
 </div>
 
 
-<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v11.1</div>
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=11.1";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<div style="text-align:center;font-size:11px;color:#999;padding:16px 0 24px">2026-11-13 v11.2</div>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=11.2";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
