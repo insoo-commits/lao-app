@@ -46,7 +46,7 @@ const scopeB=()=>{const b=curBun();return b==="all"?SUBS[S.sub].b:[b]};
 const hl=(text,w)=>{const e=esc(text);if(!w)return e;const i=e.indexOf(esc(w));return i<0?e:e.slice(0,i)+"<mark>"+esc(w)+"</mark>"+e.slice(i+esc(w).length)};
 // mark Lao text that contains Korean (tips): wrap Lao runs
 const laoWrap=t=>esc(t).replace(/([຀-໿][຀-໿\s◌]*)/g,'<span class="lo">$1</span>');
-const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';const RPT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>';
 const spkBtn=(lo,rd,label)=>`<button class="speak" data-say="${esc(lo)}" data-rd="${esc(rd||"")}" aria-label="${esc(label||"발음 듣기")}">${SPK}</button>`;
 
 /* ---------- TTS ---------- */
@@ -188,7 +188,7 @@ function renderBand(){
 const bhead=(id,withIntro)=>{const b=B[id];return `<div class="bhead"><span class="bid">${id}</span><span class="bt">${esc(b.t)}</span><span class="bw lo">${esc(b.h)}</span></div>${withIntro?`<p class="bintro">${laoWrap(b.i)}</p>`:""}`};
 function renderCards(){
   const ids=scopeB(),ws=ids.flatMap(id=>B[id].w.map(w=>[id,w])),n=ws.filter(([id,w])=>known[kk(id,w[0])]).length,pct=ws.length?Math.round(n/ws.length*100):0;
-  return `<div class="meter" style="justify-content:flex-end"><label class="toggle"><input type="checkbox" id="hideRd" ${S.hideRd?"checked":""}>독음 가리기</label>${hasTTS?`<button class="speak all" data-playcards="1" aria-label="화면의 단어 전체 듣기">${SPK}<span>단어 반복</span></button>`:""}</div>
+  return `<div class="meter" style="justify-content:flex-end"><label class="toggle"><input type="checkbox" id="hideRd" ${S.hideRd?"checked":""}>독음 가리기</label>${hasTTS?`<button class="speak all" data-playcards="1" aria-label="화면의 단어 전체 듣기">${RPT}<span>단어 반복</span></button>`:""}</div>
   ${ids.map(id=>`${bhead(id,false)}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
     return `<div class="card${f?" flipped":""}${k?" known":""}" id="cd-${id}-${wi}">
       <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big">${esc(lo)}</span><span class="hint">${laoWrap(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span><span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span></span></button>
@@ -198,12 +198,12 @@ const lineHTML=(cls,role,lo,rd,ko,id,w)=>{const ns=String(id).startsWith("pr-")?
 function renderBundle(id){
   const b=B[id];let h=`<section class="bundle" id="bd-${id}">${bhead(id,true)}`;
   if(b.tp.length)h+=`<div class="box"><h4>구별 포인트</h4>${b.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`;
-  h+=`<div class="row" style="justify-content:flex-end;gap:8px"><button class="speak all" data-playbundle="${id}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${SPK}<span>전체 반복</span></button><button class="speak all" data-playbundle="${id}">${SPK}<span>묶음 반복</span></button></div>`;
+  h+=`<div class="row" style="justify-content:flex-end;gap:8px"><button class="speak all" data-playbundle="${id}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>전체 반복</span></button><button class="speak all" data-playbundle="${id}">${RPT}<span>묶음 반복</span></button></div>`;
   b.w.forEach((w,wi)=>{const [lo,hint,rd,ko,ex]=w;
-    h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${SPK}<span>예문 반복</span></button>${hint?`<span class="hint">${laoWrap(hint)}</span>`:""}</div>
+    h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${RPT}<span>예문 반복</span></button>${hint?`<span class="hint">${laoWrap(hint)}</span>`:""}</div>
     ${ex.map((e,ei)=>lineHTML(["g","s","r"][ei]||"n",ei===2?"실생활":`예문 ${ei+1}`,e[0],e[1],e[2],`ln-${id}-${wi}-${ei}`,lo)).join("")}</article>`});
-  if(b.pr.length)h+=`<div class="pairs"><div class="sechd"><span class="sec">짝 문장 비교</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${SPK}<span>예문 반복</span></button></div>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
-  if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${SPK}<span>예문 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
+  if(b.pr.length)h+=`<div class="pairs"><div class="sechd"><span class="sec">짝 문장 비교</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
+  if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
   if(b.sm&&b.sm[0])h+=`<div class="dlg smb"><span class="sec">한 문장에 모아 읽기</span>${lineHTML("n",null,b.sm[0],b.sm[1],b.sm[2],`sm-${id}`)}</div>`;
   if(b.nx.length)h+=`<div class="box"><h4>이어지는 묶음</h4>${b.nx.map(t=>`<p>${laoWrap(t).replace(/→\s*(\d-\d{2}-\d{2})/g,(m,x)=>B[x]?`→ <button class="jump" data-goto="${x}">${x}</button>`:m)}</p>`).join("")}</div>`;
   return h+`</section>`;
