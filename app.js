@@ -271,10 +271,10 @@ document.addEventListener("click",e=>{
   const ko=e.target.closest(".hide-ko .ko");if(ko){ko.classList.toggle("show");return}
   const rd=e.target.closest(".hide-rd .line .t2,.hide-rd .entry-head .r");if(rd){rd.classList.toggle("show");return}
   if(document.documentElement.classList.contains("audwait")&&e.target.closest(".speak,.line,.card .face,[data-playcards],[data-playbundle],[data-sayall],[data-playsec]")){e.preventDefault();return}
-  if(!e.target.closest("button,input,label,a,select")){const ln=e.target.closest(".line");const sb=ln&&ln.querySelector("[data-say]");if(sb){sb.click();return}}
+  if(!e.target.closest("button,input,label,a,select")){const eh=e.target.closest(".entry-head");const ab=eh&&eh.querySelector("[data-sayall]");if(ab){ab.click();return}const ln=e.target.closest(".line");const sb=ln&&ln.querySelector("[data-say]");if(sb){sb.click();return}}
   const t=e.target.closest("button");if(!t)return;
   {const d=t.dataset;if((d.part||d.sub||d.goto||d.mode)&&P.active)stopPlay()}
-  if(t.dataset.sayall){const en=t.closest(".entry");play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id,head:1},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
+  if(t.dataset.sayall){const en=t.closest(".entry");{const hid=en.querySelector(".entry-head").id,q0=P.queue&&P.queue[0];if(P.active&&!P.single&&q0&&q0.head&&q0.id===hid){stopPlay();return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id,head:1},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
   if(t.dataset.playsec){const sec=t.closest(".pairs,.dlg");play([...sec.querySelectorAll(".line")].map(sayItem).filter(Boolean),true,1);return}
   if(t.dataset.playcards){play([...document.querySelectorAll(".cards .card")].map(c=>{const b=c.querySelector(".card-foot [data-say]");return {text:b.dataset.say,rd:b.dataset.rd,id:c.id}}),true,2);return}
   if(t.dataset.playbundle){play(bundleItems(t.dataset.playbundle),true,2,!!t.dataset.chain);return}
