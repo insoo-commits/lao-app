@@ -1,4 +1,4 @@
-const SHELL="lao-shell-v12.54",AUD="lao-audio-v2";
+const SHELL="lao-shell-v12.55",AUD="lao-audio-v2";
 const JS="lao-js";/* versioned app.js?v=… lives here, kept across versions, only newest entry kept */
 const FILES=["./","index.html","manifest.webmanifest","audio/index.js","icon-180.png","icon-192.png","icon-512.png","header.svg","header-day.svg"];
 /* Audio clips live in IndexedDB ("lao-audio" / store "c", key = clip name, value = ArrayBuffer).
@@ -15,7 +15,7 @@ self.addEventListener("install",e=>{e.waitUntil(caches.open(SHELL).then(c=>Promi
 )).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>(k.startsWith("lao-shell-")&&k!==SHELL)||(k.startsWith("lao-audio-")&&k!==AUD)).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{const u=new URL(e.request.url);if(e.request.method!=="GET")return;
-  if(u.pathname.includes("/audio/")&&u.pathname.endsWith(".mp3")){const k=u.pathname.split("/").pop().slice(0,-4);
+  if(u.pathname.includes("/audio/")&&u.pathname.endsWith(".mp3")){const v=u.searchParams.get("v"),k=u.pathname.split("/").pop().slice(0,-4)+(v?"@"+v:"");
     e.respondWith(aget(k).then(b=>{if(b)return mp3(b);
       return fetch(e.request).then(r=>{if(r.ok){const cl=r.clone();e.waitUntil(cl.arrayBuffer().then(b=>aput(k,b)).catch(()=>{}))}return r})
         // offline and not in IndexedDB yet: last try the old audio cache (only until the page has moved it over)

@@ -88,8 +88,9 @@ function chainNext(){const sb=SUBS[S.sub];if(!sb)return stopPlay();const L=PARTS
   const ns=Object.values(SUBS).find(x=>x.b.includes(nx));S.part=ns.part;S.sub=ns.id;S.lastSub[ns.part]=ns.id;S.bun[ns.id]=nx;S.mode="dlg";S.quiz=null;S.q="";$("#q").value="";save();render();window.scrollTo({top:0});const items=bundleItems(nx);if(!items.length)return stopPlay();play(items,true,2,true)}
 function play(items,follow,each,chain){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
-  const groups=items.map(it=>{if((each||1)>=2){const ko=it&&!it.ko&&koOf(it.id);return ko?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it}]}return [{...it}]});
-  const q=[];groups.forEach((g,gi)=>{const gs=q.length;g.forEach(x=>{x.rs=g.length===3&&g[1].ko?gs+2:gs;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
+  /* RYU v12.55: Lao → Korean once, then Lao only for the remaining repeats (words and sentences) */
+  const groups=items.map(it=>{const ko=it&&!it.ko&&koOf(it.id);if(!ko)return [{...it}];return (single||REP>=2)?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it},{text:ko,ko:1,id:it.id}]});
+  const q=[];groups.forEach((g,gi)=>{const gs=q.length,kg=g.length>1&&g[1].ko;g.forEach(x=>{x.rs=kg&&g.length===3?gs+2:gs;x.kg=kg;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
   stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.chain=!!chain&&!single;P.queue=q;P.i=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
@@ -100,9 +101,11 @@ function setPaused(v){if(!P.active)return;P.paused=!!v;
   const b=document.getElementById("ppause");if(b)b.textContent=v?"재개":"일시정지"}
 /* audio comes as blobs (fast start on iPhone, avoids slow service-worker range requests); next clips are fetched ahead */
 const BLOBP={};
+/* replaced clips get a version in AUDIO_INDEX (value >1): new URL + new IndexedDB key, so saved old copies are not reused */
+function aurl(k){const v=AUD&&AUD[k];return "audio/"+k+".mp3"+(v>1?"?v="+v:"")}
 function keyOf(it){if(!AUD||it.noAud)return null;let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;return AUD[k]?k:null}
 function blobUrl(k){if(ABLOB[k])return Promise.resolve(ABLOB[k]);if(BLOBP[k])return BLOBP[k];
-  return BLOBP[k]=fetch("audio/"+k+".mp3").then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>ABLOB[k]=URL.createObjectURL(b)).catch(e=>{delete BLOBP[k];throw e})}
+  return BLOBP[k]=fetch(aurl(k)).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>ABLOB[k]=URL.createObjectURL(b)).catch(e=>{delete BLOBP[k];throw e})}
 let LT=null;function loadStart(){clearTimeout(LT);LT=setTimeout(()=>{P.loading=true;showPlayer()},350)}
 function loadDone(){clearTimeout(LT);if(P.loading){P.loading=false;showPlayer()}}
 setTimeout(()=>{if(AUD){blobUrl("_gap450").catch(()=>{});blobUrl("_gap900").catch(()=>{})}},1500);
@@ -135,7 +138,7 @@ function holdAt(idx){const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasS
 function releaseHold(){const it=P.queue[P.hold];const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
   P.hold=null;holdMark(null);P.paused=false;P._resume=null;P.k=0;P.i=it?it.ge+1:P.i+1;nextPlay(tok)}
 function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
-  if(P.single||P.k<REP-1){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
+  if(P.single||P.k<(it.kg?REP-2:REP-1)){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){if(P.chain){chainNext();return}P.round++;P.i=0}
@@ -144,7 +147,7 @@ function nextPlay(tok){
     const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length?900:450)};
     a.onended=fin;a.onerror=()=>{if(done||tok!==P.token)return;done=true;it.noAud=1;nextPlay(tok)};
     const go=src=>{if(tok!==P.token)return;loadDone();try{a.src=src;a.playbackRate=RATE;a.defaultPlaybackRate=RATE;const pr=a.play();if(pr&&pr.catch)pr.catch(e=>{if(tok!==P.token)return;if(e&&e.name==="NotAllowedError"){stopPlay();ttsWarn();return}a.onerror()})}catch(e){a.onerror()}};
-    msMeta(it);if(ABLOB[k])go(ABLOB[k]);else{loadStart();blobUrl(k).then(go,()=>go("audio/"+k+".mp3"))}
+    msMeta(it);if(ABLOB[k])go(ABLOB[k]);else{loadStart();blobUrl(k).then(go,()=>go(aurl(k)))}
     for(let j=1;j<=3;j++){const nx=P.queue[P.i+j];const nk=nx&&keyOf(nx);if(nk)blobUrl(nk).catch(()=>{})}
     return}}
   if(!hasSS){P.i++;setTimeout(()=>nextPlay(tok),50);return}
@@ -162,7 +165,7 @@ loadVoices();
 $("#repSel").addEventListener("change",e=>{REP=+e.target.value;store.set("lao-rep",REP);showPlayer()});
 $("#rateSel").addEventListener("change",e=>{RATE=+e.target.value;store.set("lao-rate",RATE);try{if(AEL){AEL.playbackRate=RATE}}catch(x){}});
 const koSay=t=>String(t).replace(/[\u2460-\u2473]/g,"").replace(/\s*\([^)]*\)/g,"").replace(/[;·]/g,",").replace(/\s+/g," ").trim()||String(t);
-const koOf=id=>{const m=/^(?:cd|eh)-(.+)-(\d+)$/.exec(id||"");const w=m&&B[m[1]]&&B[m[1]].w[+m[2]];return w?w[3]:""};
+const koOf=id=>{const m=/^(?:cd|eh)-(.+)-(\d+)$/.exec(id||"");const w=m&&B[m[1]]&&B[m[1]].w[+m[2]];if(w)return w[3];const el=id&&document.getElementById(id),k=el&&el.querySelector(".ko");return k?k.textContent:""};
 const isM=id=>{id=id||"";if(/^ln-.*-1$/.test(id))return true;const m=/^dl-.*-(\d+)$/.exec(id);return !!(m&&m[1]%2)};
 const sayItem=el=>{const b=el.querySelector("[data-say]");return b?{text:b.dataset.say,rd:b.dataset.rd,id:el.id,m:isM(el.id)}:null};
 
@@ -316,10 +319,10 @@ const aput=(k,v)=>ADB().then(db=>new Promise(res=>{const tx=db.transaction("c","
 const akeys=()=>ADB().then(db=>new Promise(res=>{const q=db.transaction("c").objectStore("c").getAllKeys();q.onsuccess=()=>res(new Set(q.result));q.onerror=()=>res(new Set())})).catch(()=>new Set());
 let busy=false;
 a.onclick=async e=>{e.preventDefault();if(busy||!window.indexedDB)return;busy=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
- const have=await akeys();const q=ks.filter(k=>!have.has(k));let done=ks.length-q.length;const sw=!!(navigator.serviceWorker&&navigator.serviceWorker.controller);
- async function w(){while(q.length){const k=q.shift();try{const r=await fetch("audio/"+k+".mp3");if(r.ok){const buf=await r.arrayBuffer();if(!sw)await aput(k,buf)}}catch(e){}done++;if(done%20==0||done==ks.length)b.textContent=done+" / "+ks.length}}
+ const have=await akeys();const ik=k=>{const v=window.AUDIO_INDEX[k];return v>1?k+"@"+v:k};const q=ks.filter(k=>!have.has(ik(k)));let done=ks.length-q.length;const sw=!!(navigator.serviceWorker&&navigator.serviceWorker.controller);
+ async function w(){while(q.length){const k=q.shift();try{const r=await fetch(aurl(k));if(r.ok){const buf=await r.arrayBuffer();if(!sw)await aput(ik(k),buf)}}catch(e){}done++;if(done%20==0||done==ks.length)b.textContent=done+" / "+ks.length}}
  b.textContent=done+" / "+ks.length;await Promise.all([w(),w(),w(),w(),w(),w()]);
- const left=ks.length-(await akeys()).size;b.textContent=left>0?(ks.length-left)+" / "+ks.length+" ("+left+"개 남음, 다시 누르기)":"(완료)";busy=false;try{localStorage.setItem("lao-audio-saved3","1")}catch(e){}};
+ const h2=await akeys(),left=ks.filter(k=>!h2.has(ik(k))).length;b.textContent=left>0?(ks.length-left)+" / "+ks.length+" ("+left+"개 남음, 다시 누르기)":"(완료)";busy=false;try{localStorage.setItem("lao-audio-saved3","1")}catch(e){}};
 try{if(localStorage.getItem("lao-audio-saved3"))b.textContent="(완료)"}catch(e){}
 /* one-time move from the old audio cache (slow to open on iPhone) to IndexedDB */
 setTimeout(async()=>{if(!("caches" in window)||!window.indexedDB)return;try{if(!(await caches.has("lao-audio-v2")))return;
