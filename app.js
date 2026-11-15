@@ -309,7 +309,7 @@ render();
 ;
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 (function(){const n=document.getElementById("voiceNote");if(!n||!window.AUDIO_INDEX)return;
-const ks=Object.keys(window.AUDIO_INDEX);const p=document.createElement("p");p.className="dlp";p.innerHTML='<a href="#" class="dla">↓ 음성 mp3 내려받기 (오프라인용)</a><span class="dls"></span>';const a=p.firstChild,b=p.lastChild;(document.querySelector(".note.foot")||n).after(p);
+const ks=Object.keys(window.AUDIO_INDEX);const p=document.createElement("p");p.className="dlp";p.innerHTML='<a href="#" class="dla">↓ 음성 mp3 내려받기 (오프라인용)</a><span class="dls"></span>';const a=p.firstChild,b=p.lastChild;n.after(p);
 /* clips are kept in IndexedDB (see sw.js); the old CacheStorage copy is moved over once, then deleted */
 let _db;const ADB=()=>_db||(_db=new Promise((res,rej)=>{const r=indexedDB.open("lao-audio",1);r.onupgradeneeded=()=>r.result.createObjectStore("c");r.onsuccess=()=>res(r.result);r.onerror=()=>{_db=null;rej(r.error)}}));
 const aput=(k,v)=>ADB().then(db=>new Promise(res=>{const tx=db.transaction("c","readwrite");tx.objectStore("c").put(v,k);tx.oncomplete=()=>res(true);tx.onerror=tx.onabort=()=>res(false)})).catch(()=>false);
