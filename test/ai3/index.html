@@ -1,0 +1,9 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ກຸ້ງ 발음 비교</title>
+<style>body{font-family:-apple-system,system-ui,sans-serif;margin:0;padding:16px;background:#151a1a;color:#eee}h1{font-size:20px}p{color:#bbb;font-size:14px}button{display:block;width:100%;margin:8px 0;background:#2a3233;color:#eee;border:1px solid #555;border-radius:12px;padding:12px;font-size:16px;text-align:left}button.on{background:#b07d12}</style></head><body>
+<h1><span style="font-size:30px">ກຸ້ງ</span> 꿍 (새우)</h1><p>맞게 들리는 번호를 알려 주세요.</p>
+<button data-s="../../audio/1in3fdk.mp3">0. 지금 앱 음성</button>
+<button data-s="male.mp3">1. 남자 목소리</button>
+<button data-s="slow.mp3">2. 여자 목소리, 천천히</button>
+<button data-s="list.mp3">3. 여자 목소리, "ກຸ້ງ, ປາ, ປູ" 앞에서 자름</button>
+<button data-s="listm.mp3">4. 남자 목소리, "ກຸ້ງ, ປາ, ປູ" 앞에서 자름</button>
+<script>const a=new Audio();document.addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;document.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');a.src=b.dataset.s;a.play()});a.onended=()=>document.querySelectorAll('.on').forEach(x=>x.classList.remove('on'))</script></body></html>
