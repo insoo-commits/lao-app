@@ -196,6 +196,9 @@ function renderBand(){
   $("#repSel").value=String(REP);$("#rateSel").value=String(RATE);
 }
 const bhead=(id,withIntro)=>{const b=B[id];return `<div class="bhead"><span class="bt">${esc(b.t)}</span><span class="bw lo">${esc(b.h)}</span></div>${withIntro?`<p class="bintro">${laoWrap(b.i)}</p>`:""}`};
+/* RYU v12.73: card words same size + same height; shrink only very long ones to fit one line (min 17px, then wrap) */
+function fitBig(){document.querySelectorAll(".cards .face .big").forEach(e=>{e.style.fontSize="";e.style.whiteSpace="nowrap";let f=parseFloat(getComputedStyle(e).fontSize),m=f*0.6;while(e.scrollWidth>e.clientWidth+1&&f>m){f-=1;e.style.fontSize=f+"px"}if(e.scrollWidth>e.clientWidth+1)e.style.whiteSpace="normal"})}
+addEventListener("resize",()=>{clearTimeout(fitBig.t);fitBig.t=setTimeout(()=>{if(S.mode==="cards")fitBig()},150)});
 function renderCards(){
   const ids=scopeB(),ws=ids.flatMap(id=>B[id].w.map(w=>[id,w])),n=ws.filter(([id,w])=>known[kk(id,w[0])]).length,pct=ws.length?Math.round(n/ws.length*100):0;
   /* RYU v12.68: cards only (no 단어 반복 button, no bundle title/word list, no 외웠어요) */
@@ -270,7 +273,7 @@ function render(){
   renderTop();
   if(S.q.trim()){renderSearch();return}
   $("#controls").hidden=false;renderBand();
-  $("#view").innerHTML=S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz();
+  $("#view").innerHTML=S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz();if(S.mode==="cards")fitBig();
   if(P.active&&P.queue[P.i])mark(P.queue[P.i].id);
 }
 function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s.part;S.sub=s.id;S.bun[s.id]=id;S.mode="dlg";S.q="";$("#q").value="";S.quiz=null;save();render();window.scrollTo({top:0})}
