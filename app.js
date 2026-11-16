@@ -301,7 +301,15 @@ function render(){
   $("#controls").hidden=false;renderBand();
   $("#view").innerHTML=S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz();if(S.mode==="cards")fitBig();else if(S.mode==="dlg")fitNotes();
   if(P.active&&P.queue[P.i])mark(P.queue[P.i].id);
+  snapLater();
 }
+/* v14.13 launch snapshot: keep the last clean screen so the next launch can show it at once, before the 3 MB of data loads (index.html restores it) */
+let snapT=0;function snapSig(){return [S.part,S.sub,S.bun[S.sub]||"",S.mode,innerWidth].join("|")}
+function snapLater(){clearTimeout(snapT);snapT=setTimeout(function(){try{
+  if(P.active||S.q.trim()||S.mode==="quiz"||Object.keys(S.flipped||{}).length||document.documentElement.classList.contains("pre"))return;
+  const a=$("#app"),sc=document.querySelector('script[src^="app.js"]');if(!a||!sc)return;
+  a.querySelectorAll("select option").forEach(o=>o.toggleAttribute("selected",o.selected));
+  localStorage.setItem("lao-snap",JSON.stringify({v:sc.getAttribute("src"),sig:snapSig(),g:a.getAttribute("data-g"),c:a.className,h:["stats","groups","subs","band","controls","view"].map(i=>[i,document.getElementById(i).innerHTML])}))}catch(e){try{localStorage.removeItem("lao-snap")}catch(e2){}}},500)}
 function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s.part;S.sub=s.id;S.bun[s.id]=id;S.mode="dlg";S.q="";$("#q").value="";S.quiz=null;save();render();window.scrollTo({top:0})}
 
 document.addEventListener("click",e=>{
@@ -340,6 +348,7 @@ document.addEventListener("change",e=>{
   if(c.dataset&&c.dataset.known!==undefined){const k=c.dataset.known;if(c.checked)known[k]=1;else delete known[k];store.set("lao-known",known);render()}
 });
 $("#q").addEventListener("input",e=>{if(P.active)stopPlay();S.q=e.target.value;render()});
+document.documentElement.classList.remove("pre");/* v14.13: shell stays hidden until this first render */
 render();
 (function(){var b=document.getElementById("boot");if(b)b.remove()})();
 
