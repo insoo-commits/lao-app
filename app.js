@@ -297,7 +297,7 @@ function renderSearch(){
 }
 function render(){
   S.hideRd=false;S.hideKo=false;$("#app").classList.toggle("hide-rd",false);
-  renderTop();
+  renderTop();showSel($("#groups"),'[aria-pressed="true"]');showSel($("#subs"),'[aria-selected="true"]');
   if(S.q.trim()){renderSearch();return}
   $("#controls").hidden=false;renderBand();
   $("#view").innerHTML=S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz();if(S.mode==="cards")fitBig();else if(S.mode==="dlg")fitNotes();
@@ -311,6 +311,8 @@ function snapLater(){clearTimeout(snapT);snapT=setTimeout(function(){try{
   const a=$("#app"),sc=document.querySelector('script[src^="app.js"]');if(!a||!sc)return;
   a.querySelectorAll("select option").forEach(o=>o.toggleAttribute("selected",o.selected));
   localStorage.setItem("lao-snap",JSON.stringify({v:sc.getAttribute("src"),sig:snapSig(),g:a.getAttribute("data-g"),c:a.className,h:["stats","groups","subs","band","controls","view"].map(i=>[i,document.getElementById(i).innerHTML])}))}catch(e){try{localStorage.removeItem("lao-snap")}catch(e2){}}},500)}
+/* v14.22: if the selected 대분류/소분류 chip is cut off or off-screen in its sideways-scrolling row, scroll the row just enough to show it (plus a peek of the neighbour) */
+let showSelN=0;function showSel(c,sel){const e=c&&c.querySelector(sel);if(!e)return;const l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth,pad=28;let x=null;if(l-pad<c.scrollLeft)x=Math.max(0,l-pad);else if(r+pad>c.scrollLeft+c.clientWidth)x=r+pad-c.clientWidth;if(x===null)return;if(showSelN++<2||!c.scrollTo)c.scrollLeft=x;else c.scrollTo({left:x,behavior:"smooth"})}
 function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s.part;S.sub=s.id;S.bun[s.id]=id;S.mode="dlg";S.q="";$("#q").value="";S.quiz=null;save();render();window.scrollTo({top:0})}
 
 document.addEventListener("click",e=>{
