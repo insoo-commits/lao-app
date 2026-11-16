@@ -208,6 +208,18 @@ function renderCards(){
       <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}</div></div>`}).join("")}</div>`).join("")}`;
 }
 const lineHTML=(cls,role,lo,rd,ko,id,w)=>{const ns=String(id).startsWith("pr-")?[]:notesOf(lo,w);return `<div class="line ${cls}" id="${id}">${role!==null?`<span class="role">${esc(role)}</span>`:""}<span class="t1 lo">${hl(lo,w)}</span>${spkBtn(lo,rd,"문장 듣기")}<span class="t2">${esc(rd)}</span><span class="ko">${esc(ko)}</span>${ns.length?`<span class="nt">※ ${ns.map(t=>`<span class="ni"><span class="lo">${esc(t)}</span>${NRD[t]?" "+esc(NRD[t]):""}(${esc(NDICT[t])})</span>`).join(" · ")}</span>`:""}</div>`};
+/* RYU v12.76: 관련 묶음 for every bundle = bundles sharing rare words (headwords and example sentences), plus the old hand-made links first */
+const isBig=()=>document.documentElement.classList.contains("tab")||matchMedia("(hover:hover) and (pointer:fine)").matches;
+let RT=null,RH=null;const DF={},RC={};
+function relText(){if(RT)return;RT={};RH={};for(const k in B){const b=B[k];RH[k]=new Set(b.w.map(w=>w[0]));RT[k]=JSON.stringify([b.w.map(w=>[w[0],w[4]]),b.pr,b.dl,b.sm&&b.sm[0]])}}
+function dfOf(w){if(DF[w]==null){let n=0;for(const k in RT)if(RT[k].includes(w))n++;DF[w]=n}return DF[w]}
+function relOf(id){if(RC[id])return RC[id];relText();const N=Object.keys(B).length,A=RH[id],TA=RT[id],sc={};
+  const idf=w=>{const d=dfOf(w);return w.length<2||d>40?0:Math.log(N/d)};
+  A.forEach(w=>{const f=idf(w);if(!f)return;for(const k in RT){if(k===id||!RT[k].includes(w))continue;sc[k]=(sc[k]||0)+f*(RH[k].has(w)?2:1)}});
+  for(const k in RH){if(k===id)continue;RH[k].forEach(w=>{if(A.has(w)||!TA.includes(w))return;const f=idf(w);if(f)sc[k]=(sc[k]||0)+f*0.7})}
+  const man=[...new Set(((B[id].nx||[]).join(" ").match(/\d-\d{2}-\d{2}/g)||[]).filter(x=>B[x]&&x!==id))];
+  const auto=Object.keys(sc).filter(k=>sc[k]>=3&&!man.includes(k)).sort((a,b)=>sc[b]-sc[a]);
+  return RC[id]=[...man,...auto].slice(0,5)}
 function renderBundle(id){
   const b=B[id],cur=id===curBun();let h=`<section class="bundle" id="bd-${id}">${cur?"":bhead(id,true)}`;
   if(b.tp.length&&!cur)h+=`<div class="box"><h4>구별 포인트</h4>${b.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`;
@@ -218,7 +230,7 @@ function renderBundle(id){
   if(b.pr.length)h+=`<div class="pairs"><div class="sechd"><span class="sec">짝 문장 비교</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
   if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
   if(b.sm&&b.sm[0])h+=`<div class="dlg smb"><span class="sec">한 문장에 모아 읽기</span>${lineHTML("n",null,b.sm[0],b.sm[1],b.sm[2],`sm-${id}`)}</div>`;
-  if(b.nx.length)h+=`<div class="box"><h4>이어지는 묶음</h4>${b.nx.map(t=>`<p>${laoWrap(t).replace(/→\s*(\d-\d{2}-\d{2})/g,(m,x)=>B[x]?`→ <button class="jump" data-goto="${x}">${esc((BLAB[x]||[B[x].t])[0])}</button>`:m)}</p>`).join("")}</div>`;
+  {const rl=relOf(id);if(rl.length){const big=isBig();h+=`<div class="box rel"><h4>관련 묶음</h4><ul>${rl.map(x=>{const L=BLAB[x]||[B[x].t,""];return `<li><button class="rjump" data-goto="${x}"><span class="rn">[${big?x:x.split("-").pop()}]</span> ${esc(L[0])}${L[1]?` <span class="lo rlo">(${esc(L[1])})</span>`:""}</button></li>`}).join("")}</ul></div>`}}
   return h+`</section>`;
 }
 function renderDlg(){
