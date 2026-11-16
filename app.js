@@ -191,7 +191,7 @@ function renderBand(){
   const b=curBun(),bb=B[b];
   $("#band").innerHTML=`<select id="bsel" class="bsel bigsel" aria-label="묶음 고르기"></select>${bb&&bb.i?`<p class="bintro">${laoWrap(bb.i)}</p>`:""}${bb&&bb.tp.length?`<div class="box">${bb.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`:""}`;
   $("#bact").innerHTML=S.mode==="quiz"||!bb?"":`<button class="speak all" data-playbundle="${b}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>전체 반복</span></button><button class="speak all" data-playbundle="${b}">${RPT}<span>묶음 반복</span></button>`;
-  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${id===b?"✓ ["+id+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
+  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${id===b?"["+id.split("-").pop()+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
   document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.mode===S.mode));
   $("#repSel").value=String(REP);$("#rateSel").value=String(RATE);
 }
