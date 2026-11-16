@@ -76,8 +76,10 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
   else{u.text=it.rd;u.lang="ko-KR";if(VKO)u.voice=VKO;u.rate=RATE}return u}
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
-  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"재개":"일시정지"}
-  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};$("#pt").textContent=P.loading?"⏳ 소리 준비 중…":P.hold!=null?`🔁 이 문장 반복 (${P.k+1}회째)`:P.single?`🔊 무한 반복 (${P.k+1}회째)`:(P.chain?`🔊 전체 · ${S.bun[S.sub]||(SUBS[S.sub]?SUBS[S.sub].b[0]:"")} · ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회`:`🔊 ${cur.gi+1}/${P.ng} · ${P.k+1}/${REP}회 · ${P.round}바퀴`)}
+  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"▶ 재개":"❙❙ 일시정지"}
+  const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};const g0=P.queue[cur.gs]||cur,txt=esc(g0.text||"");
+  /* RYU v12.58: like kor-app: icon · count · current sentence */
+  $("#pt").innerHTML=P.loading?"⏳ 소리 준비 중…":`<span class="pic">${SPK}</span>`+(P.single||P.hold!=null?`∞ · ${P.k+1} · `:`${cur.gi+1}/${P.ng} · ↻${P.k+1} · `)+`<span class="lo">${txt}</span>`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
 function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec)return items;
@@ -98,7 +100,7 @@ function setPaused(v){if(!P.active)return;P.paused=!!v;
   if(!v&&P._resume){const r=P._resume;P._resume=null;r()}else try{if(v)aud().pause();else{const pr=aud().play();if(pr&&pr.catch)pr.catch(()=>{})}}catch(e){}
   try{if(hasSS){if(v)speechSynthesis.pause();else speechSynthesis.resume()}}catch(e){}
   try{navigator.mediaSession.playbackState=v?"paused":"playing"}catch(e){}
-  const b=document.getElementById("ppause");if(b)b.textContent=v?"재개":"일시정지"}
+  const b=document.getElementById("ppause");if(b)b.textContent=v?"▶ 재개":"❙❙ 일시정지"}
 /* audio comes as blobs (fast start on iPhone, avoids slow service-worker range requests); next clips are fetched ahead */
 const BLOBP={};
 /* replaced clips get a version in AUDIO_INDEX (value >1): new URL + new IndexedDB key, so saved old copies are not reused */
