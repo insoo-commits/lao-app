@@ -194,7 +194,7 @@ function renderBand(){
   /* RYU v12.60: band = bundle picker + intro + 구별 포인트 (like KOR Lang) */
   const b=curBun(),bb=B[b];
   $("#band").innerHTML=`<select id="bsel" class="bsel bigsel" aria-label="묶음 고르기"></select>${bb&&bb.i?`<p class="bintro">${laoWrap(bb.i)}</p>`:""}${bb&&bb.tp.length?`<div class="box">${bb.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`:""}`;
-  $("#bact").innerHTML=S.mode==="quiz"||!bb?"":`<button class="speak all" data-playbundle="${b}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>전체 반복</span></button><button class="speak all" data-playbundle="${b}">${RPT}<span>묶음 반복</span></button>`;
+  $("#bact").innerHTML=S.mode==="quiz"||!bb?"":`<button class="speak all" data-playbundle="${b}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>연속 재생</span></button><button class="speak all" data-playbundle="${b}">${RPT}<span>묶음 재생</span></button>`;
   $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${id===b?"["+(document.documentElement.classList.contains("tab")||matchMedia("(hover:hover) and (pointer:fine)").matches?id:id.split("-").pop())+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
   document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.mode===S.mode));
   $("#repSel").value=String(REP);$("#rateSel").value=String(RATE);
@@ -230,12 +230,12 @@ function relOf(id){if(RC[id])return RC[id];relText();const N=Object.keys(B).leng
 function renderBundle(id){
   const b=B[id],cur=id===curBun();let h=`<section class="bundle" id="bd-${id}">${cur?"":bhead(id,true)}`;
   if(b.tp.length&&!cur)h+=`<div class="box"><h4>구별 포인트</h4>${b.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`;
-  if(!cur)h+=`<div class="row" style="justify-content:flex-end;gap:8px"><button class="speak all" data-playbundle="${id}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>전체 반복</span></button><button class="speak all" data-playbundle="${id}">${RPT}<span>묶음 반복</span></button></div>`;
+  if(!cur)h+=`<div class="row" style="justify-content:flex-end;gap:8px"><button class="speak all" data-playbundle="${id}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>연속 재생</span></button><button class="speak all" data-playbundle="${id}">${RPT}<span>묶음 재생</span></button></div>`;
   b.w.forEach((w,wi)=>{const [lo,hint,rd,ko,ex]=w;
-    h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${RPT}<span>예문 반복</span></button>${hint?`<span class="hint">${laoWrap(hint)}</span>`:""}</div>
+    h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${RPT}<span>단어 반복</span></button>${hint?`<span class="hint">${laoWrap(hint)}</span>`:""}</div>
     ${ex.map((e,ei)=>lineHTML(["g","s","r"][ei]||"n",ei===2?"실생활":`예문 ${ei+1}`,e[0],e[1],e[2],`ln-${id}-${wi}-${ei}`,lo)).join("")}</article>`});
   if(b.pr.length)h+=`<div class="pairs"><div class="sechd"><span class="sec">짝 문장 비교</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
-  if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
+  if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="대화 전체 듣기">${RPT}<span>대화 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
   if(b.sm&&b.sm[0])h+=`<div class="dlg smb"><span class="sec">한 문장에 모아 읽기</span>${lineHTML("n",null,b.sm[0],b.sm[1],b.sm[2],`sm-${id}`)}</div>`;
   {const rl=relOf(id);if(rl.length){const big=isBig();h+=`<div class="box rel"><h4>관련 묶음</h4><ul>${rl.map(x=>{const L=BLAB[x]||[B[x].t,""];return `<li><button class="rjump" data-goto="${x}"><span class="rn">[${x}]</span> ${esc(L[0])}${L[1]?` <span class="lo rlo">(${esc(L[1])})</span>`:""}</button></li>`}).join("")}</ul></div>`}}
   return h+`</section>`;
