@@ -378,7 +378,7 @@ function open(sel){close();var r0=sel.getBoundingClientRect(),cs=getComputedStyl
   Array.prototype.forEach.call(sel.options,function(o){var b=document.createElement("button");b.type="button";b.setAttribute("role","option");b.setAttribute("aria-selected",o.selected?"true":"false");
     if(o.dataset.ko!==undefined){b.className="ctr";b.appendChild(document.createTextNode(o.dataset.ko));if(o.dataset.lo){var sm=document.createElement("small");sm.className="dlo";sm.textContent=" ("+o.dataset.lo+")";b.appendChild(sm)}}
     else{b.innerHTML='<span class="ck">'+(o.selected?"✓":"")+'</span>';b.appendChild(document.createTextNode(o.textContent))}
-    b.onclick=function(){close();if(sel.value!==o.value){sel.value=o.value;sel.dispatchEvent(new Event("change",{bubbles:true}))}};l.appendChild(b)});
+    b.onclick=function(){close();var v=o.value;/* v12.93: list may outlive its <select> (re-render during playback) */if(sel.id==="bsel"){var s=Object.values(SUBS).find(function(x){return x.b.indexOf(v)>=0});if(!s)return;if(S.sub===s.id&&S.bun[s.id]===v&&!P.active)return;if(P.active)stopPlay();S.part=s.part;S.sub=s.id;S.bun[s.id]=v;S.quiz=null;S.flipped={};save();render();return}var cur=(sel.id&&document.getElementById(sel.id))||sel;if(cur.value!==v){cur.value=v;cur.dispatchEvent(new Event("change",{bubbles:true}))}};l.appendChild(b)});
   document.body.appendChild(bg);document.body.appendChild(l);
   var vw=document.documentElement.clientWidth/k,vh=innerHeight/k,m=8;
   var w=Math.min(vw-2*m,Math.max(r.width,l.scrollWidth+2));l.style.width=w+"px";
