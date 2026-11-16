@@ -1,0 +1,11 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ໄປ 발음 비교 2</title>
+<style>body{font-family:-apple-system,system-ui,sans-serif;margin:0;padding:16px;background:#151a1a;color:#eee}h1{font-size:20px}p{color:#bbb;font-size:14px}button{display:block;width:100%;margin:8px 0;background:#2a3233;color:#eee;border:1px solid #555;border-radius:12px;padding:12px;font-size:16px;text-align:left}button.on{background:#b07d12}</style></head><body>
+<h1><span style="font-size:30px">ໄປ</span> 빠이 (가다)</h1><p>맞게 들리는 번호를 알려 주세요.</p>
+<button data-s="../../audio/n8huhk.mp3">0. 지금 앱 음성</button>
+<button data-s="a.mp3">1. 여자, "ຂ້ອຍຈະໄປ(나는 갈 거야)" 끝에서 자름</button>
+<button data-s="b.mp3">2. 남자, "ຂ້ອຍຈະໄປ" 끝에서 자름</button>
+<button data-s="c.mp3">3. 여자, "ໄປໃສ(어디 가?)" 앞에서 자름</button>
+<button data-s="d.mp3">4. 남자, "ໄປໃສ" 앞에서 자름</button>
+<button data-s="e.mp3">5. 여자, "ໄປກິນເຂົ້າ(밥 먹으러 가)" 앞에서 자름</button>
+<button data-s="f.mp3">6. 여자, "ໄປ ໄປ ໄປ" 가운데에서 자름</button>
+<script>const a=new Audio();document.addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;document.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');a.src=b.dataset.s;a.play()});a.onended=()=>document.querySelectorAll('.on').forEach(x=>x.classList.remove('on'))</script></body></html>
