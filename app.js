@@ -82,12 +82,12 @@ function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;documen
   $("#pt").innerHTML=P.loading?"⏳ 소리 준비 중…":`<span class="pic">${SPK}</span>`+(P.single||P.hold!=null?`∞ · ${P.k+1} · `:`${cur.gi+1}/${P.ng} · ↻${P.k+1} · `)+`<span class="lo">${txt}</span>`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
 function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
-function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec)return items;
+function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec){/* 단어공부: word cards of this bundle */return [...document.querySelectorAll(".cards .card")].filter(c=>c.id.startsWith("cd-"+id+"-")).map(c=>{const b=c.querySelector(".card-foot [data-say]");return b&&{text:b.dataset.say,rd:b.dataset.rd,id:c.id}}).filter(Boolean)}
   sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
   return items.filter(Boolean)}
 /* 전체 반복: after the last line of a bundle, move to the next bundle of the same 소분류 (after the last, back to the first) and keep going */
 function chainNext(){const sb=SUBS[S.sub];if(!sb)return stopPlay();const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),cur=S.bun[S.sub]||sb.b[0];const nx=L[(L.indexOf(cur)+1)%L.length];
-  const ns=Object.values(SUBS).find(x=>x.b.includes(nx));S.part=ns.part;S.sub=ns.id;S.lastSub[ns.part]=ns.id;S.bun[ns.id]=nx;S.mode="dlg";S.quiz=null;S.q="";$("#q").value="";save();render();window.scrollTo({top:0});const items=bundleItems(nx);if(!items.length)return stopPlay();play(items,true,2,true)}
+  const ns=Object.values(SUBS).find(x=>x.b.includes(nx));S.part=ns.part;S.sub=ns.id;S.lastSub[ns.part]=ns.id;S.bun[ns.id]=nx;S.mode=S.mode==="cards"?"cards":"dlg";S.quiz=null;S.q="";$("#q").value="";save();render();window.scrollTo({top:0});const items=bundleItems(nx);if(!items.length)return stopPlay();play(items,true,2,true)}
 function play(items,follow,each,chain){if(!hasTTS||!items.length)return;let busy=false;try{busy=hasSS&&(speechSynthesis.speaking||speechSynthesis.pending)}catch(e){}
   const single=items.length===1;
   /* RYU v12.55: Lao → Korean once, then Lao only for the remaining repeats (words and sentences) */
@@ -198,11 +198,11 @@ function renderBand(){
 const bhead=(id,withIntro)=>{const b=B[id];return `<div class="bhead"><span class="bt">${esc(b.t)}</span><span class="bw lo">${esc(b.h)}</span></div>${withIntro?`<p class="bintro">${laoWrap(b.i)}</p>`:""}`};
 function renderCards(){
   const ids=scopeB(),ws=ids.flatMap(id=>B[id].w.map(w=>[id,w])),n=ws.filter(([id,w])=>known[kk(id,w[0])]).length,pct=ws.length?Math.round(n/ws.length*100):0;
-  return `<div class="meter" style="justify-content:flex-end">${hasTTS?`<button class="speak all" data-playcards="1" aria-label="화면의 단어 전체 듣기">${RPT}<span>단어 반복</span></button>`:""}</div>
-  ${ids.map(id=>`${bhead(id,false)}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
+  /* RYU v12.68: cards only (no 단어 반복 button, no bundle title/word list, no 외웠어요) */
+  return `${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
     return `<div class="card${f?" flipped":""}${k?" known":""}" id="cd-${id}-${wi}">
       <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big">${esc(lo)}</span><span class="hint">${laoWrap(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span><span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span></span></button>
-      <div class="card-foot"><label class="check"><input type="checkbox" id="k-${id}-${wi}" data-known="${esc(key)}" ${k?"checked":""}>외웠어요</label>${spkBtn(lo,rd,lo+" 발음 듣기")}</div></div>`}).join("")}</div>`).join("")}`;
+      <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}</div></div>`}).join("")}</div>`).join("")}`;
 }
 const lineHTML=(cls,role,lo,rd,ko,id,w)=>{const ns=String(id).startsWith("pr-")?[]:notesOf(lo,w);return `<div class="line ${cls}" id="${id}">${role!==null?`<span class="role">${esc(role)}</span>`:""}<span class="t1 lo">${hl(lo,w)}</span>${spkBtn(lo,rd,"문장 듣기")}<span class="t2">${esc(rd)}</span><span class="ko">${esc(ko)}</span>${ns.length?`<span class="nt">※ ${ns.map(t=>`<span class="ni"><span class="lo">${esc(t)}</span>${NRD[t]?" "+esc(NRD[t]):""}(${esc(NDICT[t])})</span>`).join(" · ")}</span>`:""}</div>`};
 function renderBundle(id){
