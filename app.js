@@ -176,11 +176,11 @@ function save(){S.lastSub[S.part]=S.sub;store.set("lao-sel",{part:S.part,sub:S.s
 /* ---------- render ---------- */
 function renderTop(){
   const all=Object.values(B),nw=all.reduce((n,b)=>n+b.w.length,0),kn=Object.keys(known).length;
-  const ns=all.reduce((n,b)=>n+b.w.reduce((m,w)=>m+w[4].length,0)+b.pr.length*2+b.dl.length+(b.sm&&b.sm[0]?1:0),0);
+  const bs=b=>b.w.reduce((m,w)=>m+w[4].length,0)+b.pr.length*2+b.dl.length+(b.sm&&b.sm[0]?1:0);const ns=all.reduce((n,b)=>n+bs(b),0);
   $("#stats").innerHTML=`<span><b>${all.length}</b>묶음</span><span><b>${nw.toLocaleString()}</b>단어</span><span><b>${ns.toLocaleString()}</b>문장</span>`;
   $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${p.subs.reduce((n,s)=>n+s.b.length,0)}</small></button>`).join("");
   const p=PARTS.find(p=>p.id===S.part);
-  $("#subs").innerHTML=p.subs.map(s=>{const n=subWords(s).length;return `<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="code">${esc(s.code)}</span><span class="name">${esc(s.name)}</span><span class="prog">${knownN(s)} / ${n} 외움</span></button>`}).join("");
+  $("#subs").innerHTML=p.subs.map(s=>{const nsb=s.b.reduce((m,id)=>m+bs(B[id]),0);return `<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="code">${esc(s.code)}</span><span class="name">${esc(s.name)}</span><span class="prog">${s.b.length}묶음 ${nsb.toLocaleString()}문장</span></button>`}).join("");
   $("#app").dataset.g=S.part;
 }
 /* RYU v12.56: bundle list shows "Korean name (Lao)" with no number */
