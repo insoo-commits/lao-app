@@ -237,7 +237,7 @@ function renderBundle(id){
   if(b.pr.length)h+=`<div class="pairs"><div class="sechd"><span class="sec">짝 문장 비교</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
   if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
   if(b.sm&&b.sm[0])h+=`<div class="dlg smb"><span class="sec">한 문장에 모아 읽기</span>${lineHTML("n",null,b.sm[0],b.sm[1],b.sm[2],`sm-${id}`)}</div>`;
-  {const rl=relOf(id);if(rl.length){const big=isBig();h+=`<div class="box rel"><h4>관련 묶음</h4><ul>${rl.map(x=>{const L=BLAB[x]||[B[x].t,""];return `<li><button class="rjump" data-goto="${x}"><span class="rn">[${big?x:x.split("-").pop()}]</span> ${esc(L[0])}${L[1]?` <span class="lo rlo">(${esc(L[1])})</span>`:""}</button></li>`}).join("")}</ul></div>`}}
+  {const rl=relOf(id);if(rl.length){const big=isBig();h+=`<div class="box rel"><h4>관련 묶음</h4><ul>${rl.map(x=>{const L=BLAB[x]||[B[x].t,""];return `<li><button class="rjump" data-goto="${x}"><span class="rn">[${x}]</span> ${esc(L[0])}${L[1]?` <span class="lo rlo">(${esc(L[1])})</span>`:""}</button></li>`}).join("")}</ul></div>`}}
   return h+`</section>`;
 }
 function renderDlg(){
