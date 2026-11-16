@@ -84,7 +84,7 @@
 
 ### 음성 (Edge TTS)
 - **목소리:** 여자 lo-LA-KeomanyNeural, 남자 lo-LA-ChanthavongNeural, 한국어 뜻은 ko-KR 여자 목소리
-- **품질:** 24kbps 모노 mp3 (RYU 선택)
+- **품질:** 모든 음성(라오어·한국어) 16kbps 모노 16kHz mp3 (RYU, 2026-11-16 처음 내려받기 부담을 줄이려고 24k에서 낮춤)
 - **방법:** 빠진 클립 목록을 만들고 `src/tts/edge_tts_gen.py 목록.json 출력폴더 [목소리]`로 생성한 뒤 `audio/index.js`에 등록함
 - 새 단어는 음성을 자동으로 만들지 않음. Claude가 만들어 push하면 RYU가 앱에서 "음성 전체 저장"을 누름
 
