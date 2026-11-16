@@ -34,6 +34,10 @@
 .band{flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:10px}.band>*{width:100%;text-align:left;box-sizing:border-box}.band>.bigsel{text-align:center}.band .bigsel{width:100%;max-width:none;font-size:16px;font-weight:700;padding:11px 36px;background-color:var(--sheet);border-radius:12px}.band .bintro{color:var(--ink)}.band .box{background:var(--sheet)}html.tab .band .bigsel{font-size:23px;padding:14px 44px}
 .controls .bact{flex:1 1 100%;order:9;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px;margin-top:6px}.controls .bact:empty{display:none}
 .controls .opts{display:flex;gap:6px;margin-left:auto;flex:0 0 auto}
+.controls .ll{display:none}.olab{font-size:12.5px;color:var(--muted);margin:0 2px 0 6px;white-space:nowrap}.dlg-list>.bundle:first-child>.entry:first-of-type{border-top:0;padding-top:4px}
+html.tab .controls .ll{display:inline } html.tab .controls .sl{display:none } html.tab .controls{justify-content:center!important;column-gap:18px } html.tab .controls .opts{margin-left:0!important;align-items:center } html.tab .controls>.seg{margin-right:0} html.tab .controls .bact{justify-content:center}
+@media (hover:hover) and (pointer:fine){.controls .ll{display:inline}.controls .sl{display:none}.controls{justify-content:center!important;column-gap:18px}.controls .opts{margin-left:0!important;align-items:center}.controls>.seg{margin-right:0!important}.controls .bact{justify-content:center}}
+html.tab .olab{font-size:18px}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
@@ -357,21 +361,21 @@ html.tab .voice{font-size:18px}
     <div class="band" id="band"></div>
     <div class="controls" id="controls">
       <div class="seg" role="group" aria-label="학습 방식">
-        <button id="m-dlg" data-mode="dlg">문장</button>
-        <button id="m-cards" data-mode="cards">단어</button>
-        <button id="m-quiz" data-mode="quiz">퀴즈</button>
+        <button id="m-dlg" data-mode="dlg"><span class="sl">문장</span><span class="ll">예문보기</span></button>
+        <button id="m-cards" data-mode="cards"><span class="sl">단어</span><span class="ll">단어공부</span></button>
+        <button id="m-quiz" data-mode="quiz"><span class="sl">퀴즈</span><span class="ll">확인퀴즈</span></button>
       </div>
-      <span class="opts"><span class="repw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg><select id="repSel" class="bsel osel" aria-label="음성 반복 횟수"><option value="1">1회</option><option value="2">2회</option><option value="3">3회</option><option value="4">4회</option><option value="5">5회</option></select></span>
-      <select id="rateSel" class="bsel osel" aria-label="재생 속도"><option value="0.8">x 0.8</option><option value="1">x 1.0</option><option value="1.2">x 1.2</option><option value="1.5">x 1.5</option><option value="2">x 2.0</option></select></span>
+      <span class="opts"><span class="ll olab">반복</span><span class="repw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg><select id="repSel" class="bsel osel" aria-label="음성 반복 횟수"><option value="1">1회</option><option value="2">2회</option><option value="3">3회</option><option value="4">4회</option><option value="5">5회</option></select></span>
+      <span class="ll olab">배속</span><select id="rateSel" class="bsel osel" aria-label="재생 속도"><option value="0.8">x 0.8</option><option value="1">x 1.0</option><option value="1.2">x 1.2</option><option value="1.5">x 1.5</option><option value="2">x 2.0</option></select></span>
       <div class="bact" id="bact"></div>
     </div>
     <div class="body" id="view"></div>
   </section>
   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-16 v12.60 · Claude AI로 제작</div></div>
+  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-16 v12.61 · Claude AI로 제작</div></div>
 </div>
 
 
 
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.60";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src="app.js?v=12.61";document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
