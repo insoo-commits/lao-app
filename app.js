@@ -191,7 +191,7 @@ function renderBand(){
   const b=curBun(),bb=B[b];
   $("#band").innerHTML=`<select id="bsel" class="bsel bigsel" aria-label="묶음 고르기"></select>${bb&&bb.i?`<p class="bintro">${laoWrap(bb.i)}</p>`:""}${bb&&bb.tp.length?`<div class="box">${bb.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`:""}`;
   $("#bact").innerHTML=S.mode==="quiz"||!bb?"":`<button class="speak all" data-playbundle="${b}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>전체 반복</span></button><button class="speak all" data-playbundle="${b}">${RPT}<span>묶음 반복</span></button>`;
-  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${id===b?"["+id.split("-").pop()+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
+  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${id===b?"["+(document.documentElement.classList.contains("tab")||matchMedia("(hover:hover) and (pointer:fine)").matches?id:id.split("-").pop())+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
   document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.mode===S.mode));
   $("#repSel").value=String(REP);$("#rateSel").value=String(RATE);
 }
@@ -337,17 +337,17 @@ setTimeout(async()=>{if(!("caches" in window)||!window.indexedDB)return;try{if(!
 })();
 
 ;/* custom dropdown list for touch devices: list text = same size as the select, list as wide as needed */
-(function(){var touch=navigator.maxTouchPoints>0||"ontouchstart" in window;if(!touch)return;
+(function(){/* RYU v12.71: also on PC so the bundle list is compact everywhere */
 document.documentElement.classList.add("cdd");
 var st=document.createElement("style");st.textContent='html.cdd select.bsel{pointer-events:none}'+
 '.ddbg{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.18)}'+
 '.ddl{position:fixed;z-index:61;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--sheet,var(--bg));color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:6px 0}'+
 '.ddl button{display:flex;gap:.5em;width:100%;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:.6em 1em;white-space:nowrap;cursor:pointer}'+
 '.ddl button.ctr{justify-content:center;text-align:center;align-items:baseline;gap:0}.ddl .dlo{color:var(--muted);font-size:.82em;margin-left:.35em;font-weight:400}.ddl button.ctr[aria-selected=true] .dlo{color:inherit;opacity:.8}'+
-'.ddl button .ck{width:1em;flex:0 0 1em;color:var(--accent)}.ddl button[aria-selected=true]{background:var(--accent-soft,rgba(0,0,0,.06));font-weight:600}';
+'.ddl button .ck{width:1em;flex:0 0 1em;color:var(--accent)}.ddl button[aria-selected=true]{background:var(--accent-soft,rgba(0,0,0,.06));font-weight:600}.ddl button.ctr{padding:.3em 1em;font-size:.86em;line-height:1.35}';
 document.head.appendChild(st);
 function close(){var a=document.querySelectorAll(".ddbg,.ddl");for(var i=0;i<a.length;i++)a[i].parentNode.removeChild(a[i])}
-function open(sel){close();var r=sel.getBoundingClientRect(),cs=getComputedStyle(sel);
+function open(sel){close();var r0=sel.getBoundingClientRect(),cs=getComputedStyle(sel),k=(sel.offsetWidth&&r0.width/sel.offsetWidth)||1,r={left:r0.left/k,top:r0.top/k,bottom:r0.bottom/k,width:r0.width/k};/* PC zoom: rect is in screen px, styles in css px */
   var bg=document.createElement("div");bg.className="ddbg";bg.onclick=close;
   var l=document.createElement("div");l.className="ddl";l.setAttribute("role","listbox");l.style.fontSize=cs.fontSize;l.style.fontFamily=cs.fontFamily;
   Array.prototype.forEach.call(sel.options,function(o){var b=document.createElement("button");b.type="button";b.setAttribute("role","option");b.setAttribute("aria-selected",o.selected?"true":"false");
@@ -355,7 +355,7 @@ function open(sel){close();var r=sel.getBoundingClientRect(),cs=getComputedStyle
     else{b.innerHTML='<span class="ck">'+(o.selected?"✓":"")+'</span>';b.appendChild(document.createTextNode(o.textContent))}
     b.onclick=function(){close();if(sel.value!==o.value){sel.value=o.value;sel.dispatchEvent(new Event("change",{bubbles:true}))}};l.appendChild(b)});
   document.body.appendChild(bg);document.body.appendChild(l);
-  var vw=document.documentElement.clientWidth,vh=innerHeight,m=8;
+  var vw=document.documentElement.clientWidth/k,vh=innerHeight/k,m=8;
   var w=Math.min(vw-2*m,Math.max(r.width,l.scrollWidth+2));l.style.width=w+"px";
   if(l.scrollWidth>w+1){l.querySelectorAll("button").forEach(function(b){b.style.whiteSpace="normal"})}
   var left=Math.min(Math.max(m,r.left),vw-m-w);l.style.left=left+"px";
