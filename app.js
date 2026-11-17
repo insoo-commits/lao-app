@@ -138,10 +138,10 @@ function msMeta(it){if(!("mediaSession" in navigator))return;try{
   navigator.mediaSession.playbackState="playing"}catch(e){}}
 /* single item: repeat forever. list: each item REP times, then next; after the last, start over */
 /* tap one line while a list is playing: loop that line; the bottom "▶ 재생" button moves on to the next one */
-/* word cards while playing: odd plays show the word side, even plays the meaning side; back to the word side when the word is done */
+/* word cards while playing (RYU v2.5): the meaning side shows only while the Korean meaning is spoken; every Lao play shows the word side */
 function cardSync(it){const prev=P.cardKey;let key=null,flip=false;
   if(it&&it.id&&String(it.id).startsWith("cd-")){const el=document.getElementById(it.id);const f=el&&el.querySelector("[data-flip]");key=f?f.dataset.flip:null;
-    if(key){if(P.lastGi!==it.gi||P.lastRound!==P.round||prev!==key)P.pc=0;P.lastGi=it.gi;P.lastRound=P.round;P.pc=(P.pc||0)+1;flip=P.pc%2===0}}
+    if(key){P.lastGi=it.gi;P.lastRound=P.round;flip=!!it.ko}}
   let ch=false;
   if(prev&&prev!==key&&S.flipped[prev]){delete S.flipped[prev];ch=true}
   if(key&&!!S.flipped[key]!==flip){if(flip)S.flipped[key]=true;else delete S.flipped[key];ch=true}
