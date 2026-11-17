@@ -224,7 +224,7 @@ const at=(s)=>{const r=[];for(const [rx,l] of P){const m=rx.exec(s);if(m){const 
 const tone=(y)=>{const c=cls(y.ini),t=y.t,dead='ກດບ'.includes(y.fin)&&y.fin!==''||(y.len==='S'&&!y.fin);
   /* RYU v2.6: textbook 6 tones (1성~6성) */
   if(t==='່')return 't5';if(t==='້')return c==='H'?'t6':'t2';
-  if(dead&&y.len==='S')return c==='L'?'t2':'t6'; /* v2.8: long vowel + stop follows 기본 성조-1 (book) */
+  if(dead)return c==='L'?'t2':'t6'; /* book p.28: 장모음 + 사음 = 고6·중6·저2 */
   return {H:'t4',M:'t1',L:'t1'}[c]};
 /* best cover of a word: max chars covered, then fewest syllables */
 const seg=(w)=>{const n=w.length,best=new Array(n+1).fill(null);best[n]={c:0,k:0,p:[]};
