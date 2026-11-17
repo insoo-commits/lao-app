@@ -239,15 +239,15 @@ return {seg:seg,tone:tone,MK:MK}})();
 function toneHtml(lo){const ys=TN.seg(lo);if(!ys.length)return esc(lo);let h='',p=0;
   for(const y of ys){if(y.i>p)h+=esc(lo.slice(p,y.i));const s=lo.slice(y.i,y.i+y.n),tn=TN.tone(y);h+=`<span class="sy" data-tn="${tn}" data-ci="${y.ci}" data-cl="${y.ini.length}">${esc(s)}</span>`;p=y.i+y.n}
   return h+esc(lo.slice(p))}
-function placeTones(root){(root||document).querySelectorAll(".cards .face .big").forEach(big=>{big.querySelectorAll(".tm").forEach(e=>e.remove());const br=big.getBoundingClientRect(),zk=br.width?big.offsetWidth/br.width:1;
+function placeTones(root){(root||document).querySelectorAll(".cards .face .big,.entry-head .w.tn").forEach(big=>{big.querySelectorAll(".tm").forEach(e=>e.remove());const br=big.getBoundingClientRect(),zk=br.width?big.offsetWidth/br.width:1;
   big.querySelectorAll(".sy").forEach(sy=>{const tn=sy.firstChild;if(!tn)return;const ci=+sy.dataset.ci,cl=+sy.dataset.cl,r=document.createRange();r.setStart(tn,ci);r.setEnd(tn,ci+cl);const rc=r.getBoundingClientRect();
     const m=document.createElement("span");m.className="tm";m.dataset.tn=sy.dataset.tn;m.innerHTML=`<svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[sy.dataset.tn]}"/></svg>`;m.style.left=(rc.left-br.left+rc.width/2)*zk+"px";m.style.top=(rc.top-br.top)*zk+"px";big.appendChild(m)})})}
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(typeof S!=="undefined"&&S.mode==="cards")fitBig()});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(typeof S!=="undefined"){if(S.mode==="cards")fitBig();else placeTones()}});
 const TONE_IDS={has:()=>true}; /* RYU 2026-11-17: tone marks on every bundle */
 const TLEG=[["t1","1성 평평"],["t2","2성 높게 떨어짐"],["t3","3성 끝이 올라감"],["t4","4성 낮게 올라감"],["t5","5성 높게 평평"],["t6","6성 가다 떨어짐"]];
 const toneLegend=()=>`<div class="tleg" aria-label="성조 표시 안내">${TLEG.map(([k,t])=>`<span data-tn="${k}"><svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[k]}"/></svg>${t}</span>`).join("")}</div>`;
 function fitBig(){document.querySelectorAll(".cards .face .big").forEach(e=>{e.style.fontSize="";e.style.whiteSpace="nowrap";let f=parseFloat(getComputedStyle(e).fontSize),m=f*0.6;while(e.scrollWidth>e.clientWidth+1&&f>m){f-=1;e.style.fontSize=f+"px"}if(e.scrollWidth>e.clientWidth+1)e.style.whiteSpace="normal"});placeTones()}
-addEventListener("resize",()=>{clearTimeout(fitBig.t);fitBig.t=setTimeout(()=>{if(S.mode==="cards")fitBig()},150)});
+addEventListener("resize",()=>{clearTimeout(fitBig.t);fitBig.t=setTimeout(()=>{if(S.mode==="cards")fitBig();else placeTones()},150)});
 function renderCards(){
   const ids=scopeB(),ws=ids.flatMap(id=>B[id].w.map(w=>[id,w])),n=ws.filter(([id,w])=>known[kk(id,w[0])]).length,pct=ws.length?Math.round(n/ws.length*100):0;
   /* RYU v12.68: cards only (no 단어 반복 button, no bundle title/word list, no 외웠어요) */
@@ -276,7 +276,7 @@ function renderBundle(id){
   if(b.tp.length&&!cur)h+=`<div class="box"><h4>구별 포인트</h4>${b.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`;
   if(!cur)h+=`<div class="row" style="justify-content:flex-end;gap:8px"><button class="speak all" data-playbundle="${id}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>연속 재생</span></button><button class="speak all" data-playbundle="${id}">${RPT}<span>묶음 재생</span></button></div>`;
   b.w.forEach((w,wi)=>{const [lo,hint,rd,ko,ex]=w;
-    h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w">${esc(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${RPT}<span>단어 반복</span></button>${hint?`<span class="hint">${hintHtml(hint)}</span>`:""}</div>
+    h+=`<article class="entry"><div class="entry-head" id="eh-${id}-${wi}"><span class="w tn">${toneHtml(lo)}</span><span class="r">${esc(rd)}</span><span class="m">${esc(ko)}</span><button class="speak all" data-sayall="1" data-say="${esc(lo)}" data-rd="${esc(rd)}" aria-label="${esc(lo)} 예문 전체 듣기">${RPT}<span>단어 반복</span></button>${hint?`<span class="hint">${hintHtml(hint)}</span>`:""}</div>
     ${ex.map((e,ei)=>lineHTML(["g","s","r"][ei]||"n",ei===2?"실생활":`예문 ${ei+1}`,e[0],e[1],e[2],`ln-${id}-${wi}-${ei}`,lo)).join("")}</article>`});
   if(b.pr.length)h+=`<div class="pairs"><div class="sechd"><span class="sec">짝 문장 비교</span><button class="speak all" data-playsec="1" aria-label="전체 예문 듣기">${RPT}<span>예문 반복</span></button></div>${b.pr.map((p,pi)=>`<div class="pair">${lineHTML("n",null,p[0][0],p[0][1],p[0][2],`pr-${id}-${pi}-a`)}<span class="vs">↔</span>${lineHTML("n",null,p[1][0],p[1][1],p[1][2],`pr-${id}-${pi}-b`)}</div>`).join("")}</div>`;
   if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="대화 전체 듣기">${RPT}<span>대화 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
@@ -336,7 +336,7 @@ function render(){
   renderTop();showSel($("#groups"),'[aria-pressed="true"]');showSel($("#subs"),'[aria-selected="true"]');
   if(S.q.trim()){renderSearch();return}
   $("#controls").hidden=false;renderBand();
-  $("#view").innerHTML=S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz();if(S.mode==="cards")fitBig();else if(S.mode==="dlg")fitNotes();
+  $("#view").innerHTML=S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz();if(S.mode==="cards")fitBig();else if(S.mode==="dlg"){fitNotes();placeTones()}
   if(P.active&&P.queue[P.i])mark(P.queue[P.i].id);
   snapLater();
 }
