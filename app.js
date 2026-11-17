@@ -251,10 +251,10 @@ addEventListener("resize",()=>{clearTimeout(fitBig.t);fitBig.t=setTimeout(()=>{i
 function renderCards(){
   const ids=scopeB(),ws=ids.flatMap(id=>B[id].w.map(w=>[id,w])),n=ws.filter(([id,w])=>known[kk(id,w[0])]).length,pct=ws.length?Math.round(n/ws.length*100):0;
   /* RYU v12.68: cards only (no 단어 반복 button, no bundle title/word list, no 외웠어요) */
-  return `${ids.some(id=>TONE_IDS.has(id))?toneLegend():""}${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
+  return `${ids.some(id=>TONE_IDS.has(id))?toneLegend():""}${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cardsw"><div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
     return `<div class="card${f?" flipped":""}${k?" known":""}" id="cd-${id}-${wi}">
       <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big${TONE_IDS.has(id)?" tn":""}">${TONE_IDS.has(id)?toneHtml(lo):esc(lo)}</span><span class="hint">${hintHtml(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span><span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span></span></button>
-      <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}</div>${(id==="2-04-10"||id==="2-04-11")&&SWATCH[lo]?`<span class="swatch" style="background:${SWATCH[lo]}" aria-hidden="true"></span>`:""}</div>`}).join("")}</div>`).join("")}`;
+      <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}</div>${(id==="2-04-10"||id==="2-04-11")&&SWATCH[lo]?`<span class="swatch" style="background:${SWATCH[lo]}" aria-hidden="true"></span>`:""}</div>`}).join("")}</div></div>`).join("")}`;
 }
 /* v14.3 RYU: color bar on 색 cards */
 const SWATCH={"ສີແດງ":"#d62828","ສີສົ້ມ":"#f77f00","ສີເຫຼືອງ":"#f5c518","ສີຂຽວ":"#2a9d3a","ສີຟ້າ":"#1e78d7","ສີນ້ຳເງິນ":"#1d2f6f","ສີມ່ວງ":"#7b2cbf","ສີດຳ":"#111","ສີຂາວ":"#fff","ສີເທົາ":"#8d8d8d","ສີນ້ຳຕານ":"#7a4a1e","ສີເຂັ້ມ":"linear-gradient(90deg,#8b0000,#0b3d91,#14532d)","ສີອ່ອນ":"linear-gradient(90deg,#ffc2c2,#c2dcff,#c9f2c9)","ສີບົວ":"#f4a6c6","ສີຟ້າອ່ອນ":"#8ecdf5","ສີຂຽວອ່ອນ":"#a7e36b","ສີຄຳ":"linear-gradient(135deg,#b8860b,#f7d774,#b8860b)","ສີເງິນ":"linear-gradient(135deg,#8e8e8e,#e8e8e8,#8e8e8e)"};
