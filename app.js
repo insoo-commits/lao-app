@@ -243,7 +243,7 @@ function placeTones(root){(root||document).querySelectorAll(".cards .face .big")
   big.querySelectorAll(".sy").forEach(sy=>{const tn=sy.firstChild;if(!tn)return;const ci=+sy.dataset.ci,cl=+sy.dataset.cl,r=document.createRange();r.setStart(tn,ci);r.setEnd(tn,ci+cl);const rc=r.getBoundingClientRect();
     const m=document.createElement("span");m.className="tm";m.dataset.tn=sy.dataset.tn;m.innerHTML=`<svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[sy.dataset.tn]}"/></svg>`;m.style.left=(rc.left-br.left+rc.width/2)*zk+"px";m.style.top=(rc.top-br.top)*zk+"px";big.appendChild(m)})})}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(typeof S!=="undefined"&&S.mode==="cards")fitBig()});
-const TONE_IDS=new Set(["5-01-03"]);
+const TONE_IDS={has:()=>true}; /* RYU 2026-11-17: tone marks on every bundle */
 const TLEG=[["hi","높게"],["mid","중간"],["low","낮게"],["rise","올라감"],["hf","높은 데서 떨어짐"],["lf","낮게 떨어짐"]];
 const toneLegend=()=>`<div class="tleg" aria-label="성조 표시 안내">${TLEG.map(([k,t])=>`<span data-tn="${k}"><svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[k]}"/></svg>${t}</span>`).join("")}</div>`;
 function fitBig(){document.querySelectorAll(".cards .face .big").forEach(e=>{e.style.fontSize="";e.style.whiteSpace="nowrap";let f=parseFloat(getComputedStyle(e).fontSize),m=f*0.6;while(e.scrollWidth>e.clientWidth+1&&f>m){f-=1;e.style.fontSize=f+"px"}if(e.scrollWidth>e.clientWidth+1)e.style.whiteSpace="normal"});placeTones()}
