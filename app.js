@@ -90,7 +90,7 @@ function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;documen
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"▶ 재개":"❙❙ 일시정지"}
   const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};const g0=P.queue[cur.gs]||cur,txt=esc(g0.text||"");
   /* RYU v12.58: like kor-app: icon · count · current sentence */
-  $("#pt").innerHTML=P.loading?"⏳ 소리 준비 중…":`<span class="pic">${SPK}</span>`+(()=>{try{const c=curBun();return c&&B[c]?`[${c}] `:""}catch(e){return ""}})()+(P.single||P.hold!=null?`∞ · ${P.k+1} · `:`${cur.gi+1}/${P.ng} · ↻${P.k+1} · `)+`<span class="lo">${txt}</span>`}
+  $("#pt").innerHTML=P.loading?"⏳ 소리 준비 중…":`<span class="pic">${SPK}</span>`+(()=>{try{const c=curBun();return c&&B[c]?`[${c}] `:""}catch(e){return ""}})()+(P.single||P.hold!=null?`∞ · ${P.k+1} · `:cur.rv?`복습 ${cur.ri+1}/${cur.rn} · ↻${(P.rk||0)+1} · `:`${cur.gi+1}/${P.ng} · ↻${P.k+1} · `)+`<span class="lo">${txt}</span>`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
 function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec){/* 단어공부: word cards of this bundle */return [...document.querySelectorAll(".cards .card")].filter(c=>c.id.startsWith("cd-"+id+"-")).map(c=>{const b=c.querySelector(".card-foot [data-say]");return b&&{text:b.dataset.say,rd:b.dataset.rd,id:c.id}}).filter(Boolean)}
@@ -104,7 +104,9 @@ function play(items,follow,each,chain){if(!hasTTS||!items.length)return;let busy
   /* RYU v12.55: Lao → Korean once, then Lao only for the remaining repeats (words and sentences) */
   const groups=items.map(it=>{const ko=it&&!it.ko&&koOf(it.id);if(!ko)return [{...it}];return (single||REP>=2)?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it},{text:ko,ko:1,id:it.id}]});
   const q=[];groups.forEach((g,gi)=>{const gs=q.length,kg=g.length>1&&g[1].ko;g.forEach(x=>{x.rs=kg&&g.length===3?gs+2:gs;x.kg=kg;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
-  stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.chain=!!chain&&!single;P.queue=q;P.i=0;P.round=1;P.active=true;const tok=P.token;
+  /* RYU v2.1: 단어공부 묶음 재생·연속 재생: after the bundle, a Lao-only pass over its words, repeated REP times */
+  if(!single&&items.every(it=>it&&/^cd-/.test(it.id||""))){const r0=q.length;items.forEach((it,ri)=>{const n=q.length;q.push({...it,rv:1,rv0:r0,ri:ri,rn:items.length,rvl:ri===items.length-1,gi:groups.length+ri,gs:n,ge:n,rs:n,kg:false})})}
+  stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.chain=!!chain&&!single;P.queue=q;P.i=0;P.rk=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
 function setPaused(v){if(!P.active)return;P.paused=!!v;
@@ -151,13 +153,14 @@ function holdAt(idx){const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasS
 function releaseHold(){const it=P.queue[P.hold];const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
   P.hold=null;holdMark(null);P.paused=false;P._resume=null;P.k=0;P.i=it?it.ge+1:P.i+1;nextPlay(tok)}
 function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
+  if(it.rv){P.k=0;if(it.rvl&&(P.rk||0)<REP-1){P.rk=(P.rk||0)+1;P.i=it.rv0}else{if(it.rvl)P.rk=0;P.i++}return}
   if(P.single||P.k<(it.kg?REP-2:REP-1)){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){if(P.chain){chainNext();return}P.round++;P.i=0}
   const it=P.queue[P.i];cardSync(it);mark(it.id);showPlayer();
   if(AUD&&!it.noAud){const k=keyOf(it);if(k){const a=aud();let done=false;
-    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length?900:450)};
+    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length||(P.queue[P.i].rv&&P.queue[P.i].rv0===P.i)?900:450)};
     a.onended=fin;a.onerror=()=>{if(done||tok!==P.token)return;done=true;it.noAud=1;nextPlay(tok)};
     const go=src=>{if(tok!==P.token)return;loadDone();try{a.src=src;a.playbackRate=RATE;a.defaultPlaybackRate=RATE;const pr=a.play();if(pr&&pr.catch)pr.catch(e=>{if(tok!==P.token)return;if(e&&e.name==="NotAllowedError"){stopPlay();ttsWarn();return}a.onerror()})}catch(e){a.onerror()}};
     msMeta(it);if(ABLOB[k])go(ABLOB[k]);else{loadStart();blobUrl(k).then(go,()=>go(aurl(k)))}
@@ -165,7 +168,7 @@ function nextPlay(tok){
     return}}
   if(!hasSS){P.i++;setTimeout(()=>nextPlay(tok),50);return}
   try{const u=utterOf(it);
-    let done=false;const t0=Date.now();const fin=()=>{clearInterval(wd);if(done||tok!==P.token)return;done=true;advQ();setTimeout(()=>nextPlay(tok),P.i>=P.queue.length?900:450)};
+    let done=false;const t0=Date.now();const fin=()=>{clearInterval(wd);if(done||tok!==P.token)return;done=true;advQ();setTimeout(()=>nextPlay(tok),P.i>=P.queue.length||(P.queue[P.i].rv&&P.queue[P.i].rv0===P.i)?900:450)};
     u.onstart=()=>{P.err=0};
     u.onend=fin;u.onerror=ev=>{const er=ev&&ev.error;if(er==="interrupted"||er==="canceled"){fin();return}
       if(tok!==P.token)return;P.err=(P.err||0)+1;if(er==="not-allowed"||P.err>=3){stopPlay();ttsWarn();return}fin()};
