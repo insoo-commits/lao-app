@@ -214,14 +214,46 @@ const bhead=(id,withIntro)=>{const b=B[id];return `<div class="bhead"><span clas
 try{document.fonts.ready.then(()=>{if(S.mode==="dlg")fitNotes()})}catch(e){}
 function fitNotes(){document.querySelectorAll(".line .nt").forEach(e=>{const lh=parseFloat(getComputedStyle(e).lineHeight)||18;let g=0;while(e.offsetHeight>lh*2.4&&g++<20){const ni=[...e.querySelectorAll(".ni")];if(ni.length<2)break;ni.sort((a,b)=>(+b.dataset.f)-(+a.dataset.f)||a.textContent.length-b.textContent.length);ni[0].remove()}})}
 /* RYU v12.73: card words same size + same height; shrink only very long ones to fit one line (min 17px, then wrap) */
-function fitBig(){document.querySelectorAll(".cards .face .big").forEach(e=>{e.style.fontSize="";e.style.whiteSpace="nowrap";let f=parseFloat(getComputedStyle(e).fontSize),m=f*0.6;while(e.scrollWidth>e.clientWidth+1&&f>m){f-=1;e.style.fontSize=f+"px"}if(e.scrollWidth>e.clientWidth+1)e.style.whiteSpace="normal"})}
+/* RYU v2.3: tone marks above each syllable's first consonant on word cards (Vientiane table, same as 말소리 성조 묶음) */
+const TN=(()=>{const I='(ຫ[ງຍນມລວ]|ຫຼ|[ກຂຄງຈສຊຍດຕຖທນບປຜຝພຟມຢຣລວຫອຮໜໝ])(ວ(?=[າັ])|ວ(?=[່້]?າ))?',WQ='(ວ(?=[າັ])|ວ(?=[່້]?າ))?',T='([່້໊໋]?)',F='([ກງຍດນບມວ])';
+const P=[['ເ'+I+'ິ'+T+F,'S'],['ເ'+I+'ີ'+T+F+'?','L'],['ເ'+I+'[ຶື]'+T+'ອ'+F+'?','L'],['ເ'+I+T+'ົ'+T+'າ','A'],['ເ'+I+T+'າະ','S'],['ເ'+I+'ັ'+T+F,'S'],['ເ'+I+T+'ະ','S'],['ເ'+I+T+'ຍ','L'],['ເ'+I+T+F+'?','L'],['ແ'+I+T+'ະ','S'],['ແ'+I+'ັ'+T+F,'S'],['ແ'+I+T+F+'?','L'],['ໂ'+I+T+'ະ','S'],['ໂ'+I+T+F+'?','L'],['[ໄໃ]'+I+T,'A'],[I+'ັ'+T+'ອ'+F,'S'],[I+'ັ'+T+F,'S'],[I+'ົ'+T+'ວ','L'],[I+'ົ'+T+F,'S'],[I+T+'ະ','S'],[I+T+'າ'+F+'?','L'],[I+T+'ຳ','A'],[I+T+'ໍ'+T,'L'],[I+'ິ'+T+F+'?','S'],[I+'ີ'+T+F+'?','L'],[I+'ຶ'+T+F+'?','S'],[I+'ື'+T+F+'?','L'],[I+'ຸ'+T+F+'?','S'],[I+'ູ'+T+F+'?','L'],[I+T+'ອ'+F,'L'],[I+T+'ຽ'+F,'L'],[I+T+'ວ'+F,'L'],['ແ([ກຂຄ])(ວ)'+T+F,'L'],[I+'ໍ'+T+'າ','A'],[I+'ົ'+T+'ວະ','S'],['ເ'+I+'ິ'+T,'S']].flatMap(([p,l])=>p.endsWith(F+'?')?[[p.slice(0,-1),l],[p.slice(0,-F.length-1),l]]:[[p,l]]).flatMap(([p,l])=>[[p,l],[p.replace(WQ,'()'),l]]).map(([p,l])=>[new RegExp('^(?:'+p+')'),l]);
+const H='ຂສຖຜຝຫໜໝ',M='ກຈດຕບປຢອ';
+const cls=i=>i.length>1||H.includes(i)?'H':M.includes(i)?'M':'L';
+/* all syllable parses starting at s */
+const at=(s)=>{const r=[];for(const [rx,l] of P){const m=rx.exec(s);if(m){const g=m.slice(1),ini=g[0],rest=g.slice(2).filter(Boolean),t=rest.filter(x=>'່້໊໋'.includes(x)).join(''),fin=rest.filter(x=>!'່້໊໋'.includes(x)).join('');r.push({n:m[0].length,ini:ini,ci:m[0].indexOf(ini),t:t,fin:fin,len:l})}}return r};
+const tone=(y)=>{const c=cls(y.ini),t=y.t,dead='ກດບ'.includes(y.fin)&&y.fin!==''||(y.len==='S'&&!y.fin);
+  if(t==='່')return 'mid';if(t==='້')return c==='H'?'lf':'hf';
+  if(dead){if(y.len==='L')return c==='L'?'hf':'lf';return c==='L'?'mid':'hi'}
+  return {H:'rise',M:'low',L:'hi'}[c]};
+/* best cover of a word: max chars covered, then fewest syllables */
+const seg=(w)=>{const n=w.length,best=new Array(n+1).fill(null);best[n]={c:0,k:0,p:[]};
+  for(let i=n-1;i>=0;i--){let b={c:best[i+1].c,k:best[i+1].k,p:best[i+1].p};
+    for(const y of at(w.slice(i))){const nx=best[i+y.n];if(!nx)continue;const c=nx.c+y.n,k=nx.k+1;if(c>b.c||c===b.c&&k<b.k)b={c:c,k:k,p:[{i:i,...y}].concat(nx.p)}}
+    best[i]=b}
+  /* loanwords: leading cluster consonant (ກຣາມ, ຄລິກ) carries the class; a trailing ສ closes the syllable (ເຟສ) */
+  const p=best[0].p;let e=0;for(const y of p){if(y.i>e&&y.ci===0&&/[ກຂຄຕທປຜພຝຟບດສ]/.test(w[y.i-1])&&'ຣລ'.includes(y.ini)){y.i--;y.n++;y.ini=w[y.i]}
+    if(!y.fin&&w[y.i+y.n]==='ສ'&&w[y.i+y.n+1]!=='໌'&&!at(w.slice(y.i+y.n)).length){y.fin='ດ';y.n++}e=y.i+y.n}
+  return p};
+const MK={hi:'M2 2H14',mid:'M2 6H14',low:'M2 10H14',rise:'M2 10L14 2',hf:'M2 6L7 2L14 10',lf:'M2 5L14 10'};
+return {seg:seg,tone:tone,MK:MK}})();
+function toneHtml(lo){const ys=TN.seg(lo);if(!ys.length)return esc(lo);let h='',p=0;
+  for(const y of ys){if(y.i>p)h+=esc(lo.slice(p,y.i));const s=lo.slice(y.i,y.i+y.n),tn=TN.tone(y);h+=`<span class="sy" data-tn="${tn}" data-ci="${y.ci}" data-cl="${y.ini.length}">${esc(s)}</span>`;p=y.i+y.n}
+  return h+esc(lo.slice(p))}
+function placeTones(root){(root||document).querySelectorAll(".cards .face .big").forEach(big=>{big.querySelectorAll(".tm").forEach(e=>e.remove());const br=big.getBoundingClientRect(),zk=br.width?big.offsetWidth/br.width:1;
+  big.querySelectorAll(".sy").forEach(sy=>{const tn=sy.firstChild;if(!tn)return;const ci=+sy.dataset.ci,cl=+sy.dataset.cl,r=document.createRange();r.setStart(tn,ci);r.setEnd(tn,ci+cl);const rc=r.getBoundingClientRect();
+    const m=document.createElement("span");m.className="tm";m.dataset.tn=sy.dataset.tn;m.innerHTML=`<svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[sy.dataset.tn]}"/></svg>`;m.style.left=(rc.left-br.left+rc.width/2)*zk+"px";m.style.top=(rc.top-br.top)*zk+"px";big.appendChild(m)})})}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(typeof S!=="undefined"&&S.mode==="cards")fitBig()});
+const TONE_IDS=new Set(["5-01-03"]);
+const TLEG=[["hi","높게"],["mid","중간"],["low","낮게"],["rise","올라감"],["hf","높은 데서 떨어짐"],["lf","낮게 떨어짐"]];
+const toneLegend=()=>`<div class="tleg" aria-label="성조 표시 안내">${TLEG.map(([k,t])=>`<span data-tn="${k}"><svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[k]}"/></svg>${t}</span>`).join("")}</div>`;
+function fitBig(){document.querySelectorAll(".cards .face .big").forEach(e=>{e.style.fontSize="";e.style.whiteSpace="nowrap";let f=parseFloat(getComputedStyle(e).fontSize),m=f*0.6;while(e.scrollWidth>e.clientWidth+1&&f>m){f-=1;e.style.fontSize=f+"px"}if(e.scrollWidth>e.clientWidth+1)e.style.whiteSpace="normal"});placeTones()}
 addEventListener("resize",()=>{clearTimeout(fitBig.t);fitBig.t=setTimeout(()=>{if(S.mode==="cards")fitBig()},150)});
 function renderCards(){
   const ids=scopeB(),ws=ids.flatMap(id=>B[id].w.map(w=>[id,w])),n=ws.filter(([id,w])=>known[kk(id,w[0])]).length,pct=ws.length?Math.round(n/ws.length*100):0;
   /* RYU v12.68: cards only (no 단어 반복 button, no bundle title/word list, no 외웠어요) */
-  return `${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
+  return `${ids.some(id=>TONE_IDS.has(id))?toneLegend():""}${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
     return `<div class="card${f?" flipped":""}${k?" known":""}" id="cd-${id}-${wi}">
-      <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big">${esc(lo)}</span><span class="hint">${hintHtml(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span><span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span></span></button>
+      <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big${TONE_IDS.has(id)?" tn":""}">${TONE_IDS.has(id)?toneHtml(lo):esc(lo)}</span><span class="hint">${hintHtml(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span><span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span></span></button>
       <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}</div>${(id==="2-04-10"||id==="2-04-11")&&SWATCH[lo]?`<span class="swatch" style="background:${SWATCH[lo]}" aria-hidden="true"></span>`:""}</div>`}).join("")}</div>`).join("")}`;
 }
 /* v14.3 RYU: color bar on 색 cards */
