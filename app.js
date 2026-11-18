@@ -102,6 +102,7 @@ function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 
 function btnKey(b){const d=b.dataset;if(d.playbundle)return "pb"+(d.chain?"c":"");if(d.sayall){const h=b.closest(".entry");return "sa"+(h&&h.querySelector(".entry-head")?h.querySelector(".entry-head").id:"")}if(d.playsec)return "ps"+((b.closest(".pairs,.dlg")||{}).className||"");if(d.playcards)return "pc";return ""}
 function syncBtn(){const on=P.active&&P._bk;document.querySelectorAll(".speak.all").forEach(b=>b.classList.toggle("act",!!on&&btnKey(b)===P._bk))}
 setInterval(syncBtn,300);
+function nextRow(id){if(!id)return "";const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),nx=L[(L.indexOf(id)+1)%L.length];if(!nx||nx===id)return "";const NL=BLAB[nx]||[B[nx].t,""];return `<div class="nextrow"><button class="nextbun" data-next="${nx}"><span class="nbl">다음 묶음 →</span><span class="nbn">[${nx}] ${esc(NL[0])}</span></button></div>`}
 function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec){/* 단어공부: word cards of this bundle */return [...document.querySelectorAll(".cards .card")].filter(c=>c.id.startsWith("cd-"+id+"-")).map(c=>{const b=c.querySelector(".card-foot [data-say]");return b&&{text:b.dataset.say,rd:b.dataset.rd,id:c.id}}).filter(Boolean)}
   sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
@@ -346,6 +347,8 @@ function renderBundle(id){
   if(b.dl.length){const r0=b.dl[0][0];h+=`<div class="dlg"><div class="sechd"><span class="sec">짧은 대화</span><button class="speak all" data-playsec="1" aria-label="대화 전체 듣기">${RPT}<span>대화 반복</span></button></div>${b.dl.map((d,di)=>lineHTML(d[0]===r0?"g":"s",d[0],d[1],d[2],d[3],`dl-${id}-${di}`)).join("")}</div>`}
   if(b.sm&&b.sm[0])h+=`<div class="dlg smb"><span class="sec">한 문장에 모아 읽기</span>${lineHTML("n",null,b.sm[0],b.sm[1],b.sm[2],`sm-${id}`)}</div>`;
   {const rl=relOf(id);if(rl.length){const big=isBig();h+=`<div class="box rel"><h4>관련 묶음</h4><ul>${rl.map(x=>{const L=BLAB[x]||[B[x].t,""];return `<li><button class="rjump" data-goto="${x}"><span class="rn">[${x}]</span> ${esc(L[0])}${L[1]?` <span class="lo rlo">(${esc(L[1])})</span>`:""}</button></li>`}).join("")}</ul></div>`}}
+  /* v2.38 RYU: next-bundle button at the bottom (like the Korean app) */
+  h+=nextRow(id);
   return h+`</section>`;
 }
 function renderDlg(){
@@ -400,7 +403,7 @@ function render(){
   renderTop();showSel($("#groups"),'[aria-pressed="true"]');showSel($("#subs"),'[aria-selected="true"]');
   if(S.q.trim()){renderSearch();return}
   $("#controls").hidden=false;renderBand();
-  $("#view").innerHTML=S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz();if(S.mode==="cards")fitBig();else if(S.mode==="dlg"){fitNotes();placeTones()}
+  $("#view").innerHTML=(S.mode==="cards"?renderCards():S.mode==="dlg"?renderDlg():renderQuiz())+(S.mode!=="dlg"?nextRow(S.bun[S.sub]||(SUBS[S.sub]||{b:[]}).b[0]):"");if(S.mode==="cards")fitBig();else if(S.mode==="dlg"){fitNotes();placeTones()}
   if(P.active&&P.queue[P.i])mark(P.queue[P.i].id);
   snapLater();
 }
@@ -434,6 +437,7 @@ document.addEventListener("click",e=>{
   if(t.id==="ppause"){if(P.hold!=null)releaseHold();else setPaused(!P.paused);return}
   if(t.dataset.part){const p=PARTS.find(p=>p.id===t.dataset.part);S.part=p.id;{const ls=S.lastSub[p.id];S.sub=(ls&&p.subs.some(x=>x.id===ls))?ls:p.subs[0].id};S.q="";$("#q").value="";S.quiz=null;S.flipped={};save();render();return}
   if(t.dataset.sub){S.sub=t.dataset.sub;S.quiz=null;S.flipped={};save();render();return}
+  if(t.dataset.next){if(P.active)stopPlay();goto(t.dataset.next);try{const sh=document.getElementById("sheet");if(sh)sh.scrollIntoView({block:"start"})}catch(_){}return}
   if(t.dataset.goto){goto(t.dataset.goto);return}
   if(t.dataset.mode){S.mode=t.dataset.mode;S.quiz=null;save();render();return}
   if(t.dataset.qkind){S.qkind=t.dataset.qkind;render();return}
