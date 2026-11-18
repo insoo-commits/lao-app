@@ -55,7 +55,10 @@ const subWords=s=>s.b.flatMap(bid=>B[bid].w.map(w=>({bid,w})));
 const knownN=s=>subWords(s).filter(x=>known[kk(x.bid,x.w[0])]).length;
 const curBun=()=>{const s=SUBS[S.sub],b=S.bun[S.sub];return s.b.includes(b)?b:s.b[0]};
 const scopeB=()=>{const b=curBun();return b==="all"?SUBS[S.sub].b:[b]};
-const hl=(text,w)=>{const e=esc(text);if(!w)return e;const i=e.indexOf(esc(w));return i<0?e:e.slice(0,i)+"<mark>"+esc(w)+"</mark>"+e.slice(i+esc(w).length)};
+const hlSyl=(e,i,w)=>{try{if(typeof TN==="undefined")return true;const m=/[\u0E80-\u0EFF]+/g;let r;while((r=m.exec(e))){if(i>=r.index&&i<r.index+r[0].length){const bs=new Set([0]);for(const y of TN.seg(r[0])){bs.add(y.i);bs.add(y.i+y.n)}return bs.has(i-r.index)&&bs.has(i-r.index+w.length)}}}catch(_){}return true};
+const hlBad=(e,i,w)=>{const nx=e[i+w.length]||"",pv=e[i-1]||"";if(!hlSyl(e,i,w))return true;if(/[\u0EB0-\u0EBC\u0EC8-\u0ECD]/.test(nx)||/[\u0EC0-\u0EC4]/.test(pv))return true;for(let L=w.length+1;L<=Math.min(NMAX,e.length-i);L++){const k=e.slice(i,i+L);if(NDICT[k]!==undefined&&!/[\u0EB0-\u0EBC\u0EC8-\u0ECD]/.test(e[i+L]||"")&&e.indexOf(w,i+1)>=0)return true}return false};
+/* v2.28 RYU: underline the headword where it stands as a word (ລາວລາອອກ → 2nd ລາ), not inside a longer word */
+const hl=(text,w)=>{const e=esc(text);if(!w)return e;const ew=esc(w);let i=e.indexOf(ew);for(let j=i;j>=0;j=e.indexOf(ew,j+1)){if(!hlBad(e,j,ew)){i=j;break}}return i<0?e:e.slice(0,i)+"<mark>"+esc(w)+"</mark>"+e.slice(i+esc(w).length)};
 // mark Lao text that contains Korean (tips): wrap Lao runs
 const hintHtml=h=>laoWrap(h).replace(/ · (원래 )/g,'<br>$1');/* v13.12 RYU: 원래 on own line */
 const laoWrap=t=>esc(t).replace(/([຀-໿][຀-໿\s◌]*)/g,'<span class="lo">$1</span>');
