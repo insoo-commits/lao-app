@@ -266,7 +266,7 @@ const HCL=/((ເຮືອນ|ອາຄານ|ຕຶກ)[^\s,.?]{0,8}ຫຼັງ
 const nmean=(t,lo,ko)=>{if(t==="ຫຼັງ"&&HCL.test(lo)){HCL.lastIndex=0;return "채, 집 세는 말"}HCL.lastIndex=0;const r=NSENSE[t];if(r&&ko!==undefined){const i=lo.indexOf(t),b=i<0?"":lo.slice(0,i),a=i<0?"":lo.slice(i+t.length);for(const [f,m] of r){if(typeof f==="function"?f(ko,b,a,lo):f.test(ko))return m}}return nmean0(t,lo)};
 /* v2.18 RYU: words with several meanings show the meaning that fits THIS sentence (decided from the Korean translation and the words around it) */
 const NUMW=/(ໜຶ່ງ|ສອງ|ສາມ|ສີ່|ຫ້າ|ຫົກ|ເຈັດ|ແປດ|ເກົ້າ|ສິບ|ຊາວ|ຮ້ອຍ|ພັນ|ໝື່ນ|ແສນ|ລ້ານ|ຈັກ|ເອັດ|[0-9])\s*$/,NOW=s=>/^\s*$|^[\s,.?!]/.test(s),VB=/[ກ-ຮ]$/;
-const NSENSE={
+const NSENSE={"ຖືກ":[[/(싸|쌌|저렴|값이 좋)/,"싸다"],[(k,b,a)=>/^\s*ກວ່າ/.test(a),"싸다"],[(k,b,a)=>/^\s*(ເລກ|ລາງວັນ|ຫວຍ)/.test(a),"(복권에) 당첨되다"],[(k,b,a)=>/(ເດົາ|ຕອບ|ທາຍ|ອອກສຽງ|ໄດ້|ເຮັດ|ຂຽນ|ອ່ານ|ເວົ້າ|ສົ່ງເຄື່ອງ)(ບໍ່)?\s*$/.test(b),"맞히다·제대로"],[(k,b,a)=>/^\s*(ແລ້ວ|ບໍ|ດີ|$|[!?.,])/.test(a)||/^\s*$/.test(a),"맞다·옳다"],[(k,b,a)=>/^\s*(ບານ|ເສື້ອ)/.test(a),"닿다·맞다"],[(k,b,a)=>/^\s*[ກ-ຮເແໂໃໄ]/.test(a),"당하다(~되다)"]],
 "ລາວ":[[/라오/,"라오스"],[/./,"그·그녀(3인칭)"]],
 "ຢູ່":[[/(하는 |하고 |고 )?(있는 중|중이|중에|중입|하고 있|고 있어|고 있다|고 있는|고 있었)/,"~하는 중"],[(k,b,a)=>/에서/.test(k)&&VB.test(b.trim()?b.trimEnd():"")&&!/^\s*$/.test(b),"~에서"],[/(살아|살고|사는|살아요|삽니다)/,"살다"],[(k,b,a)=>/^\s*ບໍ່\s*$/.test(b.slice(-4))&&/(없|안 계)/.test(k),"있다(없다)"],[/(에 있|에 계|있어요|있나요|있습|있는|있었)/,"있다"],[/에서/,"~에서"],[/./,"~에·있다"]],
 "ໃຫ້":[[/(어|아|여|해) ?(주|드|줬|줄)/,"~해 주다"],[/(줘요|주세요|주다|줘|드려|드릴|드리|주었|줬|주고|주면|주는|줄게|줍니다)/,"주다"],[/(하게|도록|하세요|하라고|게 하|시키|게 해)/,"~하게 하다"],[/에게|한테|께/,"~에게"]],
