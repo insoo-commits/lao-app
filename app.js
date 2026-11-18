@@ -98,6 +98,10 @@ function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;documen
   /* RYU v12.58: like kor-app: icon · count · current sentence */
   $("#pt").innerHTML=P.loading?"⏳ 소리 준비 중…":`<span class="pic">${SPK}</span>`+(()=>{try{const c=curBun();return c&&B[c]?`[${c}] `:""}catch(e){return ""}})()+(P.single||P.hold!=null?`∞ · ${P.k+1} · `:cur.rv?`복습 ${cur.ri+1}/${cur.rn} · ↻${(P.rk||0)+1} · `:`${cur.gi+1}/${P.ng} · ↻${P.k+1} · `)+`<span class="lo">${txt}</span>`}
 function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 않으면: 아이패드·아이폰의 무음 모드를 끄고 볼륨을 올린 뒤 🔊 버튼을 다시 눌러 주세요."}
+/* v2.33 RYU: only the 반복 button that is playing right now is shown inverted */
+function btnKey(b){const d=b.dataset;if(d.playbundle)return "pb"+(d.chain?"c":"");if(d.sayall){const h=b.closest(".entry");return "sa"+(h&&h.querySelector(".entry-head")?h.querySelector(".entry-head").id:"")}if(d.playsec)return "ps"+((b.closest(".pairs,.dlg")||{}).className||"");if(d.playcards)return "pc";return ""}
+function syncBtn(){const on=P.active&&P._bk;document.querySelectorAll(".speak.all").forEach(b=>b.classList.toggle("act",!!on&&btnKey(b)===P._bk))}
+setInterval(syncBtn,300);
 function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec){/* 단어공부: word cards of this bundle */return [...document.querySelectorAll(".cards .card")].filter(c=>c.id.startsWith("cd-"+id+"-")).map(c=>{const b=c.querySelector(".card-foot [data-say]");return b&&{text:b.dataset.say,rd:b.dataset.rd,id:c.id}}).filter(Boolean)}
   sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
@@ -417,6 +421,7 @@ document.addEventListener("click",e=>{
   if(document.documentElement.classList.contains("audwait")&&e.target.closest(".speak,.line,.card .face,[data-playcards],[data-playbundle],[data-sayall],[data-playsec]")){e.preventDefault();return}
   if(!e.target.closest("button,input,label,a,select")){const eh=e.target.closest(".entry-head");const ab=eh&&eh.querySelector("[data-sayall]");if(ab){ab.click();return}const ln=e.target.closest(".line");const sb=ln&&ln.querySelector("[data-say]");if(sb){sb.click();return}}
   const t=e.target.closest("button");if(!t)return;
+  if(t.matches(".speak.all"))P._bk=btnKey(t);else if(t.dataset.say!==undefined)P._bk=null;
   {const d=t.dataset;if((d.part||d.sub||d.goto||d.mode)&&P.active)stopPlay()}
   if(t.dataset.sayall){const en=t.closest(".entry");{const hid=en.querySelector(".entry-head").id,q0=P.queue&&P.queue[0];if(P.active&&!P.single&&q0&&q0.head&&q0.id===hid){stopPlay();return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id,head:1},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
   if(t.dataset.playsec){const sec=t.closest(".pairs,.dlg");play([...sec.querySelectorAll(".line")].map(sayItem).filter(Boolean),true,1);return}
