@@ -32,7 +32,7 @@
 #bsel{text-align:center;text-align-last:center}
 .player .t{display:flex;align-items:center;gap:0;min-width:0;white-space:pre}.player .t .lo{margin-left:.25em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.player .pic{display:inline-flex;margin-right:6px;color:var(--play);flex:0 0 auto}.player .pic svg{width:15px;height:15px}html.tab .player .pic svg{width:19px;height:19px}
 .band{flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:10px}.band>*{width:100%;text-align:left;box-sizing:border-box}.band>.bigsel{text-align:center}.band .bigsel{width:100%;max-width:none;font-size:16px;font-weight:700;padding:11px 36px;background-color:var(--sheet);border-radius:12px}.band .bintro{color:var(--ink)}.band .box{background:var(--sheet)}html.tab .band .bigsel{font-size:23px;padding:14px 44px}
-.band .bigsel{background-color:var(--accent);color:var(--sheet);border-color:var(--accent);background-image:linear-gradient(45deg,transparent 50%,var(--sheet) 50%),linear-gradient(135deg,var(--sheet) 50%,transparent 50%)}.band .bigsel option{background:var(--sheet);color:var(--ink,inherit)}
+.band .bigsel{background-color:var(--inv);color:var(--sheet);border-color:var(--inv);background-image:linear-gradient(45deg,transparent 50%,var(--sheet) 50%),linear-gradient(135deg,var(--sheet) 50%,transparent 50%)}.band .bigsel option{background:var(--sheet);color:var(--ink,inherit)}
 .controls .bact{flex:1 1 100%;order:9;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px;margin-top:6px}.controls .bact:empty{display:none}
 .controls .opts{display:flex;gap:6px;margin-left:auto;flex:0 0 auto}
 .controls .ll{display:none}.olab{font-size:12.5px;color:var(--muted);margin:0 2px 0 6px;white-space:nowrap}.dlg-list>.bundle:first-child>.entry:first-of-type{border-top:0;padding-top:4px}
@@ -66,13 +66,14 @@ html.tab .olab{font-size:18px}
 .line .nt .ni:not(:last-child)::after{content:" ·";color:var(--muted)}
 .box.rel ul{list-style:none;padding-left:0!important}.box.rel li{font-size:13px}html.tab .box.rel li{font-size:19px}
 .card .swatch{position:absolute;left:12px;right:12px;bottom:10px;height:12px;border-radius:6px;border:1px solid rgba(0,0,0,.18);pointer-events:none}.card:has(.swatch) .face{padding-bottom:30px!important}
-/* v2.31 RYU: selected options and menu buttons shown inverted */
-.seg button[aria-pressed="true"]{background:var(--accent)!important;color:var(--sheet)!important;font-weight:700}
+/* v2.31 RYU: selected options and menu buttons shown inverted; v2.32 softer (--inv = accent mixed toward the sheet) */
+:root,#app{--inv:var(--accent)}@supports (background:color-mix(in srgb,red 50%,blue)){:root,#app,#app[data-g]{--inv:color-mix(in srgb,var(--accent) 72%,var(--sheet))}}
+.seg button[aria-pressed="true"]{background:var(--inv)!important;color:var(--sheet)!important;font-weight:600}
 .seg button[aria-pressed="true"] .ll,.seg button[aria-pressed="true"] .sl{color:var(--sheet)!important}
-.controls .bsel.osel{background-color:var(--accent);color:var(--sheet);border-color:var(--accent);font-weight:700;background-image:linear-gradient(45deg,transparent 50%,var(--sheet) 50%),linear-gradient(135deg,var(--sheet) 50%,transparent 50%)}
+.controls .bsel.osel{background-color:var(--inv);color:var(--sheet);border-color:var(--inv);font-weight:600;background-image:linear-gradient(45deg,transparent 50%,var(--sheet) 50%),linear-gradient(135deg,var(--sheet) 50%,transparent 50%)}
 .controls .bsel.osel option{background:var(--sheet);color:var(--ink)}
 .repw svg{color:var(--sheet)!important}
-.speak.all,.speak.all:hover{background:var(--accent);color:var(--sheet);border-color:var(--accent)}
+.speak.all,.speak.all:hover{background:var(--inv);color:var(--sheet);border-color:var(--inv)}
 .speak.all:hover{filter:brightness(1.08)}
 .speak.all span,.speak.all svg{color:var(--sheet)!important;fill:none}.speak.all span{display:inline!important;opacity:1!important}
 </style>
@@ -158,7 +159,7 @@ h1 .lo{font-weight:600;color:var(--accent)}
 .group{flex:0 0 auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--sheet);border-radius:999px;padding:7px 14px 7px 10px;font-weight:600;font-size:14px;white-space:nowrap}
 .group i{width:10px;height:10px;border-radius:50%;background:var(--accent)}
 .group small{font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
-.group[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--sheet)}
+.group[aria-pressed="true"]{background:var(--inv);border-color:var(--inv);color:var(--sheet)}
 .group[aria-pressed="true"] i{background:var(--sheet)}
 .group[aria-pressed="true"] small{color:var(--sheet);opacity:.8}
 .subs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
@@ -166,7 +167,7 @@ h1 .lo{font-weight:600;color:var(--accent)}
 .sub .code{font-family:var(--display);font-size:11px;letter-spacing:.08em;color:var(--accent);font-weight:600}
 .sub .name{font-weight:600;font-size:14px;white-space:nowrap}
 .sub .prog{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
-.sub[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--sheet)}
+.sub[aria-selected="true"]{background:var(--inv);border-color:var(--inv);color:var(--sheet)}
 .sub[aria-selected="true"] .code,.sub[aria-selected="true"] .prog,.sub[aria-selected="true"] .sub-ko{color:var(--sheet)}.sub[aria-selected="true"] .prog{opacity:.85}
 .sheet{background:var(--sheet);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .band{background:var(--accent-soft);padding:18px 20px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;border-bottom:1px solid var(--line)}
@@ -414,10 +415,10 @@ html.tab .voice{font-size:18px}
     <div class="body" id="view"></div>
   </section>
   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-18 v2.31 · Claude AI로 제작</div></div>
+  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-18 v2.32 · Claude AI로 제작</div></div>
 </div>
 
 
 
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.31";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.32";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
