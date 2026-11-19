@@ -441,7 +441,7 @@ document.addEventListener("click",e=>{
   if(t.id==="ppause"){if(P.hold!=null)releaseHold();else setPaused(!P.paused);return}
   if(t.dataset.part){const p=PARTS.find(p=>p.id===t.dataset.part);S.part=p.id;{const ls=S.lastSub[p.id];S.sub=(ls&&p.subs.some(x=>x.id===ls))?ls:p.subs[0].id};S.q="";$("#q").value="";S.quiz=null;S.flipped={};save();render();return}
   if(t.dataset.sub){S.sub=t.dataset.sub;S.quiz=null;S.flipped={};save();render();return}
-  if(t.dataset.next){if(P.active)stopPlay();goto(t.dataset.next);try{const sh=document.getElementById("sheet");if(sh)sh.scrollIntoView({block:"start"})}catch(_){}return}
+  if(t.dataset.next){if(P.active)stopPlay();{/* v2.55 RYU: keep 단어공부/퀴즈 mode */const md=S.mode;goto(t.dataset.next);if(md!=="dlg"){S.mode=md;save();render()}}try{const sh=document.getElementById("sheet");if(sh)sh.scrollIntoView({block:"start"})}catch(_){}return}
   if(t.dataset.goto){goto(t.dataset.goto);return}
   if(t.dataset.mode){S.mode=t.dataset.mode;S.quiz=null;save();render();return}
   if(t.dataset.qkind){S.qkind=t.dataset.qkind;render();return}
