@@ -492,7 +492,7 @@ var st=document.createElement("style");st.textContent='html.cdd select.bsel{poin
 '.ddl button.ctr{justify-content:center;text-align:center;align-items:baseline;gap:0}.ddl .dlo{color:var(--muted);font-size:.82em;margin-left:.35em;font-weight:400}.ddl button.ctr[aria-selected=true] .dlo{color:inherit;opacity:.8}'+
 '.ddl button .ck{width:1em;flex:0 0 1em;color:var(--accent)}.ddl button[aria-selected=true]{background:var(--accent-soft,rgba(0,0,0,.06));font-weight:600}.ddl button.ctr{padding:.3em 1em;font-size:.86em;line-height:1.35}';
 document.head.appendChild(st);
-function close(){var a=document.querySelectorAll(".ddbg,.ddl");for(var i=0;i<a.length;i++)a[i].parentNode.removeChild(a[i])}
+function close(){document.querySelectorAll(".ddopen").forEach(function(x){x.classList.remove("ddopen")});var a=document.querySelectorAll(".ddbg,.ddl");for(var i=0;i<a.length;i++)a[i].parentNode.removeChild(a[i])}
 function open(sel){close();var r0=sel.getBoundingClientRect(),cs=getComputedStyle(sel),k=(sel.offsetWidth&&r0.width/sel.offsetWidth)||1,r={left:r0.left/k,top:r0.top/k,bottom:r0.bottom/k,width:r0.width/k};/* PC zoom: rect is in screen px, styles in css px */
   var bg=document.createElement("div");bg.className="ddbg";bg.onclick=close;
   var l=document.createElement("div");l.className="ddl";l.setAttribute("role","listbox");l.style.fontSize=cs.fontSize;l.style.fontFamily=cs.fontFamily;
@@ -502,11 +502,13 @@ function open(sel){close();var r0=sel.getBoundingClientRect(),cs=getComputedStyl
     b.onclick=function(){close();var v=o.value;/* v12.93: list may outlive its <select> (re-render during playback) */if(sel.id==="bsel"){var s=Object.values(SUBS).find(function(x){return x.b.indexOf(v)>=0});if(!s)return;if(S.sub===s.id&&S.bun[s.id]===v&&!P.active)return;if(P.active)stopPlay();S.part=s.part;S.sub=s.id;S.bun[s.id]=v;S.quiz=null;S.flipped={};save();render();return}var cur=(sel.id&&document.getElementById(sel.id))||sel;if(cur.value!==v){cur.value=v;cur.dispatchEvent(new Event("change",{bubbles:true}))}};l.appendChild(b)});
   document.body.appendChild(bg);document.body.appendChild(l);
   var vw=document.documentElement.clientWidth/k,vh=innerHeight/k,m=8;
-  var w=Math.min(vw-2*m,Math.max(r.width,l.scrollWidth+2));l.style.width=w+"px";
+  var big=sel.classList.contains("bigsel");/* v2.44 RYU: the bundle list hangs from its box as one piece (same left/right edges, no gap) */
+  var w=big?r.width:Math.min(vw-2*m,Math.max(r.width,l.scrollWidth+2));l.style.width=w+"px";if(big){l.classList.add("ddj");["--inv","--accent","--ink","--line"].forEach(function(v){var x=cs.getPropertyValue(v);if(x)l.style.setProperty(v,x)})}
   if(l.scrollWidth>w+1){l.querySelectorAll("button").forEach(function(b){b.style.whiteSpace="normal"})}
-  var left=Math.min(Math.max(m,r.left),vw-m-w);l.style.left=left+"px";
+  var left=big?r.left:Math.min(Math.max(m,r.left),vw-m-w);l.style.left=left+"px";
   var below=vh-r.bottom-m,above=r.top-m,h=l.scrollHeight;
-  if(h<=below||below>=above){l.style.top=(r.bottom+4)+"px";l.style.maxHeight=(below-4)+"px"}
+  if(big){var bh=Math.max(below-6,160);l.style.top=(r.bottom+6)+"px";l.style.maxHeight=bh+"px"}
+  else if(h<=below||below>=above){l.style.top=(r.bottom+4)+"px";l.style.maxHeight=(below-4)+"px"}
   else{var hh=Math.min(h,above-4);l.style.top=(r.top-4-hh)+"px";l.style.maxHeight=hh+"px"}
   var cur=l.querySelector('[aria-selected=true]');if(cur&&cur.offsetTop>l.clientHeight-40)l.scrollTop=cur.offsetTop-l.clientHeight/2;
   /* v2.43 RYU: the open list moves with its box when the page scrolls (phone) */
