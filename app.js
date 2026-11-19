@@ -206,7 +206,7 @@ function renderTop(){
   $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${p.subs.reduce((n,s)=>n+s.b.length,0)}</small></button>`).join("");
   const p=PARTS.find(p=>p.id===S.part);
   $("#subs").innerHTML=p.subs.map(s=>`<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="code">${esc(s.code.split("-")[1])}</span><span class="name">${esc(s.name)}</span></button>`).join("");
-  {const cs=SUBS[S.sub]||p.subs[0],nsb=cs.b.reduce((m,id)=>m+bs(B[id]),0);$("#sinfo").innerHTML=`<b>${esc(cs.code)}</b> ${esc(cs.name)} · ${cs.b.length}묶음 ${nsb.toLocaleString()}문장`}
+  {const cs=SUBS[S.sub]||p.subs[0],nsb=cs.b.reduce((m,id)=>m+bs(B[id]),0);const nwd=cs.b.reduce((m,id)=>m+B[id].w.length,0);$("#sinfo").innerHTML=`<b>[${esc(cs.code)}]</b> ${esc(cs.name)} · ${cs.b.length}묶음 ${nwd.toLocaleString()}단어 ${nsb.toLocaleString()}문장`}
   $("#app").dataset.g=S.part;
 }
 /* RYU v12.56: bundle list shows "Korean name (Lao)" with no number */
