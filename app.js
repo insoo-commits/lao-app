@@ -425,6 +425,8 @@ document.addEventListener("click",e=>{
   if(document.documentElement.classList.contains("audwait")&&e.target.closest(".speak,.line,.card .face,[data-playcards],[data-playbundle],[data-sayall],[data-playsec]")){e.preventDefault();return}
   if(!e.target.closest("button,input,label,a,select")){const eh=e.target.closest(".entry-head");const ab=eh&&eh.querySelector("[data-sayall]");if(ab){ab.click();return}const ln=e.target.closest(".line");const sb=ln&&ln.querySelector("[data-say]");if(sb){sb.click();return}}
   const t=e.target.closest("button");if(!t)return;
+  /* v2.51 RYU: tapping a playing 반복/재생 button again stops it */
+  if(t.matches(".speak.all")&&P.active&&P._bk&&btnKey(t)===P._bk){stopPlay();P._bk=null;syncBtn();return}
   if(t.matches(".speak.all"))P._bk=btnKey(t);else if(t.dataset.say!==undefined)P._bk=null;
   {const d=t.dataset;if((d.part||d.sub||d.goto||d.mode)&&P.active)stopPlay()}
   if(t.dataset.sayall){const en=t.closest(".entry");{const hid=en.querySelector(".entry-head").id,q0=P.queue&&P.queue[0];if(P.active&&!P.single&&q0&&q0.head&&q0.id===hid){stopPlay();return}}play([{text:t.dataset.say,rd:t.dataset.rd,id:en.querySelector(".entry-head").id,head:1},...[...en.querySelectorAll(".line")].map(sayItem)],false,2);return}
