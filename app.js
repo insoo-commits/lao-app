@@ -508,7 +508,10 @@ function open(sel){close();var r0=sel.getBoundingClientRect(),cs=getComputedStyl
   var below=vh-r.bottom-m,above=r.top-m,h=l.scrollHeight;
   if(h<=below||below>=above){l.style.top=(r.bottom+4)+"px";l.style.maxHeight=(below-4)+"px"}
   else{var hh=Math.min(h,above-4);l.style.top=(r.top-4-hh)+"px";l.style.maxHeight=hh+"px"}
-  var cur=l.querySelector('[aria-selected=true]');if(cur&&cur.offsetTop>l.clientHeight-40)l.scrollTop=cur.offsetTop-l.clientHeight/2}
+  var cur=l.querySelector('[aria-selected=true]');if(cur&&cur.offsetTop>l.clientHeight-40)l.scrollTop=cur.offsetTop-l.clientHeight/2;
+  /* v2.43 RYU: the open list moves with its box when the page scrolls (phone) */
+  var t0=parseFloat(l.style.top),y0=r0.top;l._follow=function(){if(!l.parentNode)return;var el=(sel.id&&document.getElementById(sel.id))||sel,nr=el.getBoundingClientRect();if(!nr.height||nr.bottom<0||nr.top>innerHeight){close();return}l.style.top=(t0+(nr.top-y0)/k)+"px"}}
+addEventListener("scroll",function(){var l=document.querySelector(".ddl");if(l&&l._follow)l._follow()},{passive:true,capture:true});
 document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest(".ddl,.ddbg"))return;
   var x=e.clientX,y=e.clientY,ss=document.querySelectorAll("select.bsel");
   for(var i=0;i<ss.length;i++){var r=ss[i].getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){e.preventDefault();e.stopPropagation();open(ss[i]);return}}},true);
