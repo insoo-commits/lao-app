@@ -205,7 +205,8 @@ function renderTop(){
   $("#stats").innerHTML=`<span><b>${all.length}</b>묶음</span><span><b>${nw.toLocaleString()}</b>단어</span><span><b>${ns.toLocaleString()}</b>문장</span>`;
   $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${p.subs.reduce((n,s)=>n+s.b.length,0)}</small></button>`).join("");
   const p=PARTS.find(p=>p.id===S.part);
-  $("#subs").innerHTML=p.subs.map(s=>{const nsb=s.b.reduce((m,id)=>m+bs(B[id]),0);return `<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="code">${esc(s.code)}</span><span class="name">${esc(s.name)}</span><span class="prog">${s.b.length}묶음 ${nsb.toLocaleString()}문장</span></button>`}).join("");
+  $("#subs").innerHTML=p.subs.map(s=>`<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="name">${esc(s.name)}</span></button>`).join("");
+  {const cs=SUBS[S.sub]||p.subs[0],nsb=cs.b.reduce((m,id)=>m+bs(B[id]),0);$("#sinfo").innerHTML=`<b>${esc(cs.code)}</b> ${esc(cs.name)} · ${cs.b.length}묶음 ${nsb.toLocaleString()}문장`}
   $("#app").dataset.g=S.part;
 }
 /* RYU v12.56: bundle list shows "Korean name (Lao)" with no number */
@@ -413,7 +414,7 @@ function snapLater(){clearTimeout(snapT);snapT=setTimeout(function(){try{
   if(P.active||S.q.trim()||S.mode==="quiz"||Object.keys(S.flipped||{}).length||document.documentElement.classList.contains("pre"))return;
   const a=$("#app"),sc=document.querySelector('script[src^="app.js"]');if(!a||!sc)return;
   a.querySelectorAll("select option").forEach(o=>o.toggleAttribute("selected",o.selected));
-  localStorage.setItem("lao-snap",JSON.stringify({v:sc.getAttribute("src"),sig:snapSig(),g:a.getAttribute("data-g"),c:a.className,h:["stats","groups","subs","band","controls","view"].map(i=>[i,document.getElementById(i).innerHTML])}))}catch(e){try{localStorage.removeItem("lao-snap")}catch(e2){}}},500)}
+  localStorage.setItem("lao-snap",JSON.stringify({v:sc.getAttribute("src"),sig:snapSig(),g:a.getAttribute("data-g"),c:a.className,h:["stats","groups","subs","sinfo","band","controls","view"].map(i=>[i,document.getElementById(i).innerHTML])}))}catch(e){try{localStorage.removeItem("lao-snap")}catch(e2){}}},500)}
 /* v14.22: if the selected 대분류/소분류 chip is cut off or off-screen in its sideways-scrolling row, scroll the row just enough to show it (plus a peek of the neighbour) */
 let showSelN=0;function showSel(c,sel){const e=c&&c.querySelector(sel);if(!e)return;const l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth,pad=28;let x=null;if(l-pad<c.scrollLeft)x=Math.max(0,l-pad);else if(r+pad>c.scrollLeft+c.clientWidth)x=r+pad-c.clientWidth;if(x===null)return;if(showSelN++<2||!c.scrollTo)c.scrollLeft=x;else c.scrollTo({left:x,behavior:"smooth"})}
 function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s.part;S.sub=s.id;S.bun[s.id]=id;S.mode="dlg";S.q="";$("#q").value="";S.quiz=null;save();render();window.scrollTo({top:0})}

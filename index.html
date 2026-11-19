@@ -116,6 +116,21 @@ html.tab .nextbun{font-size:17px;padding:6px 18px;border-radius:20px}html.tab .n
 .speak.all{border-radius:999px 0 0 999px!important}
 .speak.all[data-playbundle][data-chain]{border-radius:999px 0 0 999px!important}
 .speak.all[data-playbundle]:not([data-chain]){border-radius:0 999px 999px 0!important}
+/* v2.46 RYU: menu = folder tabs (시안 4): 대분류 tabs, 소분류 chips inside the folder box */
+.groups{gap:4px!important;padding:0 0 0 6px!important;align-items:flex-end;margin-bottom:-17px;position:relative;z-index:2;scrollbar-width:none}
+.groups::-webkit-scrollbar{display:none}
+.group{gap:0!important;border:1px solid transparent!important;border-bottom:none!important;border-radius:12px 12px 0 0!important;background:color-mix(in srgb,var(--line) 65%,var(--bg))!important;color:var(--muted)!important;padding:8px 11px 9px!important;font-size:14px}
+.group i,.group small{display:none!important}
+.group[aria-pressed="true"]{background:var(--sheet)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-bottom:none!important;box-shadow:inset 0 -3px 0 var(--accent)}
+.subs{background:var(--sheet);border:1px solid var(--line);border-bottom:none;border-radius:0 14px 0 0;padding:12px 10px 4px!important;gap:6px!important;scrollbar-width:none}
+.subs::-webkit-scrollbar{display:none}
+.sub{border:none!important;border-left:5px solid var(--accent)!important;border-radius:3px 999px 999px 3px!important;background:var(--bg)!important;padding:6px 14px 6px 11px!important;min-width:0!important;color:var(--ink)!important}
+.sub .name{font-size:14px}
+.sub[aria-selected="true"]{border:none!important;border-left:5px solid var(--accent)!important;background:var(--inv)!important;box-shadow:inset 0 0 0 1.5px var(--accent)}
+.sinfo{background:var(--sheet);border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;padding:4px 14px 10px;font-size:12px;color:var(--muted);margin-top:-16px}
+.sinfo b{font-weight:600}
+html.pre .sinfo{display:none!important}
+html.tab .group{font-size:19px}html.tab .sub .name{font-size:19px}html.tab .sinfo{font-size:15px}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8a5a12">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
@@ -440,6 +455,7 @@ html.tab .voice{font-size:18px}
   </label>
   <nav class="groups" id="groups" aria-label="대분류"></nav>
   <nav class="subs" id="subs" role="tablist" aria-label="소분류"></nav>
+  <div class="sinfo" id="sinfo"></div>
   <section class="sheet" id="sheet">
     <div class="band" id="band"></div>
     <div class="controls" id="controls">
@@ -455,10 +471,10 @@ html.tab .voice{font-size:18px}
     <div class="body" id="view"></div>
   </section>
   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-18 v2.45 · Claude AI로 제작</div></div>
+  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-18 v2.46 · Claude AI로 제작</div></div>
 </div>
 
 
 
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.45";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.46";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
