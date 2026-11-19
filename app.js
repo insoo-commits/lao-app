@@ -91,7 +91,7 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
   if(it.ko){u.text=koSay(it.text);u.lang="ko-KR";if(VKO)u.voice=VKO;u.rate=RATE}
   else if(VLO||!it.rd){u.text=rep(it.text);u.lang="lo-LA";if(VLO)u.voice=VLO;u.rate=RATE}
   else{u.text=it.rd;u.lang="ko-KR";if(VKO)u.voice=VKO;u.rate=RATE}return u}
-function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)el.scrollIntoView({block:"center",behavior:"smooth"})}}}}
+function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){/* v2.53 RYU: keep the playing item at the vertical centre (above the player bar) */const r=el.getBoundingClientRect(),pl=document.getElementById("player"),ph=pl&&!pl.hidden?pl.getBoundingClientRect().height+16:0,d=(r.top+r.height/2)-(innerHeight-ph)/2;if(Math.abs(d)>24)window.scrollBy({top:d,behavior:"smooth"})}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
   el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"▶ 재개":"❙❙ 일시정지"}
   const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};const g0=P.queue[cur.gs]||cur,txt=esc(g0.text||"");
