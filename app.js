@@ -107,7 +107,7 @@ function btnKey(b){const d=b.dataset;if(d.playbundle)return "pb"+(d.chain?"c":""
 function syncBtn(){const on=P.active&&P._bk;document.querySelectorAll(".speak.all").forEach(b=>b.classList.toggle("act",!!on&&btnKey(b)===P._bk))}
 setInterval(syncBtn,300);
 function nextRow(id){if(!id)return "";const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),k=L.indexOf(id);if(k<0)return "";const big=(typeof isBig==="function")&&isBig();const lab=x=>{const NL=BLAB[x]||[B[x].t,""];return `[${big?x:x.slice(-2)}] ${esc(NL[0])}`};const pv=L[(k-1+L.length)%L.length],nx=L[(k+1)%L.length];return `<div class="nextrow"><button class="nextbun prevbun" data-next="${pv}"><span class="nbl">← 이전 묶음</span><span class="nbn">${lab(pv)}</span></button><button class="nextbun" data-next="${nx}"><span class="nbl">다음 묶음 →</span><span class="nbn">${lab(nx)}</span></button></div>`}
-function stopPlay(){P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
+function stopPlay(){P.rel=0;P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec){/* 단어공부: word cards of this bundle */return [...document.querySelectorAll(".cards .card")].filter(c=>c.id.startsWith("cd-"+id+"-")).map(c=>{const b=c.querySelector(".card-foot [data-say]");return b&&{text:b.dataset.say,rd:b.dataset.rd,id:c.id}}).filter(Boolean)}
   sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
   return items.filter(Boolean)}
@@ -167,7 +167,7 @@ function holdAt(idx){const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasS
   P.paused=false;P._resume=null;P.hold=idx;P.i=idx;P.k=0;holdMark(idx);nextPlay(tok)}
 function releaseHold(){const it=P.queue[P.hold];const tok=++P.token;try{aud().pause()}catch(e){}try{if(hasSS)speechSynthesis.cancel()}catch(e){}
   P.hold=null;holdMark(null);P.paused=false;P._resume=null;P.k=0;P.i=it?it.ge+1:P.i+1;nextPlay(tok)}
-function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];if(!it){P.i++;return}if(P.i<it.ge){P.i++;return}
+function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];if(!it){P.i++;return}/* v2.73 Enter released the loop: go on to the next item */if(P.rel){P.rel=0;P.k=0;P.i=it.ge+1;return}if(P.i<it.ge){P.i++;return}
   if(it.rv){P.k=0;if(it.rvl&&(P.rk||0)<REP-1){P.rk=(P.rk||0)+1;P.i=it.rv0}else{if(it.rvl)P.rk=0;P.i++}return}
   if(P.single||P.k<(it.kg?REP-2:REP-1)){P.k++;P.i=it.rs;return}P.k=0;P.i=it.ge+1}
 function nextPlay(tok){
@@ -437,7 +437,9 @@ document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey)return
   if(!P.active)return;
   if(e.key===" "||e.code==="Space"){e.preventDefault();if(P.hold!=null)releaseHold();else setPaused(!P.paused);showPlayer();return}
   if(e.key==="Escape"){e.preventDefault();stopPlay();return}
-  if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();if(P.single||P.hold!=null)return;const tok=P.token;try{aud().pause()}catch(_){}P.k=0;{const q=P.queue,c=q[Math.min(P.i,q.length-1)]||{},R=e.key==="ArrowRight";let j=-1;if(c.gi!=null&&!c.rv){const g=c.gi+(R?1:-1);j=q.findIndex(x=>x&&!x.rv&&x.gi===g);if(j<0&&R){j=q.findIndex((x,ix)=>ix>P.i&&x&&x.gi!==c.gi);if(j<0)j=q.length}if(j<0&&!R)j=q.findIndex(x=>x&&x.gi===c.gi)}if(j<0)j=R?P.i+1:Math.max(0,P.i-1);P.i=j}if(P.paused)setPaused(false);nextPlay(tok)}});
+  /* v2.73 RYU: Enter = loop the current word/sentence without end (no cut, Lao only); Enter again = back to the normal repeat, going on from the next item */
+  if(e.key==="Enter"){e.preventDefault();if(P.single)return;if(P.hold!=null){P.hold=null;holdMark(null);P.rel=1;P.k=0}else{const q=P.queue,c=q[Math.min(P.i,q.length-1)];if(!c)return;const j=c.ko?q.findIndex(x=>x&&x.gi===c.gi&&!x.ko):P.i;if(j<0)return;P.rel=0;P.hold=j;P.k=0;holdMark(j)}showPlayer();return}
+  if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();if(P.single||P.hold!=null)return;const tok=P.token;try{aud().pause()}catch(_){}P.k=0;P.rel=0;{const q=P.queue,c=q[Math.min(P.i,q.length-1)]||{},R=e.key==="ArrowRight";let j=-1;if(c.gi!=null&&!c.rv){const g=c.gi+(R?1:-1);j=q.findIndex(x=>x&&!x.rv&&x.gi===g);if(j<0&&R){j=q.findIndex((x,ix)=>ix>P.i&&x&&x.gi!==c.gi);if(j<0)j=q.length}if(j<0&&!R)j=q.findIndex(x=>x&&x.gi===c.gi)}if(j<0)j=R?P.i+1:Math.max(0,P.i-1);P.i=j}if(P.paused)setPaused(false);nextPlay(tok)}});
 document.addEventListener("click",e=>{
   const ko=e.target.closest(".hide-ko .ko");if(ko){ko.classList.toggle("show");return}
   const rd=e.target.closest(".hide-rd .line .t2,.hide-rd .entry-head .r");if(rd){rd.classList.toggle("show");return}
