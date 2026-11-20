@@ -427,6 +427,8 @@ function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s
 
 /* v2.71 RYU: keyboard during playback: Space = pause/resume, ←/→ = previous/next item, Esc = stop */
 document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const t=e.target,tn=t&&t.tagName;if(tn==="INPUT"||tn==="TEXTAREA"||tn==="SELECT"||(t&&t.isContentEditable))return;
+  /* v2.72 RYU: , = 이전 묶음, . = 다음 묶음 (keeps the mode, works in every tab) */
+  if((e.key===","||e.key===".")&&!S.q.trim()){const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),k=L.indexOf(curBun());if(k>=0){e.preventDefault();if(P.active)stopPlay();const md=S.mode;goto(L[(k+(e.key==="."?1:-1)+L.length)%L.length]);if(md!=="dlg"&&!B[curBun()].info){S.mode=md;save();render()}}return}
   /* C = 연속 재생, G = 묶음 재생 (again = stop), 1-5 = 횟수, ↑/↓ = 배속 */
   {const k=e.key.toLowerCase(),ctl=document.getElementById("controls");if(ctl&&!ctl.hidden&&!S.q.trim()){
     if(k==="c"||k==="ㅊ"||k==="g"||k==="ㅎ"){const b=document.querySelector(k==="c"||k==="ㅊ"?'#bact [data-playbundle][data-chain]':'#bact [data-playbundle]:not([data-chain])');if(b){e.preventDefault();b.click()}return}
