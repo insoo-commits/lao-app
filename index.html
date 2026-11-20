@@ -151,7 +151,7 @@ html.tab .group{font-size:20px}html.tab .sub .name{font-size:19px}html.tab .sub 
   --p2:#3B7650; --p2-soft:#E4F1E8;
   --p3:#A23B57; --p3-soft:#F8E6EB;
   --p4:#6A4C9C; --p4-soft:#EEE8F6;
-  --p5:#966511; --p5-soft:#F6EEDC; --p6:#1E6E73; --p6-soft:#DFF0F0; --p7:#A0481E; --p7-soft:#F7E6DC;
+  --p5:#966511; --p5-soft:#F6EEDC; --p6:#1E6E73; --p6-soft:#DFF0F0; --p7:#A0481E; --p7-soft:#F7E6DC; --p8:#1F4E8C; --p8-soft:#E2EAF5;
   --accent:var(--p1); --accent-soft:var(--p1-soft);
   --good:#1E7F4F; --bad:#B33A3A;
   --display:"Space Grotesk","Lao Local","IBM Plex Sans KR",system-ui,sans-serif;
@@ -161,11 +161,11 @@ html.tab .group{font-size:20px}html.tab .sub .name{font-size:19px}html.tab .sub 
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#111514; --sheet:#191E1D; --ink:#E8EDEB; --muted:#9BA7A4; --line:#2C3533; --raise:#202725;
   --p1:#78B4E6; --p1-soft:#1C2E3E; --p2:#7CC795; --p2-soft:#1C3024; --p3:#EE8AA5; --p3-soft:#3A1E27;
-  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}}
+  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --p8:#8DB4E8; --p8-soft:#172538; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111514; --sheet:#191E1D; --ink:#E8EDEB; --muted:#9BA7A4; --line:#2C3533; --raise:#202725;
   --p1:#78B4E6; --p1-soft:#1C2E3E; --p2:#7CC795; --p2-soft:#1C3024; --p3:#EE8AA5; --p3-soft:#3A1E27;
-  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}
+  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --p8:#8DB4E8; --p8-soft:#172538; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}
 [data-g="P1"]{--accent:var(--p1);--accent-soft:var(--p1-soft)}
 [data-g="P2"]{--accent:var(--p2);--accent-soft:var(--p2-soft)}
 [data-g="P3"]{--accent:var(--p3);--accent-soft:var(--p3-soft)}
@@ -173,6 +173,33 @@ html.tab .group{font-size:20px}html.tab .sub .name{font-size:19px}html.tab .sub 
 [data-g="P5"]{--accent:var(--p5);--accent-soft:var(--p5-soft)}
 [data-g="P6"]{--accent:var(--p6);--accent-soft:var(--p6-soft)}
 [data-g="P7"]{--accent:var(--p7);--accent-soft:var(--p7-soft)}
+[data-g="P8"]{--accent:var(--p8);--accent-soft:var(--p8-soft)}
+/* v2.63 라오스 탭 info pages */
+.info{padding:6px 4px 12px;font-size:15.5px;line-height:1.65;color:var(--ink)}
+.info h2{font-size:21px;margin:4px 0 0;line-height:1.3}
+.info .sub2{color:var(--muted);font-size:14px;margin-bottom:14px}
+.info figure{margin:0 0 14px;text-align:center}
+.info figure svg.flag,.info figure img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.18)}
+.info figure img{background:var(--line)}
+.info figcaption{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+.info figcaption small{display:block;font-size:11px;opacity:.85}
+.info .facts{width:100%;border-collapse:collapse;margin:2px 0 14px;font-size:14.5px}
+.info .facts th{width:31%;text-align:left;font-weight:700;color:var(--accent);padding:7px 6px;vertical-align:top;border-bottom:1px solid var(--line)}
+.info .facts td{padding:7px 6px;border-bottom:1px solid var(--line)}
+.info h3{font-size:16.5px;margin:18px 0 6px;padding-left:9px;border-left:4px solid var(--accent);line-height:1.35}
+.info p{margin:0 0 8px}
+.info .lo{font-family:var(--lao)}
+.info .r{color:var(--accent)}
+.info .clr{display:flex;flex-direction:column;gap:7px;margin:6px 0 10px}
+.info .clr div{display:flex;gap:10px;align-items:flex-start}
+.info .clr i{flex:none;width:22px;height:22px;border-radius:5px;margin-top:2px;border:1px solid var(--line)}
+.info .terms{background:var(--accent-soft);border-radius:12px;padding:8px 14px;margin:8px 0 14px}
+.info .terms div{padding:5px 0;border-bottom:1px dashed var(--line)}.info .terms div:last-child{border:0}
+.info .terms .lo{font-size:17px;font-weight:700}.info .terms .r{margin:0 8px 0 6px}
+.info .rel{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.info .rel button{border:1.5px solid var(--accent);color:var(--accent);background:none;border-radius:999px;padding:3px 13px;font:inherit;font-size:13.5px;cursor:pointer}
+@media (min-width:860px){.info{padding:8px 14px 14px}.info .top2{display:grid;grid-template-columns:44% 1fr;gap:28px;align-items:start}.info .two{display:grid;grid-template-columns:1fr 1fr;gap:32px}.info .facts th{width:28%}}
+
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6}
 .lo{font-family:var(--lao)}
@@ -475,10 +502,10 @@ html.tab .voice{font-size:18px}
     <div class="body" id="view"></div>
   </section>
   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-18 v2.62 · Claude AI로 제작</div></div>
+  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-18 v2.63 · Claude AI로 제작</div></div>
 </div>
 
 
 
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.62";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.63";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
