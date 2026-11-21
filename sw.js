@@ -1,4 +1,4 @@
-const SHELL="lao-shell-v2.75",AUD="lao-audio-v2";
+const SHELL="lao-shell-v2.76",AUD="lao-audio-v2";
 const JS="lao-js";/* versioned app.js?v=… lives here, kept across versions, only newest entry kept */
 const FILES=["./","index.html","manifest.webmanifest","audio/index.js","icon-180.png","icon-192.png","icon-512.png","header.svg","header-day.svg"];
 /* Audio clips live in IndexedDB ("lao-audio" / store "c", key = clip name, value = ArrayBuffer).
@@ -11,7 +11,7 @@ const mp3=b=>new Response(b,{headers:{"Content-Type":"audio/mpeg","Content-Lengt
 
 self.addEventListener("install",e=>{e.waitUntil(caches.open(SHELL).then(c=>Promise.all(
   FILES.map(f=>fetch(new Request(f,{cache:"reload"})).then(r=>{if(r.ok)return c.put(f,r)}).catch(()=>{}))
-  .concat(["_gap450","_gap900"].map(k=>fetch("audio/"+k+".mp3",{cache:"reload"}).then(r=>r.ok?r.arrayBuffer().then(b=>aput(k,b)):0).catch(()=>{})))
+  .concat(["_gap150","_gap450","_gap900"].map(k=>fetch("audio/"+k+".mp3",{cache:"reload"}).then(r=>r.ok?r.arrayBuffer().then(b=>aput(k,b)):0).catch(()=>{})))
 )).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>(k.startsWith("lao-shell-")&&k!==SHELL)||(k.startsWith("lao-audio-")&&k!==AUD)).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{const u=new URL(e.request.url);if(e.request.method!=="GET")return;

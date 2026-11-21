@@ -75,7 +75,7 @@ const AUD=window.AUDIO_INDEX||null;const hasSS="speechSynthesis" in window;const
 function akey(t){t=rep(String(t)).replace(/\s+/g," ").trim();let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 let AEL=null;const ABLOB={};function aud(){if(!AEL){AEL=new Audio();AEL.preload="auto";AEL.setAttribute("playsinline","")}return AEL}
 function unlockAud(){if(!AUD)return;const a=aud();if(a._u)return;a._u=1;try{a.src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//OEwAAAAAAAAAAAAEluZm8AAAAPAAAABwAAA2AAVVVVVVVVVVVVVVVVVVVxcXFxcXFxcXFxcXFxcY6Ojo6Ojo6Ojo6Ojo6Oqqqqqqqqqqqqqqqqqqqqx8fHx8fHx8fHx8fHx8fj4+Pj4+Pj4+Pj4+Pj4///////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQEIAAAAAAAAANgmVBi7QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//NExAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExFMAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKYAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";const p=a.play();if(p&&p.catch)p.catch(()=>{a._u=0})}catch(e){a._u=0}}
-let REP=store.get("lao-rep",2); /* v2.16 RYU: first launch = 2회 */if(![1,2,3,4,5].includes(REP))REP=1;
+let REP=store.get("lao-rep",2);/* v2.76 RYU: K = Korean voice on/off */let SAYKO=store.get("lao-sayko",true)!==false; /* v2.16 RYU: first launch = 2회 */if(![1,2,3,4,5].includes(REP))REP=1;
 let RATE=store.get("lao-rate",1);if(![0.8,1,1.2,1.5,2].includes(RATE))RATE=1;
 const P={queue:[],i:0,round:1,token:0,active:false};
 let VLO=null,VKO=null;
@@ -106,7 +106,7 @@ function ttsWarn(){const n=$("#voiceNote");if(n)n.textContent="소리가 나지 
 function btnKey(b){const d=b.dataset;if(d.playbundle)return "pb"+(d.chain?"c":"");if(d.sayall){const h=b.closest(".entry");return "sa"+(h&&h.querySelector(".entry-head")?h.querySelector(".entry-head").id:"")}if(d.playsec)return "ps"+((b.closest(".pairs,.dlg")||{}).className||"");if(d.playcards)return "pc";return ""}
 function syncBtn(){const on=P.active&&P._bk;document.querySelectorAll(".speak.all").forEach(b=>b.classList.toggle("act",!!on&&btnKey(b)===P._bk))}
 setInterval(syncBtn,300);
-function nextRow(id){if(!id)return "";const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),k=L.indexOf(id);if(k<0)return "";const big=(typeof isBig==="function")&&isBig();const lab=x=>{const NL=BLAB[x]||[B[x].t,""];return `[${big?x:x.slice(-2)}] ${esc(NL[0])}`};const pv=L[(k-1+L.length)%L.length],nx=L[(k+1)%L.length];return `<div class="nextrow"><button class="nextbun prevbun" data-next="${pv}"><span class="nbl"><kbd class="kc">,</kbd>← 이전 묶음</span><span class="nbn">${lab(pv)}</span></button><button class="nextbun" data-next="${nx}"><span class="nbl">다음 묶음 →<kbd class="kc">.</kbd></span><span class="nbn">${lab(nx)}</span></button></div>`}
+function nextRow(id){if(!id)return "";const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),k=L.indexOf(id);if(k<0)return "";const big=(typeof isBig==="function")&&isBig();const lab=x=>{const NL=BLAB[x]||[B[x].t,""];return `[${big?x:x.slice(-2)}] ${esc(NL[0])}`};const pv=L[(k-1+L.length)%L.length],nx=L[(k+1)%L.length];return `<div class="nextrow"><button class="nextbun prevbun" data-next="${pv}"><span class="nbl"><kbd class="kc">&lt;</kbd>← 이전 묶음</span><span class="nbn">${lab(pv)}</span></button><button class="nextbun" data-next="${nx}"><span class="nbl">다음 묶음 →<kbd class="kc">&gt;</kbd></span><span class="nbn">${lab(nx)}</span></button></div>`}
 function stopPlay(){P.rel=0;P.token++;P.active=false;clearTimeout(LT);P.loading=false;P.paused=false;P.hold=null;try{holdMark(null)}catch(e){}if(P.cardKey){const k=P.cardKey;P.cardKey=null;P.lastGi=null;if(S.flipped[k]){delete S.flipped[k];try{render()}catch(e){}}}P._resume=null;try{navigator.mediaSession.playbackState="none"}catch(e){}try{if(AEL)AEL.pause()}catch(e){}try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel()}catch(e){}mark(null);showPlayer()}
 function bundleItems(id){const sec=document.getElementById("bd-"+id),items=[];if(!sec){/* 단어공부: word cards of this bundle */return [...document.querySelectorAll(".cards .card")].filter(c=>c.id.startsWith("cd-"+id+"-")).map(c=>{const b=c.querySelector(".card-foot [data-say]");return b&&{text:b.dataset.say,rd:b.dataset.rd,id:c.id}}).filter(Boolean)}
   sec.querySelectorAll(".entry-head,.line").forEach(el=>{if(el.classList.contains("entry-head")){const b=el.querySelector("[data-sayall]");items.push({text:b.dataset.say,rd:b.dataset.rd,id:el.id,head:1})}else items.push(sayItem(el))});
@@ -138,7 +138,9 @@ function blobUrl(k){if(ABLOB[k])return Promise.resolve(ABLOB[k]);if(BLOBP[k])ret
   return BLOBP[k]=fetch(aurl(k)).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>ABLOB[k]=URL.createObjectURL(b)).catch(e=>{delete BLOBP[k];throw e})}
 let LT=null;function loadStart(){clearTimeout(LT);LT=setTimeout(()=>{P.loading=true;showPlayer()},350)}
 function loadDone(){clearTimeout(LT);if(P.loading){P.loading=false;showPlayer()}}
-setTimeout(()=>{if(AUD){blobUrl("_gap450").catch(()=>{});blobUrl("_gap900").catch(()=>{})}},1500);
+setTimeout(()=>{if(AUD){blobUrl("_gap150").catch(()=>{});blobUrl("_gap450").catch(()=>{});blobUrl("_gap900").catch(()=>{})}},1500);
+/* v2.76 RYU: the same sentence again = short pause only */
+function gapMs(it){const q=P.queue;if(P.i>=q.length||(q[P.i].rv&&q[P.i].rv0===P.i))return 900;let j=P.i;if(!SAYKO)while(j<q.length&&q[j].ko)j++;const n=q[j];return n&&!it.ko&&!n.ko&&n.text===it.text?150:450}
 function gapThen(tok,ms){const a=aud();let fired=false;const fb=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;setTimeout(()=>nextPlay(tok),ms)};
   if(tok!==P.token)return;a.onended=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;nextPlay(tok)};a.onerror=fb;
   try{a.src=ABLOB["_gap"+ms]||("audio/_gap"+ms+".mp3");a.playbackRate=1;a.defaultPlaybackRate=1;const pr=a.play();if(pr&&pr.catch)pr.catch(fb)}catch(e){fb()}}
@@ -173,9 +175,9 @@ function advQ(){if(P.hold!=null){P.i=P.hold;P.k++;return}const it=P.queue[P.i];i
 function nextPlay(tok){
   if(tok!==P.token)return;if(P.paused){P._resume=()=>nextPlay(tok);return}
   if(P.i>=P.queue.length){if(P.chain){chainNext();return}P.round++;P.i=0}
-  const it=P.queue[P.i];cardSync(it);mark(it.id);showPlayer();
+  const it=P.queue[P.i];if(it.ko&&!SAYKO){advQ();nextPlay(tok);return}cardSync(it);mark(it.id);showPlayer();
   if(AUD&&!it.noAud){const k=keyOf(it);if(k){const a=aud();let done=false;
-    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,P.i>=P.queue.length||(P.queue[P.i].rv&&P.queue[P.i].rv0===P.i)?900:450)};
+    const fin=()=>{if(done||tok!==P.token)return;done=true;a.onended=a.onerror=null;advQ();gapThen(tok,gapMs(it))};
     a.onended=fin;a.onerror=()=>{if(done||tok!==P.token)return;done=true;it.noAud=1;nextPlay(tok)};
     const go=src=>{if(tok!==P.token)return;loadDone();try{a.src=src;a.playbackRate=RATE;a.defaultPlaybackRate=RATE;const pr=a.play();if(pr&&pr.catch)pr.catch(e=>{if(tok!==P.token)return;if(e&&e.name==="NotAllowedError"){stopPlay();ttsWarn();return}a.onerror()})}catch(e){a.onerror()}};
     msMeta(it);if(ABLOB[k])go(ABLOB[k]);else{loadStart();blobUrl(k).then(go,()=>go(aurl(k)))}
@@ -183,7 +185,7 @@ function nextPlay(tok){
     return}}
   if(!hasSS){P.i++;setTimeout(()=>nextPlay(tok),50);return}
   try{const u=utterOf(it);
-    let done=false;const t0=Date.now();const fin=()=>{clearInterval(wd);if(done||tok!==P.token)return;done=true;advQ();setTimeout(()=>nextPlay(tok),P.i>=P.queue.length||(P.queue[P.i].rv&&P.queue[P.i].rv0===P.i)?900:450)};
+    let done=false;const t0=Date.now();const fin=()=>{clearInterval(wd);if(done||tok!==P.token)return;done=true;advQ();setTimeout(()=>nextPlay(tok),gapMs(it))};
     u.onstart=()=>{P.err=0};
     u.onend=fin;u.onerror=ev=>{const er=ev&&ev.error;if(er==="interrupted"||er==="canceled"){fin();return}
       if(tok!==P.token)return;P.err=(P.err||0)+1;if(er==="not-allowed"||P.err>=3){stopPlay();ttsWarn();return}fin()};
@@ -193,6 +195,8 @@ function nextPlay(tok){
 }
 if(hasSS){try{speechSynthesis.getVoices();speechSynthesis.addEventListener("voiceschanged",loadVoices)}catch(e){}}
 loadVoices();
+function setSayKo(v){SAYKO=!!v;store.set("lao-sayko",SAYKO);const c=document.getElementById("koChk");if(c)c.checked=SAYKO}
+{const c=document.getElementById("koChk");if(c){c.checked=SAYKO;c.addEventListener("change",()=>{setSayKo(c.checked);try{c.blur()}catch(e){}})}}
 $("#repSel").addEventListener("change",e=>{REP=+e.target.value;store.set("lao-rep",REP);showPlayer()});
 $("#rateSel").addEventListener("change",e=>{RATE=+e.target.value;store.set("lao-rate",RATE);try{if(AEL){AEL.playbackRate=RATE}}catch(x){}});
 const koSay=t=>String(t).replace(/[\u2460-\u2473]/g,"").replace(/\s*\([^)]*\)/g,"").replace(/[;·]/g,",").replace(/\s+/g," ").trim()||String(t);
@@ -428,9 +432,11 @@ function goto(id){const s=Object.values(SUBS).find(s=>s.b.includes(id));S.part=s
 /* v2.71 RYU: keyboard during playback: Space = pause/resume, ←/→ = previous/next item, Esc = stop */
 document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const t=e.target,tn=t&&t.tagName;if(tn==="INPUT"||tn==="TEXTAREA"||tn==="SELECT"||(t&&t.isContentEditable))return;
   /* v2.72 RYU: , = 이전 묶음, . = 다음 묶음 (keeps the mode, works in every tab) */
-  if((e.key===","||e.key===".")&&!S.q.trim()){const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),k=L.indexOf(curBun());if(k>=0){e.preventDefault();if(P.active)stopPlay();const md=S.mode;goto(L[(k+(e.key==="."?1:-1)+L.length)%L.length]);if(md!=="dlg"&&!B[curBun()].info){S.mode=md;save();render()}}return}
+  if((e.key===","||e.key==="."||e.key==="<"||e.key===">")&&!S.q.trim()){const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),k=L.indexOf(curBun());if(k>=0){e.preventDefault();if(P.active)stopPlay();const md=S.mode;goto(L[(k+(e.key==="."||e.key===">"?1:-1)+L.length)%L.length]);if(md!=="dlg"&&!B[curBun()].info){S.mode=md;save();render()}}return}
+  /* v2.76 RYU: K (ㅏ) = Korean voice on/off, checkbox #koChk shows it */
+  if(e.key==="k"||e.key==="K"||e.key==="ㅏ"){e.preventDefault();setSayKo(!SAYKO);return}
   /* ? = shortcut list (any key or click closes it) */
-  {const h=document.getElementById("kbhelp");if(h){h.remove();e.preventDefault();return}else if(e.key==="?"){e.preventDefault();const d=document.createElement("div");d.id="kbhelp";d.style.cssText="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)";d.innerHTML='<div style="background:var(--sheet,#fff);color:var(--ink,#222);border-radius:16px;padding:18px 22px;max-width:92vw;max-height:88vh;overflow:auto;font-size:15px;line-height:1.75;box-shadow:0 10px 40px rgba(0,0,0,.3)"><b style="font-size:17px">키보드 단축키</b><table style="border-collapse:collapse;margin-top:8px">'+[["Space","묶음 재생 시작 · 일시정지 · 재개"],["C","연속 재생"],["G","묶음 재생"],["Esc","정지"],["← →","이전 · 다음 문장"],[", .","이전 · 다음 묶음"],["Enter","지금 문장 무한 반복 켜기 · 끄기"],["1 ~ 5","반복 횟수"],["-  =","배속 느리게 · 빠르게"],["Q W E","예문보기 · 단어공부 · 확인퀴즈"],["?","이 목록 열기 · 닫기"]].map(r=>'<tr><td style="padding:1px 16px 1px 0;white-space:nowrap"><b>'+r[0]+'</b></td><td>'+r[1]+'</td></tr>').join("")+'</table></div>';d.addEventListener("click",()=>d.remove());document.body.appendChild(d);return}}
+  {const h=document.getElementById("kbhelp");if(h){h.remove();e.preventDefault();return}else if(e.key==="?"){e.preventDefault();const d=document.createElement("div");d.id="kbhelp";d.style.cssText="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)";d.innerHTML='<div style="background:var(--sheet,#fff);color:var(--ink,#222);border-radius:16px;padding:18px 22px;max-width:92vw;max-height:88vh;overflow:auto;font-size:15px;line-height:1.75;box-shadow:0 10px 40px rgba(0,0,0,.3)"><b style="font-size:17px">키보드 단축키</b><table style="border-collapse:collapse;margin-top:8px">'+[["Space","묶음 재생 시작 · 일시정지 · 재개"],["C","연속 재생"],["G","묶음 재생"],["Esc","정지"],["← →","이전 · 다음 문장"],["< >  (, .)","이전 · 다음 묶음"],["Enter","지금 문장 무한 반복 켜기 · 끄기"],["1 ~ 5","반복 횟수"],["-  =","배속 느리게 · 빠르게"],["Q W E","예문보기 · 단어공부 · 확인퀴즈"],["K","한국어 말하기 켜기 · 끄기"],["?","이 목록 열기 · 닫기"]].map(r=>'<tr><td style="padding:1px 16px 1px 0;white-space:nowrap"><b>'+r[0]+'</b></td><td>'+r[1]+'</td></tr>').join("")+'</table></div>';d.addEventListener("click",()=>d.remove());document.body.appendChild(d);return}}
   /* C = 연속 재생, G = 묶음 재생 (again = stop), 1-5 = 횟수, ↑/↓ = 배속 */
   {const k=e.key.toLowerCase(),ctl=document.getElementById("controls");if(ctl&&!ctl.hidden&&!S.q.trim()){
     if(k==="c"||k==="ㅊ"||k==="g"||k==="ㅎ"){const b=document.querySelector(k==="c"||k==="ㅊ"?'#bact [data-playbundle][data-chain]':'#bact [data-playbundle]:not([data-chain])');if(b){e.preventDefault();b.click()}return}
@@ -553,7 +559,7 @@ addEventListener("resize",close);
   const bar=document.createElement("div");bar.id="audwait";bar.innerHTML='<span class="sp"></span>음성 준비 중…';document.body.appendChild(bar);
   const done=()=>{de.classList.remove("audwait");if(bar.parentNode)bar.parentNode.removeChild(bar)};
   const swr=("serviceWorker" in navigator)?Promise.race([navigator.serviceWorker.ready,new Promise(r=>setTimeout(r,4000))]):Promise.resolve();
-  const first=()=>{const b=document.querySelector("[data-say]");const k=b&&keyOf({text:b.dataset.say});return Promise.all([blobUrl("_gap450"),blobUrl("_gap900")].concat(k?[blobUrl(k)]:[]))};
+  const first=()=>{const b=document.querySelector("[data-say]");const k=b&&keyOf({text:b.dataset.say});return Promise.all([blobUrl("_gap150"),blobUrl("_gap450"),blobUrl("_gap900")].concat(k?[blobUrl(k)]:[]))};
   Promise.race([swr.then(first),new Promise(r=>setTimeout(r,10000))]).then(done,done)})();
 ;/* clips re-recorded after release: drop the old copy from this device once, so the new one is fetched */
 (function(){var KEYS=["1htfkmp"],V="1";try{if(localStorage.getItem("lao-aref")===V||!window.indexedDB)return;var r=indexedDB.open("lao-audio",1);r.onupgradeneeded=function(){r.result.createObjectStore("c")};r.onsuccess=function(){try{var tx=r.result.transaction("c","readwrite");KEYS.forEach(function(k){tx.objectStore("c").delete(k)});tx.oncomplete=function(){try{localStorage.setItem("lao-aref",V)}catch(e){}}}catch(e){}}}catch(e){}})();
