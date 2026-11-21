@@ -119,8 +119,7 @@ function play(items,follow,each,chain){if(!hasTTS||!items.length)return;let busy
   /* RYU v12.55: Lao → Korean once, then Lao only for the remaining repeats (words and sentences) */
   const groups=items.map(it=>{/* v2.56 RYU: 짝 문장 비교 = Lao only, left right left right … REP times per pair */if(it&&it.pair)return it.pair.map(x=>({...x}));const ko=it&&!it.ko&&koOf(it.id);if(!ko)return [{...it}];return (single||REP>=2)?[{...it},{text:ko,ko:1,id:it.id},{...it}]:[{...it},{text:ko,ko:1,id:it.id}]});
   const q=[];groups.forEach((g,gi)=>{const gs=q.length,kg=g.length>1&&g[1].ko;g.forEach(x=>{x.rs=kg&&g.length===3?gs+2:gs;x.kg=kg;x.gi=gi;x.gs=gs;x.ge=gs+g.length-1;q.push(x)})});
-  /* RYU v2.1: 단어공부 묶음 재생·연속 재생: after the bundle, a Lao-only pass over its words, repeated REP times */
-  if(!single&&items.every(it=>it&&/^cd-/.test(it.id||""))){const r0=q.length;items.forEach((it,ri)=>{const n=q.length;q.push({...it,rv:1,rv0:r0,ri:ri,rn:items.length,rvl:ri===items.length-1,gi:groups.length+ri,gs:n,ge:n,rs:n,kg:false})})}
+  /* v2.78 RYU: the Lao-only review pass after 단어공부 묶음 재생 (v2.1) is removed; K turns Korean off instead */
   stopPlay();unlockAud();P.each=each||1;P.single=single;P.ng=groups.length;P.k=0;P.follow=!!follow;P.chain=!!chain&&!single;P.queue=q;P.i=0;P.rk=0;P.round=1;P.active=true;const tok=P.token;
   if(busy){showPlayer();setTimeout(()=>nextPlay(tok),300)}else nextPlay(tok)}
 /* background playback: keep one audio element busy (silent gap clips instead of timers) + lock-screen controls */
