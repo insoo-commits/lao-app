@@ -218,7 +218,7 @@ function renderTop(){
   const all=Object.values(B).filter(b=>!b.info),nw=all.reduce((n,b)=>n+b.w.length,0),kn=Object.keys(known).length;
   const bs=b=>b.w.reduce((m,w)=>m+w[4].length,0)+b.pr.length*2+b.dl.length+(b.sm&&b.sm[0]?1:0);const ns=all.reduce((n,b)=>n+bs(b),0);
   $("#stats").innerHTML=`<span><b>${all.length}</b>묶음</span><span><b>${nw.toLocaleString()}</b>단어</span><span><b>${ns.toLocaleString()}</b>문장</span>`;
-  $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${(()=>{const t=p.subs.reduce((n,s)=>n+s.b.length,0),d=p.subs.reduce((n,s)=>n+s.b.filter(x=>DONE[x]).length,0);return d?d+"/"+t:t})()}</small></button>`).join("");
+  $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${p.subs.reduce((n,s)=>n+s.b.length,0)}</small></button>`).join("");
   const p=PARTS.find(p=>p.id===S.part);
   $("#subs").innerHTML=p.subs.map(s=>`<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="code">${esc(s.code.split("-")[1])}</span><span class="name">${esc(s.name)}</span></button>`).join("");
   {const cs=SUBS[S.sub]||p.subs[0],nsb=cs.b.reduce((m,id)=>m+bs(B[id]),0);const nwd=cs.b.reduce((m,id)=>m+B[id].w.length,0);$("#sinfo").innerHTML=`<b>[${esc(cs.code)}]</b> ${esc(cs.name)} · ${cs.b.length}묶음`+(B[cs.b[0]].info?"":` ${nwd.toLocaleString()}단어 ${nsb.toLocaleString()}문장`)}
@@ -233,9 +233,9 @@ function renderBand(){
   const s=SUBS[S.sub],p=PARTS.find(p=>p.id===s.part),nw=subWords(s).length;
   /* RYU v12.60: band = bundle picker + intro + 구별 포인트 (like KOR Lang) */
   const b=curBun(),bb=B[b];
-  $("#band").innerHTML=`<div class="brow"><select id="bsel" class="bsel bigsel" aria-label="묶음 고르기"></select>${bb&&!bb.info?`<button class="donebtn${DONE[b]?" on":""}" data-done="${b}" aria-pressed="${!!DONE[b]}" title="이 묶음을 다 공부했으면 눌러 두세요">${DONE[b]?"✓ 완료":"완료 표시"}</button>`:""}</div>${bb&&bb.i?`<p class="bintro">${laoWrap(bb.i)}</p>`:""}${bb&&bb.tp.length?`<div class="box">${bb.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`:""}`;
+  $("#band").innerHTML=`<div class="brow"><select id="bsel" class="bsel bigsel" aria-label="묶음 고르기"></select></div>${bb&&bb.i?`<p class="bintro">${laoWrap(bb.i)}</p>`:""}${bb&&bb.tp.length?`<div class="box">${bb.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`:""}`;
   $("#bact").innerHTML=S.mode==="quiz"||!bb?"":`<button class="speak all" data-playbundle="${b}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>연속 재생</span><kbd class="kc">C</kbd></button><button class="speak all" data-playbundle="${b}">${RPT}<span>묶음 재생</span><kbd class="kc">G</kbd></button>`;
-  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${DONE[id]?"✓ ":""}${id===b?"["+(document.documentElement.classList.contains("tab")||matchMedia("(hover:hover) and (pointer:fine)").matches?id:id.split("-").pop())+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
+  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${id===b?"["+(document.documentElement.classList.contains("tab")||matchMedia("(hover:hover) and (pointer:fine)").matches?id:id.split("-").pop())+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
   document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.mode===S.mode));
   $("#repSel").value=String(REP);$("#rateSel").value=String(RATE);
 }
