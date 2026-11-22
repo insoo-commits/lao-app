@@ -60,6 +60,8 @@ if(!SUBS[S.sub]){S.sub="P5-K";S.part="P5"}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const kk=(bid,lo)=>bid+"::"+lo;
+/* v3.02 RYU: 학습 기록 = 묶음 완료(lao-done), 틀린 단어(lao-wrong), 별표 단어(lao-star) */let DONE=store.get("lao-done",{}),WRONG=store.get("lao-wrong",{}),STAR=store.get("lao-star",{});
+const revKeys=()=>[...new Set([...Object.keys(WRONG),...Object.keys(STAR)])].filter(k=>{const i=k.indexOf("::");const b=B[k.slice(0,i)];return b&&b.w.some(w=>w[0]===k.slice(i+2))});
 const shuffle=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const uniq=a=>[...new Set(a)];
 const subWords=s=>s.b.flatMap(bid=>B[bid].w.map(w=>({bid,w})));
@@ -216,7 +218,7 @@ function renderTop(){
   const all=Object.values(B).filter(b=>!b.info),nw=all.reduce((n,b)=>n+b.w.length,0),kn=Object.keys(known).length;
   const bs=b=>b.w.reduce((m,w)=>m+w[4].length,0)+b.pr.length*2+b.dl.length+(b.sm&&b.sm[0]?1:0);const ns=all.reduce((n,b)=>n+bs(b),0);
   $("#stats").innerHTML=`<span><b>${all.length}</b>묶음</span><span><b>${nw.toLocaleString()}</b>단어</span><span><b>${ns.toLocaleString()}</b>문장</span>`;
-  $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${p.subs.reduce((n,s)=>n+s.b.length,0)}</small></button>`).join("");
+  $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${(()=>{const t=p.subs.reduce((n,s)=>n+s.b.length,0),d=p.subs.reduce((n,s)=>n+s.b.filter(x=>DONE[x]).length,0);return d?d+"/"+t:t})()}</small></button>`).join("");
   const p=PARTS.find(p=>p.id===S.part);
   $("#subs").innerHTML=p.subs.map(s=>`<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="code">${esc(s.code.split("-")[1])}</span><span class="name">${esc(s.name)}</span></button>`).join("");
   {const cs=SUBS[S.sub]||p.subs[0],nsb=cs.b.reduce((m,id)=>m+bs(B[id]),0);const nwd=cs.b.reduce((m,id)=>m+B[id].w.length,0);$("#sinfo").innerHTML=`<b>[${esc(cs.code)}]</b> ${esc(cs.name)} · ${cs.b.length}묶음`+(B[cs.b[0]].info?"":` ${nwd.toLocaleString()}단어 ${nsb.toLocaleString()}문장`)}
@@ -231,9 +233,9 @@ function renderBand(){
   const s=SUBS[S.sub],p=PARTS.find(p=>p.id===s.part),nw=subWords(s).length;
   /* RYU v12.60: band = bundle picker + intro + 구별 포인트 (like KOR Lang) */
   const b=curBun(),bb=B[b];
-  $("#band").innerHTML=`<select id="bsel" class="bsel bigsel" aria-label="묶음 고르기"></select>${bb&&bb.i?`<p class="bintro">${laoWrap(bb.i)}</p>`:""}${bb&&bb.tp.length?`<div class="box">${bb.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`:""}`;
+  $("#band").innerHTML=`<div class="brow"><select id="bsel" class="bsel bigsel" aria-label="묶음 고르기"></select>${bb&&!bb.info?`<button class="donebtn${DONE[b]?" on":""}" data-done="${b}" aria-pressed="${!!DONE[b]}" title="이 묶음을 다 공부했으면 눌러 두세요">${DONE[b]?"✓ 완료":"완료 표시"}</button>`:""}</div>${bb&&bb.i?`<p class="bintro">${laoWrap(bb.i)}</p>`:""}${bb&&bb.tp.length?`<div class="box">${bb.tp.map(t=>`<p>${laoWrap(t)}</p>`).join("")}</div>`:""}`;
   $("#bact").innerHTML=S.mode==="quiz"||!bb?"":`<button class="speak all" data-playbundle="${b}" data-chain="1" aria-label="이 묶음부터 다음 묶음으로 이어서 반복">${RPT}<span>연속 재생</span><kbd class="kc">C</kbd></button><button class="speak all" data-playbundle="${b}">${RPT}<span>묶음 재생</span><kbd class="kc">G</kbd></button>`;
-  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${id===b?"["+(document.documentElement.classList.contains("tab")||matchMedia("(hover:hover) and (pointer:fine)").matches?id:id.split("-").pop())+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
+  $("#bsel").innerHTML=s.b.map(id=>{const L=BLAB[id]||[B[id].t,""];return `<option value="${id}" data-ko="${esc(L[0])}" data-lo="${esc(L[1])}"${id===b?" selected":""}>${DONE[id]?"✓ ":""}${id===b?"["+(document.documentElement.classList.contains("tab")||matchMedia("(hover:hover) and (pointer:fine)").matches?id:id.split("-").pop())+"] ":""}${esc(L[0])}${L[1]?" ("+esc(L[1])+")":""}</option>`}).join("");
   document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.mode===S.mode));
   $("#repSel").value=String(REP);$("#rateSel").value=String(RATE);
 }
@@ -283,7 +285,7 @@ function renderCards(){
   return `${ids.some(id=>TONE_IDS.has(id))?toneLegend():""}${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cardsw"><div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
     return `<div class="card${f?" flipped":""}${k?" known":""}" id="cd-${id}-${wi}">
       <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big${TONE_IDS.has(id)?" tn":""}">${TONE_IDS.has(id)?toneHtml(lo):esc(lo)}</span><span class="hint">${hintHtml(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span>${ex[0]?`<span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span>`:""}</span></button>
-      <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}</div>${(id==="1-11-05"||id==="1-11-06")&&SWATCH[lo]?`<span class="swatch" style="background:${SWATCH[lo]}" aria-hidden="true"></span>`:""}</div>`}).join("")}</div></div>`).join("")}`;
+      <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}<button class="star${STAR[key]?" on":""}" data-star="${esc(key)}" aria-pressed="${!!STAR[key]}" aria-label="별표">${STAR[key]?"★":"☆"}</button></div>${(id==="1-11-05"||id==="1-11-06")&&SWATCH[lo]?`<span class="swatch" style="background:${SWATCH[lo]}" aria-hidden="true"></span>`:""}</div>`}).join("")}</div></div>`).join("")}`;
 }
 /* v14.3 RYU: color bar on 색 cards */
 const SWATCH={"ສີແດງ":"#d62828","ສີສົ້ມ":"#f77f00","ສີເຫຼືອງ":"#f5c518","ສີຂຽວ":"#2a9d3a","ສີຟ້າ":"#1e78d7","ສີນ້ຳເງິນ":"#1d2f6f","ສີມ່ວງ":"#7b2cbf","ສີດຳ":"#111","ສີຂາວ":"#fff","ສີເທົາ":"#8d8d8d","ສີນ້ຳຕານ":"#7a4a1e","ສີເຂັ້ມ":"linear-gradient(90deg,#8b0000,#0b3d91,#14532d)","ສີອ່ອນ":"linear-gradient(90deg,#ffc2c2,#c2dcff,#c9f2c9)","ສີບົວ":"#f4a6c6","ສີຟ້າອ່ອນ":"#8ecdf5","ສີຂຽວອ່ອນ":"#a7e36b","ສີຄຳ":"linear-gradient(135deg,#b8860b,#f7d774,#b8860b)","ສີເງິນ":"linear-gradient(135deg,#8e8e8e,#e8e8e8,#8e8e8e)"};
@@ -375,8 +377,9 @@ function renderDlg(){
   return `<div class="dlg-list">${ids.map(renderBundle).join("")}</div>`;
 }
 function blankOf(sent,w){const i=sent.indexOf(w);if(i<0)return null;return `<span class="lo">${esc(sent.slice(0,i))}</span><span class="blank">?</span><span class="lo">${esc(sent.slice(i+w.length))}</span>`}
-function makeQuiz(){
-  const s=SUBS[S.sub],ids=scopeB(),pool=ids.flatMap(id=>B[id].w),all=subWords(s).map(x=>x.w);
+function makeQuiz(rev){
+  const s=SUBS[S.sub];let ids=scopeB(),pool=ids.flatMap(id=>B[id].w),all=subWords(s).map(x=>x.w);const own=new Map();ids.forEach(id=>B[id].w.forEach(w=>own.set(w,id)));
+  if(rev){pool=[];const subsU=new Set();for(const k of revKeys()){const i=k.indexOf("::"),bid=k.slice(0,i),w=B[bid].w.find(w=>w[0]===k.slice(i+2));pool.push(w);own.set(w,bid);subsU.add(Object.values(SUBS).find(x=>x.b.includes(bid)))}all=[...subsU].flatMap(x=>subWords(x).map(y=>y.w));if(all.length<4)all=all.concat(subWords(s).map(x=>x.w))}
   if(all.length<4)return {qs:[],i:0,score:0,picked:null};
   const others=(w,f)=>shuffle(uniq(shuffle(all).filter(o=>o[0]!==w[0]&&f(o)!==f(w)).map(f))).slice(0,3);
   const pick=shuffle(pool).slice(0,Math.min(10,pool.length));
@@ -387,10 +390,12 @@ function makeQuiz(){
       if(b)return {type:"빈칸 채우기",lo:true,html:`${b}<span class="sub-ko">${esc(e[2])}</span>`,say:e[0],rd:e[1],answer:w[0],opts:shuffle([w[0],...others(w,lo)])}}
     return {type:"뜻 고르기",lo:false,html:`<span class="word lo">${esc(w[0])}</span><span class="sub-ko">${esc(w[2])}</span>`,say:w[0],rd:w[2],answer:w[3],opts:shuffle([w[3],...others(w,ko)])};
   });
-  return {qs,i:0,score:0,picked:null};
+  qs.forEach((q,i)=>{if(q)q.key=kk(own.get(pick[i]),pick[i][0])});
+  return {qs:qs.filter(Boolean),i:0,score:0,picked:null,rev:!!rev};
 }
 function renderAutoQuiz(){
-  const Q=S.quiz||(S.quiz=makeQuiz());
+  if(S.qkind==="rev"&&!revKeys().length)return `<p class="empty">아직 복습할 단어가 없어요. 4지선다 퀴즈에서 틀린 단어와, 단어공부 카드에서 ☆를 누른 단어가 여기에 모여요.</p>`;
+  const Q=S.quiz&&!!S.quiz.rev===(S.qkind==="rev")?S.quiz:(S.quiz=makeQuiz(S.qkind==="rev"));
   if(!Q.qs.length)return `<p class="empty">문제를 만들 단어가 부족해요.</p>`;
   if(Q.i>=Q.qs.length){const r=Q.score/Q.qs.length;
     return `<div class="result"><span class="q-type">RESULT</span><span class="score">${Q.score} / ${Q.qs.length}</span><p style="margin:0">${r===1?"완벽해요! 다음 묶음으로 넘어가 보세요.":r>=.6?"잘했어요. 틀린 단어는 문장 연습으로 복습해 보세요.":"단어 카드와 문장 연습을 먼저 복습해 보세요."}</p><button class="primary" id="retry">새 문제 풀기</button></div>`}
@@ -421,8 +426,8 @@ function renderDict(){if(!S.dict||S.dict.key!==curBun()){newDict();S.dict.key=cu
    ${D.done?"":`<div class="dpool">${D.o.map(j=>D.pick.includes(j)?`<span class="dw gone lo">${esc(D.ws[j])}</span>`:`<button class="dw lo" data-dw="${j}" ${D.done?"disabled":""}>${esc(D.ws[j])}</button>`).join("")}</div>`}
    ${D.done?`<p class="feedback ${D.ok?"ok":"no"}">${D.ok?"정답이에요!":"아쉬워요. 정답은 아래 문장이에요."}</p><p class="dsol"><span class="lo">${esc(d[1])}</span><br><span class="t2">${esc(d[2])}</span> · ${esc(d[3])}</p><div class="row"><button class="primary" id="dnext">${D.i+1<D.L.length?"다음 문장":"결과 보기"}</button></div>`:`<div class="row"><button class="ghost" id="dclear">다시 놓기</button><button class="primary" id="dcheck" ${D.pick.length===D.ws.length?"":"disabled"}>확인</button></div>`}</div>`}
 function renderQuiz(){
-  return `<div class="row"><div class="seg" role="group" aria-label="퀴즈 종류"><button data-qkind="auto" aria-pressed="${S.qkind==="auto"}">4지선다 퀴즈</button><button data-qkind="book" aria-pressed="${S.qkind==="book"}">${isLis()?"내용 확인 문제":"책 확인 문제"}</button>${isLis()?`<button data-qkind="dict" aria-pressed="${S.qkind==="dict"}">받아쓰기</button>`:""}</div></div>
-  ${S.qkind==="dict"&&isLis()?renderDict():S.qkind==="auto"?renderAutoQuiz():renderBookQuiz()}`;
+  return `<div class="row"><div class="seg" role="group" aria-label="퀴즈 종류"><button data-qkind="auto" aria-pressed="${S.qkind==="auto"}">4지선다 퀴즈</button><button data-qkind="rev" aria-pressed="${S.qkind==="rev"}">복습 <small>${revKeys().length}</small></button><button data-qkind="book" aria-pressed="${S.qkind==="book"}">${isLis()?"내용 확인 문제":"책 확인 문제"}</button>${isLis()?`<button data-qkind="dict" aria-pressed="${S.qkind==="dict"}">받아쓰기</button>`:""}</div></div>
+  ${S.qkind==="dict"&&isLis()?renderDict():S.qkind==="auto"||S.qkind==="rev"?renderAutoQuiz():renderBookQuiz()}`;
 }
 function renderSearch(){
   const q=S.q.trim().toLowerCase();const hits=[];
@@ -515,7 +520,9 @@ document.addEventListener("click",e=>{
   if(t.dataset.reveal){S.reveal[t.dataset.reveal]=!S.reveal[t.dataset.reveal];render();return}
   if(t.dataset.flip!==undefined&&P.active&&!P.single){const sb=t.closest(".card")&&t.closest(".card").querySelector(".card-foot [data-say]");if(sb){sb.click();return}}
   if(t.dataset.flip!==undefined){const k=t.dataset.flip;S.flipped[k]=!S.flipped[k];render();document.querySelector(`[data-flip="${CSS.escape(k)}"]`)?.focus();return}
-  if(t.dataset.opt!==undefined&&S.quiz){const Q=S.quiz;if(Q.picked!==null)return;Q.picked=+t.dataset.opt;if(Q.qs[Q.i].opts[Q.picked]===Q.qs[Q.i].answer)Q.score++;render();return}
+  if(t.dataset.opt!==undefined&&S.quiz){const Q=S.quiz;if(Q.picked!==null)return;Q.picked=+t.dataset.opt;const q=Q.qs[Q.i];if(q.opts[Q.picked]===q.answer){Q.score++;if(Q.rev&&q.key&&WRONG[q.key]){delete WRONG[q.key];store.set("lao-wrong",WRONG)}}else if(q.key){WRONG[q.key]=1;store.set("lao-wrong",WRONG)}render();return}
+  /* v3.02 RYU: 완료 표시, 별표 */if(t.dataset.done){const b=t.dataset.done;if(DONE[b])delete DONE[b];else DONE[b]=1;store.set("lao-done",DONE);render();return}
+  if(t.dataset.star){const k=t.dataset.star;if(STAR[k])delete STAR[k];else STAR[k]=1;store.set("lao-star",STAR);t.classList.toggle("on",!!STAR[k]);t.textContent=STAR[k]?"★":"☆";t.setAttribute("aria-pressed",!!STAR[k]);return}
   if(t.id==="next"){/* v2.92 RYU: stop the sound when the question changes */if(P.active)stopPlay();S.quiz.i++;S.quiz.picked=null;render();return}
   if(t.id==="retry"){if(P.active)stopPlay();S.quiz=null;render();return}
 });
