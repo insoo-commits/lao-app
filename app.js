@@ -215,7 +215,7 @@ function save(){S.lastSub[S.part]=S.sub;store.set("lao-sel",{part:S.part,sub:S.s
 function renderTop(){
   const all=Object.values(B).filter(b=>!b.info),nw=all.reduce((n,b)=>n+b.w.length,0),kn=Object.keys(known).length;
   const bs=b=>b.w.reduce((m,w)=>m+w[4].length,0)+b.pr.length*2+b.dl.length+(b.sm&&b.sm[0]?1:0);const ns=all.reduce((n,b)=>n+bs(b),0);
-  /* v2.98 RYU: 라오스 자료 counted apart */const ni=Object.values(B).filter(b=>b.info).length;$("#stats").innerHTML=`<span><b>${all.length}</b>묶음</span>${ni?`<span class="st-info"><b>${ni}</b>라오스</span>`:""}<span><b>${nw.toLocaleString()}</b>단어</span><span><b>${ns.toLocaleString()}</b>문장</span>`;
+  $("#stats").innerHTML=`<span><b>${all.length}</b>묶음</span><span><b>${nw.toLocaleString()}</b>단어</span><span><b>${ns.toLocaleString()}</b>문장</span>`;
   $("#groups").innerHTML=PARTS.map(p=>`<button class="group" data-g="${p.id}" data-part="${p.id}" aria-pressed="${p.id===S.part}"><i></i>${esc(p.ko)} <small>${p.subs.reduce((n,s)=>n+s.b.length,0)}</small></button>`).join("");
   const p=PARTS.find(p=>p.id===S.part);
   $("#subs").innerHTML=p.subs.map(s=>`<button class="sub" role="tab" data-sub="${s.id}" aria-selected="${s.id===S.sub}"><span class="code">${esc(s.code.split("-")[1])}</span><span class="name">${esc(s.name)}</span></button>`).join("");
