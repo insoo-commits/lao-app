@@ -488,8 +488,8 @@ document.addEventListener("click",e=>{
   if(t.dataset.flip!==undefined&&P.active&&!P.single){const sb=t.closest(".card")&&t.closest(".card").querySelector(".card-foot [data-say]");if(sb){sb.click();return}}
   if(t.dataset.flip!==undefined){const k=t.dataset.flip;S.flipped[k]=!S.flipped[k];render();document.querySelector(`[data-flip="${CSS.escape(k)}"]`)?.focus();return}
   if(t.dataset.opt!==undefined&&S.quiz){const Q=S.quiz;if(Q.picked!==null)return;Q.picked=+t.dataset.opt;if(Q.qs[Q.i].opts[Q.picked]===Q.qs[Q.i].answer)Q.score++;render();return}
-  if(t.id==="next"){S.quiz.i++;S.quiz.picked=null;render();return}
-  if(t.id==="retry"){S.quiz=null;render();return}
+  if(t.id==="next"){/* v2.92 RYU: stop the sound when the question changes */if(P.active)stopPlay();S.quiz.i++;S.quiz.picked=null;render();return}
+  if(t.id==="retry"){if(P.active)stopPlay();S.quiz=null;render();return}
 });
 document.addEventListener("change",e=>{
   const c=e.target;
