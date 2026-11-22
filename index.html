@@ -178,7 +178,7 @@ html.tab .group{font-size:20px}html.tab .sub .name{font-size:19px}html.tab .sub 
   --p2:#3B7650; --p2-soft:#E4F1E8;
   --p3:#A23B57; --p3-soft:#F8E6EB;
   --p4:#6A4C9C; --p4-soft:#EEE8F6;
-  --p5:#966511; --p5-soft:#F6EEDC; --p6:#1E6E73; --p6-soft:#DFF0F0; --p7:#A0481E; --p7-soft:#F7E6DC; --p8:#1F4E8C; --p8-soft:#E2EAF5;
+  --p5:#966511; --p5-soft:#F6EEDC; --p6:#1E6E73; --p6-soft:#DFF0F0; --p7:#A0481E; --p7-soft:#F7E6DC; --p8:#1F4E8C; --p8-soft:#E2EAF5; --p9:#6A4C9C; --p9-soft:#EDE6F7;
   --accent:var(--p1); --accent-soft:var(--p1-soft);
   --good:#1E7F4F; --bad:#B33A3A;
   --display:"Space Grotesk","Lao Local","IBM Plex Sans KR",system-ui,sans-serif;
@@ -188,11 +188,11 @@ html.tab .group{font-size:20px}html.tab .sub .name{font-size:19px}html.tab .sub 
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#111514; --sheet:#191E1D; --ink:#E8EDEB; --muted:#9BA7A4; --line:#2C3533; --raise:#202725;
   --p1:#78B4E6; --p1-soft:#1C2E3E; --p2:#7CC795; --p2-soft:#1C3024; --p3:#EE8AA5; --p3-soft:#3A1E27;
-  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --p8:#8DB4E8; --p8-soft:#172538; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}}
+  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --p8:#8DB4E8; --p8-soft:#172538; --p9:#B9A0E6; --p9-soft:#261E36; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111514; --sheet:#191E1D; --ink:#E8EDEB; --muted:#9BA7A4; --line:#2C3533; --raise:#202725;
   --p1:#78B4E6; --p1-soft:#1C2E3E; --p2:#7CC795; --p2-soft:#1C3024; --p3:#EE8AA5; --p3-soft:#3A1E27;
-  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --p8:#8DB4E8; --p8-soft:#172538; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}
+  --p4:#B79CEB; --p4-soft:#2A2238; --p5:#E2B25A; --p5-soft:#352A15; --p6:#6FC9C9; --p6-soft:#16302F; --p7:#F0A070; --p7-soft:#3A2316; --p8:#8DB4E8; --p8-soft:#172538; --p9:#B9A0E6; --p9-soft:#261E36; --good:#5FCB8E; --bad:#F08080; color-scheme:dark}
 [data-g="P1"]{--accent:var(--p1);--accent-soft:var(--p1-soft)}
 [data-g="P2"]{--accent:var(--p2);--accent-soft:var(--p2-soft)}
 [data-g="P3"]{--accent:var(--p3);--accent-soft:var(--p3-soft)}
@@ -201,6 +201,8 @@ html.tab .group{font-size:20px}html.tab .sub .name{font-size:19px}html.tab .sub 
 [data-g="P6"]{--accent:var(--p6);--accent-soft:var(--p6-soft)}
 [data-g="P7"]{--accent:var(--p7);--accent-soft:var(--p7-soft)}
 [data-g="P8"]{--accent:var(--p8);--accent-soft:var(--p8-soft)}
+[data-g="P9"]{--accent:var(--p9);--accent-soft:var(--p9-soft)}
+.lishd{margin:4px 0 6px}
 /* v2.63 라오스 탭 info pages */
 .info{padding:6px 4px 12px;font-size:15.5px;line-height:1.65;color:var(--ink)}
 .info h2{font-size:21px;margin:4px 0 0;line-height:1.3}
@@ -506,7 +508,7 @@ html.tab .voice{font-size:18px}
       <span class="eyebrow">라오스어, 주제별로 공부하기</span>
       <h1 class="lotitle"><span class="lo">ຮຽນ ພາສາລາວ</span></h1>
     </div>
-    <div class="stats" id="stats"><span><b>612</b>묶음</span><span><b>3,687</b>단어</span><span><b>14,960</b>문장</span></div>
+    <div class="stats" id="stats"><span><b>620</b>묶음</span><span><b>3,743</b>단어</span><span><b>15,016</b>문장</span></div>
   </header>
   <label class="search" for="q">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -531,10 +533,10 @@ html.tab .voice{font-size:18px}
     <div class="body" id="view"></div>
   </section>
   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-21 v2.86 · Claude AI로 제작</div></div>
+  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-21 v2.87 · Claude AI로 제작</div></div>
 </div>
 
 
 
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.86";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.87";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
