@@ -623,6 +623,6 @@ addEventListener("resize",close);
   if(Math.abs(dy)>40||Date.now()-st>1000){ok=false;return}
   if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return;ok=false;
   try{const s=getSelection();if(s&&String(s).length)return}catch(_){}
-  const b=document.querySelector(dx<0?".nextbun:not(.prevbun)":".nextbun.prevbun");if(!b)return;b.click();
+  const b=document.querySelector(dx<0?".nextbun:not(.prevbun)":".nextbun.prevbun");if(!b)return;b.click();/* v3.29 RYU: after a swipe show the page from the very top (title), not the bundle-name bar */try{window.scrollTo({top:0,left:0,behavior:"instant"})}catch(_){window.scrollTo(0,0)}
   const s2=document.getElementById("sheet");if(s2){s2.style.transition="none";s2.style.transform="translateX("+(dx<0?36:-36)+"px)";s2.style.opacity=".4";requestAnimationFrame(()=>requestAnimationFrame(()=>{s2.style.transition="transform .2s ease-out,opacity .2s";s2.style.transform="";s2.style.opacity=""}))}},{passive:true});
  document.addEventListener("touchend",()=>{ok=false},{passive:true})})();
