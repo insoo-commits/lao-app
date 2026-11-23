@@ -614,11 +614,12 @@ addEventListener("resize",close);
   Promise.race([swr.then(first),new Promise(r=>setTimeout(r,10000))]).then(done,done)})();
 ;/* clips re-recorded after release: drop the old copy from this device once, so the new one is fetched */
 (function(){var KEYS=["1htfkmp"],V="1";try{if(localStorage.getItem("lao-aref")===V||!window.indexedDB)return;var r=indexedDB.open("lao-audio",1);r.onupgradeneeded=function(){r.result.createObjectStore("c")};r.onsuccess=function(){try{var tx=r.result.transaction("c","readwrite");KEYS.forEach(function(k){tx.objectStore("c").delete(k)});tx.oncomplete=function(){try{localStorage.setItem("lao-aref",V)}catch(e){}}}catch(e){}}}catch(e){}})();
+/* v3.25 RYU: tables and photo galleries no longer block the swipe (only real side-scrolling areas do) */
 /* v3.23 RYU: phone swipe left/right = next/previous bundle (same as the 다음 묶음/이전 묶음 buttons) */
 (function(){let sx=0,sy=0,st=0,ok=false;
  const hscroll=el=>{for(;el&&el!==document.body;el=el.parentElement){if(el.scrollWidth>el.clientWidth+4){const o=getComputedStyle(el).overflowX;if(o==="auto"||o==="scroll")return true}}return false};
  document.addEventListener("touchstart",e=>{ok=false;if(e.touches.length!==1)return;const t=e.touches[0],w=innerWidth;if(t.clientX<24||t.clientX>w-24)return;/* leave screen edges to the browser back/forward gesture */
-  const el=e.target;if(el.closest&&el.closest("input,select,textarea,#player,.gal,table,.bsel,#groups,#subs,.subs,.tabs"))return;if(hscroll(el))return;sx=t.clientX;sy=t.clientY;st=Date.now();ok=true},{passive:true});
+  const el=e.target;if(el.closest&&el.closest("input,select,textarea,#player,.bsel,#groups,#subs,.subs,.tabs"))return;if(hscroll(el))return;sx=t.clientX;sy=t.clientY;st=Date.now();ok=true},{passive:true});
  document.addEventListener("touchend",e=>{if(!ok)return;ok=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
   if(Date.now()-st>700||Math.abs(dx)<80||Math.abs(dx)<Math.abs(dy)*2)return;try{const s=getSelection();if(s&&String(s).length)return}catch(_){}
   const b=document.querySelector(dx<0?".nextbun:not(.prevbun)":".nextbun.prevbun");if(!b)return;
