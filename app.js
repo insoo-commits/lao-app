@@ -626,3 +626,16 @@ addEventListener("resize",close);
   const b=document.querySelector(dx<0?".nextbun:not(.prevbun)":".nextbun.prevbun");if(!b)return;b.click();/* v3.29 RYU: after a swipe show the page from the very top (title), not the bundle-name bar */try{window.scrollTo({top:0,left:0,behavior:"instant"})}catch(_){window.scrollTo(0,0)}
   const s2=document.getElementById("sheet");if(s2){s2.style.transition="none";s2.style.transform="translateX("+(dx<0?36:-36)+"px)";s2.style.opacity=".4";requestAnimationFrame(()=>requestAnimationFrame(()=>{s2.style.transition="transform .2s ease-out,opacity .2s";s2.style.transform="";s2.style.opacity=""}))}},{passive:true});
  document.addEventListener("touchend",()=>{ok=false},{passive:true})})();
+
+// v3.30 RYU: 아래로 읽을 때 대분류 메뉴를 화면 맨 위에 고정 (호텔서비스 영어 v1.51과 같은 방식)
+(function(){
+  const st=document.getElementById("stick"),mb=document.querySelector(".menubox"),sg=document.getElementById("stickG"),g=document.getElementById("groups");
+  if(!st||!mb||!sg||!g||!("IntersectionObserver" in window))return;
+  const title=()=>{const o=document.querySelector("#bsel option:checked");return o?(o.dataset.ko||o.textContent||"").trim():""};
+  const sync=()=>{sg.innerHTML=g.innerHTML;sg.querySelectorAll("[data-part]").forEach(b=>b.removeAttribute("data-part"));document.getElementById("stickT").textContent=title();const on=sg.querySelector('[aria-pressed="true"]');if(on&&!st.hidden)on.scrollIntoView({block:"nearest",inline:"center"})};
+  new IntersectionObserver(es=>{const e=es[0];const show=!e.isIntersecting&&e.boundingClientRect.bottom<0;if(show===!st.hidden)return;st.hidden=!show;if(show)sync()}).observe(mb);
+  new MutationObserver(()=>{if(!st.hidden)sync()}).observe(g,{childList:true,subtree:true,attributes:true});
+  const band=document.getElementById("band");if(band)new MutationObserver(()=>{if(!st.hidden)sync()}).observe(band,{childList:true,subtree:true});
+  sg.addEventListener("click",e=>{const t=e.target.closest(".group");if(!t)return;e.stopPropagation();const i=[...sg.querySelectorAll(".group")].indexOf(t);const o=g.querySelectorAll(".group")[i];if(o)o.click();document.querySelector(".search").scrollIntoView({block:"start"})});
+  document.getElementById("stickQ").addEventListener("click",e=>{e.stopPropagation();window.scrollTo(0,0);document.getElementById("q").focus()});
+})();
