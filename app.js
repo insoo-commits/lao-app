@@ -632,10 +632,41 @@ addEventListener("resize",close);
   const st=document.getElementById("stick"),mb=document.querySelector(".menubox"),sg=document.getElementById("stickG"),g=document.getElementById("groups");
   if(!st||!mb||!sg||!g||!("IntersectionObserver" in window))return;
   const title=()=>{const o=document.querySelector("#bsel option:checked");return o?(o.dataset.ko||o.textContent||"").trim():""};
-  const sync=()=>{sg.innerHTML=g.innerHTML;sg.querySelectorAll("[data-part]").forEach(b=>b.removeAttribute("data-part"));document.getElementById("stickT").textContent=title();const on=sg.querySelector('[aria-pressed="true"]');if(on&&!st.hidden)on.scrollIntoView({block:"nearest",inline:"center"})};
+  const sync=()=>{sg.innerHTML=g.innerHTML;sg.querySelectorAll(".glide").forEach(x=>x.remove());sg.querySelectorAll("[data-part]").forEach(b=>b.removeAttribute("data-part"));document.getElementById("stickT").textContent=title();const on=sg.querySelector('[aria-pressed="true"]');if(on&&!st.hidden)on.scrollIntoView({block:"nearest",inline:"center"})};
   new IntersectionObserver(es=>{const e=es[0];const show=!e.isIntersecting&&e.boundingClientRect.bottom<0;if(show===!st.hidden)return;st.hidden=!show;if(show)sync()}).observe(mb);
   new MutationObserver(()=>{if(!st.hidden)sync()}).observe(g,{childList:true,subtree:true,attributes:true});
   const band=document.getElementById("band");if(band)new MutationObserver(()=>{if(!st.hidden)sync()}).observe(band,{childList:true,subtree:true});
   sg.addEventListener("click",e=>{const t=e.target.closest(".group");if(!t)return;e.stopPropagation();const i=[...sg.querySelectorAll(".group")].indexOf(t);const o=g.querySelectorAll(".group")[i];if(o)o.click();document.querySelector(".search").scrollIntoView({block:"start"})});
   document.getElementById("stickQ").addEventListener("click",e=>{e.stopPropagation();window.scrollTo(0,0);document.getElementById("q").focus()});
+})();
+
+// v3.31 RYU: PC - 대분류 위에 마우스를 올리면 연한 바탕과 밑줄이 따라 움직임 (호텔서비스 영어 v1.55)
+(function(){
+  if(!matchMedia("(hover:hover) and (pointer:fine)").matches)return;
+  for(const id of ["groups","stickG"]){const nav=document.getElementById(id);if(!nav)continue;
+    const gl=()=>{let e=nav.querySelector(".glide");if(!e){e=document.createElement("span");e.className="glide";e.setAttribute("aria-hidden","true");nav.appendChild(e)}return e};
+    const at=(e,t)=>{e.style.left=t.offsetLeft+"px";e.style.width=t.offsetWidth+"px";e.style.top=t.offsetTop+"px";e.style.height=t.offsetHeight+"px"};
+    nav.addEventListener("mouseover",ev=>{const t=ev.target.closest(".group");if(!t||!nav.contains(t))return;const e=gl();if(e.style.opacity!=="1"){e.style.transition="none";at(e,t);e.offsetWidth;e.style.transition=""}at(e,t);e.style.opacity="1"});
+    nav.addEventListener("mouseleave",()=>{const e=nav.querySelector(".glide");if(e)e.style.opacity="0"});
+  }
+})();
+// v3.31 RYU: PC - 한 줄에 다 안 들어가는 메뉴 줄 끝에 둥근 화살표 버튼, 마우스 휠로도 옆으로 이동 (호텔서비스 영어 v1.57)
+(function(){
+  if(!matchMedia("(hover:hover) and (pointer:fine)").matches)return;
+  const chev=d=>{const b=document.createElement("button");b.className="hsb "+(d<0?"l":"r");b.type="button";b.setAttribute("aria-label",d<0?"왼쪽 메뉴 보기":"오른쪽 메뉴 보기");b.hidden=true;
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(d<0?"m15 5-7 7 7 7":"m9 5 7 7-7 7")+'"/></svg>';return b};
+  for(const id of ["groups","subs","stickG"]){const nav=document.getElementById(id);if(!nav)continue;
+    const w=document.createElement("div");w.className="hs";nav.parentNode.insertBefore(w,nav);w.appendChild(nav);
+    const l=chev(-1),r=chev(1);w.append(l,r);
+    const upd=()=>{const m=nav.scrollWidth-nav.clientWidth,x=nav.scrollLeft;l.hidden=!(m>2&&x>2);r.hidden=!(m>2&&x<m-2);w.classList.toggle("ml",!l.hidden);w.classList.toggle("mr",!r.hidden)};
+    const mv=d=>nav.scrollBy({left:d*Math.max(120,nav.clientWidth*.6),behavior:"smooth"});
+    l.addEventListener("click",e=>{e.stopPropagation();mv(-1)});r.addEventListener("click",e=>{e.stopPropagation();mv(1)});
+    nav.addEventListener("scroll",upd,{passive:true});
+    nav.addEventListener("wheel",e=>{if(nav.scrollWidth-nav.clientWidth<3||Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;e.preventDefault();nav.scrollLeft+=e.deltaY},{passive:false});
+    addEventListener("resize",upd);
+    new MutationObserver(()=>requestAnimationFrame(upd)).observe(nav,{childList:true,subtree:true,attributes:true,attributeFilter:["aria-pressed","aria-selected"]});
+    if("ResizeObserver" in window)new ResizeObserver(upd).observe(nav);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(upd);
+    upd();
+  }
 })();

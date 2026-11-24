@@ -515,12 +515,102 @@ html.tab .voice{font-size:18px}
 /* v3.21 RYU: 라오 노래 YouTube 버튼 */.ytrow{margin:10px 0 2px;text-align:center}.ytbtn{display:inline-block;padding:9px 18px;border-radius:999px;background:#c4302b;color:#fff!important;font-weight:700;text-decoration:none}.ytbtn:hover{filter:brightness(1.08)}
 /* v3.18 RYU: 라오스 탭 - 줄간격 줄이고 내용별 상자 */.info{line-height:1.5;font-size:15px}.info .sub2{margin-bottom:8px}.info h3{margin:10px 0 4px;font-size:15.5px}.info p{margin:0 0 4px}.info figure{margin:0 0 8px}.info figcaption{margin-top:3px;line-height:1.35}.info .facts{margin:0 0 8px;font-size:14px}.info .facts th,.info .facts td{padding:4px 6px}.info .terms{padding:4px 12px;margin:6px 0 8px}.info .terms div{padding:3px 0}.info .terms .lo{font-size:16px}.info .two{display:grid;gap:8px;margin-top:8px}.info .two>div{border:1px solid var(--line);border-radius:12px;padding:2px 12px 8px;background:var(--sheet)}.info .two>div>h3:first-child{margin-top:8px}.info .top2,.info .top1{margin-bottom:4px}.info .cards{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0}.info .card{border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--sheet)}.info .card h4{margin:0 0 4px;font-size:15px;color:var(--accent);padding-bottom:3px;border-bottom:1px dashed var(--line)}.info .card ul,.info .card ol{margin:0;padding-left:1.15em}.info .card li{margin:1px 0}.info .card .facts{margin:0}.info .note{background:var(--accent-soft);border-radius:10px;padding:6px 12px;font-size:14px;margin:8px 0}.info .warn{border-left:4px solid #c0392b;background:rgba(192,57,43,.08);border-radius:6px;padding:6px 12px;font-size:14px;margin:8px 0}.info ol.steps{counter-reset:st;list-style:none;padding:0;margin:6px 0 8px}.info ol.steps li{counter-increment:st;position:relative;padding:3px 0 3px 30px}.info ol.steps li::before{content:counter(st);position:absolute;left:0;top:3px;width:21px;height:21px;border-radius:50%;background:var(--accent);color:var(--sheet);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}.info .phr{border:1.5px solid var(--accent);border-radius:12px;padding:4px 12px;margin:8px 0}.info .phr .ph-t{font-size:13px;font-weight:700;color:var(--accent);padding:2px 0}.info .phr>div:not(.ph-t){padding:3px 0;border-top:1px dashed var(--line)}.info .phr .lo{font-size:16px;font-weight:700}.info .phr .r{margin:0 8px 0 6px}.info .phr .m{color:var(--muted)}.info .asof{font-size:12.5px;color:var(--muted);margin-top:8px}.info .rph figure img{max-width:360px}.info .rph+.rph{margin-top:4px}.info .gal{margin:10px 0 4px}.info .gal-t{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px}.info .gal-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.info .gal figure{margin:0}.info .gal figure img{width:100%;height:84px;object-fit:cover;border-radius:6px;box-shadow:none;max-width:none}.info .gal figcaption{font-size:11.5px;margin-top:2px}.info figure img{cursor:zoom-in}@media (min-width:860px){.info .two{grid-template-columns:1fr 1fr;gap:12px}.info .cards{grid-template-columns:1fr 1fr;gap:10px}.info .gal-g{grid-template-columns:repeat(5,1fr)}.info .gal figure img{height:110px}.info .top2{gap:20px}}
 /* v3.30 RYU: 아래로 읽을 때 대분류 메뉴를 화면 맨 위에 고정 (호텔서비스 영어 v1.51과 같은 방식) */.stick[hidden]{display:none!important}.stick{position:fixed;top:0;left:0;right:0;z-index:25;background:color-mix(in srgb,var(--sheet) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--line),0 8px 20px rgba(0,0,0,.10);padding-top:env(safe-area-inset-top,0px)}.stick .stin{max-width:1000px;margin:0 auto;padding:6px max(10px,env(safe-area-inset-right,0px)) 6px max(10px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:4px}.stick .strow{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);padding:0 4px;line-height:1.3}.stick .strow b{color:var(--accent);font-size:13.5px;white-space:nowrap}.stick .strow span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stick .strow button{border:0;background:none;padding:2px 4px;display:inline-flex;color:var(--muted);cursor:pointer}.stick .strow svg{width:17px;height:17px}.stick .groups{margin-bottom:0!important;border-bottom:0!important}
+/* v3.31 RYU: 시안 B 황금 사원 (호텔서비스 영어 디자인 A 구조) */
+/* 시안 B: 황금 사원 (티크 나무·금빛 탑·메콩 노을) */
+:root{--L-bg:#F5F1EA;--L-line:#EAE1D3;--L-line2:#DCCBB1;--L-tint:#FBF3E5;--L-now:#F6E6C8;--L-segbg:#EFE6D8;--L-a1:#8A4A16;--L-a2:#C0801F;--L-soft:#F6E6C8;
+  --T1:#D49A2E;--T2:#9A4E15;--T3:#4E220C;--G1a:#FFE9A8;--G1b:#FFB54A;--G2:#2FA59A;--Ttitle:#FFF3D6;--Tart:#FFE7B3;
+  --D-bg:#15110D;--D-sheet:#211A13;--D-line:#3A2E22;--D-line2:#4C3D2C;--D-tint:#2A2016;--D-now:#3E2E17;--D-acc:#F0C36A;--D-soft:#3E2E17}
+/* ===== Lao skin (mock): hotel-app design A structure ===== */
+:root{--bg:var(--L-bg);--sheet:#FFFFFF;--ink:#16202A;--muted:#5D6873;--line:var(--L-line);--line2:var(--L-line2);--tint:var(--L-tint);--now:var(--L-now);--segbg:var(--L-segbg);
+  --shadow:0 1px 2px rgba(20,30,40,.06),0 10px 30px rgba(20,30,40,.08)}
+:root,html:root:root [data-g]{--accent:var(--L-a1);--accent-soft:var(--L-soft)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]),html:root:root:not([data-theme="light"]) [data-g]{--bg:var(--D-bg);--sheet:var(--D-sheet);--ink:#E8ECEF;--muted:#9EA9B3;--line:var(--D-line);--line2:var(--D-line2);--tint:var(--D-tint);--now:var(--D-now);--segbg:var(--D-bg);
+  --accent:var(--D-acc);--accent-soft:var(--D-soft);--shadow:0 0 0 1px var(--D-line);color-scheme:dark}}
+body{background:var(--bg)}
+/* title */
+#app header{min-height:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:6px;padding:14px 24px 13px!important;border-radius:22px;color:#fff;overflow:hidden;
+  background:radial-gradient(120% 150% at 0% 0%,var(--T1) 0%,var(--T2) 48%,var(--T3) 100%)}
+#app header::before{content:"";position:absolute;inset:auto;width:230px;height:230px;right:-60px;top:-100px;border-radius:50%;background:radial-gradient(circle,var(--G1a) 0%,var(--G1b) 55%,transparent 70%);opacity:.9;z-index:-1;-webkit-mask-image:none;mask-image:none;filter:blur(2px)}
+#app header::after{content:"";position:absolute;width:280px;height:280px;right:90px;bottom:-210px;border-radius:50%;background:radial-gradient(circle,var(--G2) 0%,transparent 68%);opacity:.7;z-index:-1}
+#app header .brand{gap:0}
+#app header .eyebrow{color:#fff;opacity:.88;font-size:12.5px;font-weight:500;letter-spacing:.04em;padding-left:2px}
+#app header h1.lotitle{font-size:clamp(30px,5vw,46px)!important;line-height:1.12!important;margin:0!important;text-shadow:0 2px 10px rgba(0,0,0,.18)}
+#app header h1 .lo{color:var(--Ttitle)}
+#app header .stats{margin:2px 0 0;align-self:flex-start;background:none;padding:0;gap:6px;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:#fff}
+#app header .stats span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:2px 10px;font-size:12.5px;color:#fff}
+#app header .stats b{color:#fff;font-size:14px}
+#app header .hart{position:absolute;right:120px;bottom:0;height:90%;width:44%;color:var(--Tart);opacity:.62;z-index:-1;-webkit-mask-image:linear-gradient(90deg,transparent,#000 35%);mask-image:linear-gradient(90deg,transparent,#000 35%)}
+/* search */
+#app .search{margin:0 6px;background:none;border:0;box-shadow:none}
+#app .search input{border:0;border-bottom:1.5px solid var(--L-a2);border-radius:0;background:transparent;text-align:center;font-size:14px;padding:5px 34px 6px}
+#app .search input::placeholder{font-size:13.5px}
+/* menu card */
+#app .menubox{background:var(--sheet);border:0;border-radius:20px;padding:10px 14px 9px;gap:7px;box-shadow:var(--shadow)}
+#app .groups{position:relative;background:var(--bg);border-radius:999px;padding:4px!important;gap:0!important;border-bottom:0;margin-bottom:0;box-shadow:none}
+#app .groups::before,#app .groups::after{display:none!important;content:none!important}
+#app .group{padding:7px 14px!important;border-radius:999px!important;color:var(--muted)!important;font-size:15px!important;z-index:1}
+#app .group+.group::before,#app .group[data-g]::before,#app .group[aria-pressed="true"]::after{display:none!important;content:none!important}
+#app .group[aria-pressed="true"]{background:var(--L-a1)!important;color:#fff!important}
+#app .group[data-g="P8"],#app .group[data-g="PH"]{margin-left:9px}
+#app .group[data-g="P8"]::after,#app .group[data-g="PH"]::after{content:""!important;display:block!important;position:absolute;left:-5px;top:50%;width:1px;height:16px;transform:translateY(-50%);background:var(--line2)}
+#app .group[data-g="P8"][aria-pressed="true"]::after,#app .group[data-g="PH"][aria-pressed="true"]::after{display:block!important}
+#app .subs{gap:6px!important;padding:2px 4px 3px!important;scrollbar-width:none}
+#app .sub,#app .sub[aria-selected="true"]{border:1px solid var(--line2)!important;border-radius:12px!important;background:var(--sheet)!important;padding:5px 12px!important;color:var(--ink)!important}
+#app .sub .code{color:var(--L-a2)!important}
+#app .sub[aria-selected="true"]{background:var(--accent-soft)!important;border-color:var(--L-a2)!important}
+#app .sub[aria-selected="true"] .name{font-weight:700}
+#app .sinfo{padding:0 4px}
+/* sheet */
+#app .sheet{border:0;border-radius:20px;box-shadow:var(--shadow);background:var(--sheet)}
+#app .sheet>.band{background:linear-gradient(180deg,color-mix(in srgb,var(--tint) 75%,var(--sheet)),var(--sheet))!important}
+#app .band .bigsel{border:0!important;border-radius:999px!important;background-color:transparent!important;background:linear-gradient(90deg,var(--L-a1),var(--L-a2))!important;color:#fff!important;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+#app .band .box{border:0!important;border-radius:14px;background:var(--tint)!important;box-shadow:none}
+#app .controls .seg{border:0;background:var(--segbg);border-radius:999px;padding:3px}
+#app .controls .seg button{border:0!important;border-radius:999px;color:var(--muted)!important;background:none!important}
+#app .controls .seg button[aria-pressed="true"]{background:var(--sheet)!important;color:var(--accent)!important;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+#app .controls .bsel,#app .controls select{border:1px solid var(--line2)!important;border-radius:999px!important;background-color:var(--sheet)!important;color:var(--accent)!important}
+#app .controls .btn,#app .nextbun,#app .wrep{border-radius:999px!important;border-color:var(--line2)!important;color:var(--accent)!important;background:var(--sheet)!important}
+#app .entry{border-radius:16px}
+#app .line{border-radius:14px}
+#app .speak{background:var(--L-a1)!important;color:#fff!important;border:0!important}
+@media (max-width:600px){
+  #app header{padding:11px 16px 12px!important;border-radius:18px;gap:2px}
+  #app header .eyebrow{font-size:11.5px}
+  #app header h1.lotitle{font-size:27px!important}
+  #app header .stats{display:none}
+  #app header::before{width:150px;height:150px;right:-46px;top:-78px}
+  #app header::after{width:170px;height:170px;right:40px;bottom:-130px;opacity:.55}
+  #app header .hart{right:8px;width:56%;height:92%;opacity:.6;-webkit-mask-image:linear-gradient(90deg,transparent,#000 40%);mask-image:linear-gradient(90deg,transparent,#000 40%)}
+  #app .menubox{padding:6px 8px;gap:5px;border-radius:16px}
+  #app .group{padding:6px 12px!important;font-size:14px!important}
+  #app .sub,#app .sub[aria-selected="true"]{padding:4px 10px!important}
+}
+#app .menubox .sinfo{margin-top:2px}#app .subs{padding-bottom:4px!important}
+/* hover glide + arrow buttons (hotel v1.55/v1.57) */
+#app .groups .group{transition:color .18s}
+#app .groups .glide{position:absolute;top:4px;left:0;width:0;border-radius:999px;background:var(--accent-soft);opacity:0;pointer-events:none;z-index:0;transition:left .28s cubic-bezier(.3,.9,.3,1),top .28s cubic-bezier(.3,.9,.3,1),width .28s cubic-bezier(.3,.9,.3,1),opacity .2s}
+#app .groups .glide::after{content:"";position:absolute;left:16px;right:16px;bottom:3px;height:2.5px;border-radius:2px;background:var(--L-a2)}
+@media (hover:hover) and (pointer:fine){#app .groups .group:hover{color:var(--accent)!important}#app .groups .group[aria-pressed="true"]:hover{color:#fff!important}
+ #app .sub{transition:transform .16s,box-shadow .16s,border-color .16s}#app .sub:hover{transform:translateY(-2px);border-color:var(--L-a2)!important;box-shadow:0 5px 12px rgba(80,40,10,.16)}}
+@media (prefers-reduced-motion:reduce){#app .groups .glide,#app .sub{transition:none}}
+.hs{position:relative;min-width:0;max-width:100%}.stick .hs{align-self:flex-start}
+.hsb{position:absolute;top:50%;z-index:3;width:28px;height:28px;margin-top:-14px;border-radius:50%;border:1px solid var(--line2);background:var(--sheet);color:var(--accent);display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 2px 8px rgba(40,20,5,.22)}
+.hsb[hidden]{display:none}.hsb svg{width:15px;height:15px}.hsb.l{left:-6px}.hsb.r{right:-6px}.hsb:hover{background:var(--L-a1);border-color:var(--L-a1);color:#fff}
+.hs.ml>nav{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 44px);mask-image:linear-gradient(90deg,transparent 0,#000 44px)}
+.hs.mr>nav{-webkit-mask-image:linear-gradient(270deg,transparent 0,#000 44px);mask-image:linear-gradient(270deg,transparent 0,#000 44px)}
+.hs.ml.mr>nav{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 44px,#000 calc(100% - 44px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 44px,#000 calc(100% - 44px),transparent 100%)}
+/* sticky bar in the new look */
+.stick{background:color-mix(in srgb,var(--sheet) 92%,transparent)}
+#app .stick .groups{background:var(--bg);padding:3px!important}
+#app .stick .group{padding:5px 12px!important;font-size:13.5px!important}
+#app .stick .groups .glide{top:3px}
+@media (min-width:601px){#app .stick .groups{align-self:flex-start;max-width:100%}}
 </style>
 
 </head><body>
 <div id="boot" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:#8a5a12;color:#fff;font:600 14px "Lao Local",-apple-system,system-ui,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);white-space:nowrap"><div style="width:16px;height:16px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:bootspin .9s linear infinite"></div><span>단어 불러오는 중… 잠시만 기다려 주세요 <span id="bootsec"></span></span><style>@keyframes bootspin{to{transform:rotate(360deg)}}</style><script>(function(){var t=Date.now();var iv=setInterval(function(){var b=document.getElementById("bootsec");if(!b||!document.getElementById("boot")){clearInterval(iv);return}var s=Math.floor((Date.now()-t)/1000);if(s>=2)b.textContent="("+s+"초)"},500)})()</script></div>
 <div class="wrap" id="app" data-g="P5">
-  <header>
+  <header><svg class="hart" viewBox="0 0 340 124" preserveAspectRatio="xMaxYMax meet" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M0 122h340"/><path d="M24 122V97h68v25M52 122v-13a6 6 0 0 1 12 0v13M30 97v-6M86 97v-6"/><path d="M12 99l18-16h56l18 16M12 99q-5-1-5-7M104 99q5-1 5-7"/><path d="M28 84l16-15h28l16 15M28 84q-4-1-4-6M88 84q4-1 4-6"/><path d="M42 70l16-17 16 17M58 53v-8M54 47h8"/><path d="M36 91h44" stroke-width=".9"/><path d="M106 122v-14h128v14M118 108v-10h104v10"/><g stroke-width="1"><path d="M126 98v-5l2-9 2 9v5M138 98v-5l2-9 2 9v5M198 98v-5l2-9 2 9v5M210 98v-5l2-9 2 9v5"/></g><path d="M142 98c0-13 7-20 14-22h28c7 2 14 9 14 22"/><path d="M150 90c4-5 10-8 20-8s16 3 20 8" stroke-width=".9"/><path d="M156 76v-7h28v7M160 69c0-10 6-22 10-46 4 24 10 36 10 46"/><path d="M164 58h12M166 46h8" stroke-width=".9"/><path d="M170 23v-10"/><circle cx="170" cy="11" r="2"/><path d="M252 122c2-20 5-38 2-58M254 64c-9-6-20-5-28 3M254 64c-7-10-17-13-26-11M254 64c5-10 15-13 24-9M254 64c10-4 21 0 27 9M254 64c1-9 5-15 11-19"/><path d="M276 114q6-3 12 0t12 0t12 0t12 0M286 120q6-3 12 0t12 0t12 0" stroke-width=".9"/><path d="M296 106h34l-5 5h-24zM314 106v-7l-4 2"/></svg>
     <div class="brand">
       <span class="eyebrow">라오스어, 주제별로 공부하기</span>
       <h1 class="lotitle"><span class="lo">ຮຽນ ພາສາລາວ</span></h1>
@@ -553,10 +643,10 @@ html.tab .voice{font-size:18px}
     <div class="body" id="view"></div>
   </section>
   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-24 v3.30 · Claude AI로 제작</div></div>
+  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-24 v3.31 · Claude AI로 제작</div></div>
 </div>
 
 
 
-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=3.30";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=3.31";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
 </body></html>
