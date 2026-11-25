@@ -144,8 +144,33 @@ const BLOBP={};
 /* replaced clips get a version in AUDIO_INDEX (value >1): new URL + new IndexedDB key, so saved old copies are not reused */
 function aurl(k){const v=AUD&&AUD[k];return "audio/"+k+".mp3"+(v>1?"?v="+v:"")}
 function keyOf(it){if(!AUD||it.noAud)return null;let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;return AUD[k]?k:null}
+/* v3.44 (2026-11-25, Cloudflare copy studylao.pages.dev): the clips of one bundle come joined in one file audio/p/<bundle>.bin
+   (tools/cf-build.js makes them; there are no single mp3s on Cloudflare). Opening a bundle loads its pack and then the next bundle's;
+   every clip of the pack is then ready in memory as before (ABLOB). Packs are kept in IndexedDB ("lao-audio" / "c", key "p:"+bundle,
+   {h: hash, b: bytes}) for next time and offline. Without window.AUDIO_PACKS (GitHub Pages) APK is null and single mp3s are used as before. */
+const APK=(()=>{const PK=window.AUDIO_PACKS;if(!AUD||!PK||!PK.length||!window.fetch)return null;
+  const home={},by={};PK.forEach((p,i)=>{by[p[0]]=i;if(p[2])for(const k of p[2].split(" "))home[k]=i});
+  let _db;const db=()=>_db||(_db=new Promise((res,rej)=>{const r=indexedDB.open("lao-audio",1);r.onupgradeneeded=()=>r.result.createObjectStore("c");r.onsuccess=()=>res(r.result);r.onerror=()=>{_db=null;rej(r.error)}}));
+  const get=k=>db().then(d=>new Promise(res=>{const q=d.transaction("c").objectStore("c").get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})).catch(()=>null);
+  const put=(k,v)=>db().then(d=>new Promise(res=>{const tx=d.transaction("c","readwrite");tx.objectStore("c").put(v,k);tx.oncomplete=()=>res(true);tx.onerror=tx.onabort=()=>res(false)})).catch(()=>false);
+  const ORD=[],LIMIT=5000,PEND={};/* at most ~5000 clips (about 40 MB) as blob URLs; the oldest 500 are let go, never the one playing */
+  function remember(k,bytes){if(ABLOB[k])return;ABLOB[k]=URL.createObjectURL(new Blob([bytes],{type:"audio/mpeg"}));ORD.push(k);
+    if(ORD.length>LIMIT){const cur=AEL&&AEL.src;for(let n=0;n<500&&ORD.length;n++){const x=ORD.shift();if(ABLOB[x]===cur){ORD.push(x);continue}URL.revokeObjectURL(ABLOB[x]);delete ABLOB[x];delete BLOBP[x]}}}
+  function unpack(buf){const n=new DataView(buf).getUint32(0,true),tb=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,4,n))),at=4+n;for(const [k,o,l] of tb)remember(k,new Uint8Array(buf,at+o,l))}
+  const net=i=>fetch("audio/p/"+PK[i][0]+".bin?h="+PK[i][1]).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer()});
+  function load(i){if(i==null||!PK[i])return Promise.resolve(false);if(PEND[i])return PEND[i];const [code,h]=PK[i];
+    return PEND[i]=get("p:"+code).then(s=>s&&s.h===h?s.b:net(i).then(b=>{put("p:"+code,{h,b});return b})).then(b=>{unpack(b);return true}).catch(()=>{delete PEND[i];return false})}
+  const sig=PK.length+":"+PK.reduce((s,p)=>(s*31+parseInt(p[1],16))%2147483647,7);
+  return {has:k=>k in home,load:k=>load(home[k]),
+    /* a bundle is shown: get its clips ready, then the next bundle's (연속 재생 goes there next) */
+    warm(code){if(!(code in by))return;load(by[code]).then(()=>{const L=PARTS.flatMap(p=>p.subs.flatMap(x=>x.b)),nx=L[(L.indexOf(code)+1)%L.length];if(nx in by)load(by[nx])})},
+    sig:()=>sig,count:()=>PK.length,
+    /* 음성 내려받기: keep every pack in IndexedDB; tick(done,total); returns how many failed */
+    async saveAll(tick){let i=0,done=0,bad=0;const N=PK.length;
+      await Promise.all([0,1,2,3].map(async()=>{while(i<N){const j=i++,[code,h]=PK[j];try{const s=await get("p:"+code);if(!(s&&s.h===h)){const b=await net(j);if(!(await put("p:"+code,{h,b})))bad++}}catch(e){bad++}tick(++done,N)}}));return bad}}})();
 function blobUrl(k){if(ABLOB[k])return Promise.resolve(ABLOB[k]);if(BLOBP[k])return BLOBP[k];
-  return BLOBP[k]=fetch(aurl(k)).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>ABLOB[k]=URL.createObjectURL(b)).catch(e=>{delete BLOBP[k];throw e})}
+  const one=()=>fetch(aurl(k)).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>ABLOB[k]=URL.createObjectURL(b));
+  return BLOBP[k]=(APK&&APK.has(k)?APK.load(k).then(()=>ABLOB[k]||one()):one()).catch(e=>{delete BLOBP[k];throw e})}
 let LT=null;function loadStart(){clearTimeout(LT);LT=setTimeout(()=>{P.loading=true;showPlayer()},350)}
 function loadDone(){clearTimeout(LT);if(P.loading){P.loading=false;showPlayer()}}
 setTimeout(()=>{if(AUD){blobUrl("_gap150").catch(()=>{});blobUrl("_gap450").catch(()=>{});blobUrl("_gap900").catch(()=>{})}},1500);
@@ -450,7 +475,7 @@ function renderSearch(){
 }
 function render(){
   S.hideRd=false;S.hideKo=false;$("#app").classList.toggle("hide-rd",false);
-  renderTop();showSel($("#groups"),'[aria-pressed="true"]');showSel($("#subs"),'[aria-selected="true"]');
+  renderTop();if(APK)try{APK.warm(curBun())}catch(e){}showSel($("#groups"),'[aria-pressed="true"]');showSel($("#subs"),'[aria-selected="true"]');
   if(S.q.trim()){renderSearch();return}
   /* v2.63 라오스 탭: info page, no controls */if(typeof LAOINFO!=="undefined"&&!BLAB["9-01-01"])Object.assign(BLAB,LAOINFO.blab);if(typeof HELPINFO!=="undefined"&&!BLAB["10-01-01"])Object.assign(BLAB,HELPINFO.blab);{const ib=B[curBun()];if(ib&&ib.info){$("#controls").hidden=true;renderBand();$("#view").innerHTML=`<article class="info">${ib.info}</article>`+nextRow(curBun());snapLater();return}}
   $("#controls").hidden=false;renderBand();
@@ -555,6 +580,11 @@ let _db;const ADB=()=>_db||(_db=new Promise((res,rej)=>{const r=indexedDB.open("
 const aput=(k,v)=>ADB().then(db=>new Promise(res=>{const tx=db.transaction("c","readwrite");tx.objectStore("c").put(v,k);tx.oncomplete=()=>res(true);tx.onerror=tx.onabort=()=>res(false)})).catch(()=>false);
 const akeys=()=>ADB().then(db=>new Promise(res=>{const q=db.transaction("c").objectStore("c").getAllKeys();q.onsuccess=()=>res(new Set(q.result));q.onerror=()=>res(new Set())})).catch(()=>new Set());
 let busy=false;
+/* v3.44: on Cloudflare the button keeps every bundle pack in IndexedDB (about 260 MB) */
+if(APK){const mk=()=>{try{const v=localStorage.getItem("lao-audio-packs");b.textContent=v===APK.sig()?"(완료)":v?"(새 음성 있음, 다시 누르기)":""}catch(e){}};mk();
+  a.onclick=async e=>{e.preventDefault();if(busy||!window.indexedDB)return;busy=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+    let bad=0;try{bad=await APK.saveAll((d,n)=>{b.textContent=Math.floor(d/n*100)+"% ("+d+" / "+n+")"})}catch(e){bad=1}
+    if(bad)b.textContent="("+bad+"개 남음, 다시 누르기)";else{try{localStorage.setItem("lao-audio-packs",APK.sig())}catch(e){}mk()}busy=false};return}
 a.onclick=async e=>{e.preventDefault();if(busy||!window.indexedDB)return;busy=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
  const have=await akeys();const ik=k=>{const v=window.AUDIO_INDEX[k];return v>1?k+"@"+v:k};const q=ks.filter(k=>!have.has(ik(k)));let done=ks.length-q.length;const sw=!!(navigator.serviceWorker&&navigator.serviceWorker.controller);
  async function w(){while(q.length){const k=q.shift();try{const r=await fetch(aurl(k));if(r.ok){const buf=await r.arrayBuffer();if(!sw)await aput(ik(k),buf)}}catch(e){}done++;if(done%20==0||done==ks.length)b.textContent=done+" / "+ks.length}}
