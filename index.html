@@ -790,6 +790,8 @@ body{background:var(--bg)}
 /* v4.10 RYU: PC 제목 부분 높이·글자 크기를 phasaKAO와 같게. 이 앱은 PC에서 화면 전체 1.3배(phasaKAO는 1.1배)라 머리만 1.1/1.3으로 줄이고 값은 phasaKAO와 똑같이 (머리 127px, 제목 40px) */
 @media (min-width:601px){#app header{padding:12px 22px!important;gap:5px!important}#app header h1.lotitle{font-size:40px!important;line-height:42px!important;margin:0!important}#app header .stats{margin-top:0!important}#app header h1.lotitle{height:42px!important;margin-top:-2.4px!important;min-height:0!important;overflow:visible!important}#app header .eyebrow{line-height:20px!important}#app header .stats>*{height:27.25px!important;box-sizing:border-box!important;align-items:center!important}}
 @media (hover:hover) and (pointer:fine){#app header{zoom:calc(1/1.12)}}@media (hover:hover) and (pointer:fine) and (min-width:900px){#app header{zoom:calc(1.1/1.3)}}
+/* v4.11 RYU: PC에서 검색창·내 학습·메뉴 글자도 phasaKAO·KoJey와 같게 (머리처럼 1.1/1.3로 줄임; 본문은 그대로) */
+@media (hover:hover) and (pointer:fine){#app>.search,#app>#mine,#app>#svbox,#app>.menubox{zoom:calc(1/1.12)}}@media (hover:hover) and (pointer:fine) and (min-width:900px){#app>.search,#app>#mine,#app>#svbox,#app>.menubox{zoom:calc(1.1/1.3)}}
 </style>
 
 </head><body>
@@ -828,7 +830,7 @@ body{background:var(--bg)}
     <div class="body" id="view"></div>
   </section>
   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-26 v4.10 · Claude AI로 제작 · <span class="cl" aria-hidden="true">©</span> Copyleft</div></div>
+  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-26 v4.11 · Claude AI로 제작 · <span class="cl" aria-hidden="true">©</span> Copyleft</div></div>
 </div>
 
 
