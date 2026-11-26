@@ -768,19 +768,25 @@ const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#
   let CW=640;
   function timeChart(rows){const W=CW,H=Math.round(Math.min(240,Math.max(180,CW*.3))),L=34,Bm=26,T=12,n=rows.length||1,bw=(W-L-8)/n,mA=Math.max(1,...rows.map(r=>r[1])),mB=Math.max(1,...rows.map(r=>r[2])),y=(v,m)=>T+(H-T-Bm)*(1-v/m),k=[];
     for(let g=0;g<=4;g++){const v=Math.round(mA*g/4),yy=y(v,mA);k.push(sv("line",{x1:L,x2:W-4,y1:yy,y2:yy,class:"stgrid"}),sv("text",{x:L-6,y:yy+4,class:"stax","text-anchor":"end"},fmt(v)))}
-    const step=Math.ceil(n/Math.max(3,Math.floor(CW/70)));rows.forEach((r,i)=>{const x=L+i*bw;k.push(sv("rect",{x:x+bw*.15,y:y(r[1],mA),width:Math.max(1,bw*.7),height:Math.max(0,H-Bm-y(r[1],mA)),rx:2,style:"fill:"+PAL[0]}));if(i%step===0||i===n-1)k.push(sv("text",{x:x+bw/2,y:H-8,class:"stax","text-anchor":"middle"},r[0].length>7?r[0].slice(5):r[0]))});
+    const step=Math.ceil(n/Math.max(3,Math.floor(CW/70)));rows.forEach((r,i)=>{const x=L+i*bw;const rw=Math.max(1,Math.min(44,bw*.7));k.push(sv("rect",{x:x+(bw-rw)/2,y:y(r[1],mA),width:rw,height:Math.max(0,H-Bm-y(r[1],mA)),rx:2,style:"fill:"+PAL[0]}));if(i%step===0||i===n-1)k.push(sv("text",{x:x+bw/2,y:H-8,class:"stax","text-anchor":"middle"},r[0].length>7?r[0].slice(5):r[0]))});
     if(rows.length>1)k.push(sv("polyline",{points:rows.map((r,i)=>(L+i*bw+bw/2)+","+y(r[2],mB)).join(" "),class:"stline"}));
     return svg(W,H,k)+`<div class="stleg"><span class="sw" style="background:${PAL[0]}"></span>학습자 <span class="sw ln"></span>열어 본 묶음 (오른쪽 기준, 최대 ${fmt(mB)})</div>`}
   const hbars=rows=>{const m=Math.max(1,...rows.map(r=>r[1]));return `<div class="sthb">${rows.map((r,i)=>`<div class="sthr"><div class="sthl">${esc(r[0])}${r[2]?`<small>${esc(r[2])}</small>`:""}</div><div class="stht"><i style="width:${(100*r[1]/m).toFixed(1)}%;background:${PAL[i%PAL.length]}"></i></div><b>${fmt(r[1])}</b></div>`).join("")}</div>`};
+  function donut(rows,unit){const tot=rows.reduce((t,r)=>t+r[1],0)||1,Rr=70,C=2*Math.PI*Rr,k=[];let off=0;
+    rows.forEach((r,i)=>{const len=C*r[1]/tot;k.push(sv("circle",{cx:100,cy:100,r:Rr,class:"stdn",style:"stroke:"+PAL[i%PAL.length],"stroke-dasharray":len+" "+(C-len),"stroke-dashoffset":-off,transform:"rotate(-90 100 100)"}));off+=len});
+    k.push(sv("text",{x:100,y:100,class:"stdc","text-anchor":"middle"},fmt(tot)),sv("text",{x:100,y:122,class:"stax","text-anchor":"middle"},unit||"명"));
+    return `<div class="stdnw">${svg(200,200,k)}<ul class="stdl">${rows.map((r,i)=>`<li><span class="sw" style="background:${PAL[i%PAL.length]}"></span>${esc(r[0])} <b>${Math.round(100*r[1]/tot)}%</b> (${fmt(r[1])})</li>`).join("")}</ul></div>`}
   function vbars(rows,color){const W=CW,H=160,Bm=24,T=16,n=rows.length,bw=(W-8)/n,m=Math.max(1,...rows.map(r=>r[1])),k=[];rows.forEach((r,i)=>{const hh=(H-Bm-T)*r[1]/m,x=4+i*bw;k.push(sv("rect",{x:x+bw*.12,y:H-Bm-hh,width:bw*.76,height:hh,rx:3,style:"fill:"+color}));if(r[1]&&n<=12)k.push(sv("text",{x:x+bw/2,y:H-Bm-hh-4,class:"stax","text-anchor":"middle"},fmt(r[1])));if(n<=12||i%3===0)k.push(sv("text",{x:x+bw/2,y:H-7,class:"stax","text-anchor":"middle"},r[0]))});return svg(W,H,k)}
   function draw(box,d){CW=Math.max(280,Math.min(1000,(box.clientWidth||640)-30));const t=d.totals||{};
     const pname={};PARTS.forEach((p,i)=>{pname[String(i+1)]=p.ko});
+    /* v4.5: 시트에 다른 앱(복사해 온 시트) 기록이 섞여 있어도 이 앱 묶음·메뉴만 보여 줌 */const top=(d.top||[]).filter(r=>B[r[0]]&&!B[r[0]].info),areas=(d.areas||[]).filter(r=>pname[r[0]]);
+    const subName=id=>{const s=Object.values(SUBS).find(x=>x.b.includes(id));return s?s.name:""};
     const tile=(v,ko,sub)=>`<div class="sttile"><b>${v}</b><span>${ko}</span>${sub?`<small>${sub}</small>`:""}</div>`;
     box.innerHTML=`<div class="stwrap"><div class="sttiles">${tile(fmt(t.devices),"학습자","기기 수")}${tile(fmt(t.returning),"다시 온 학습자","이틀 이상")}${tile(fmt(t.lessons),"묶음 열람")}${tile(t.perLearner==null?"–":t.perLearner,"1인당 묶음")}${tile(fmt(t.quizzes),"퀴즈 완료")}${tile(t.quizAvg==null?"–":t.quizAvg+"%","퀴즈 평균")}${tile(fmt(t.plays),"음성 재생")}</div>`+
       (d.daily&&d.daily.length?card("날마다",timeChart(d.daily),1):"")+(d.monthly&&d.monthly.length>1?card("달마다",timeChart(d.monthly),1):"")+
-      (d.top&&d.top.length?card("많이 본 묶음",hbars(d.top.slice(0,10).map(r=>[B[r[0]]?bname(r[0]):r[0],r[1],r[0]])),1):"")+
-      (d.areas&&d.areas.length?card("메뉴별 열람",hbars(d.areas.map(r=>[pname[r[0]]||r[0],r[1]]))):"")+
-      (d.devices&&d.devices.length?card("기기",hbars(d.devices.map(r=>[{phone:"휴대폰",tablet:"태블릿",computer:"컴퓨터"}[r[0]]||r[0],r[1]]))):"")+
+      (top.length?card("많이 본 묶음",hbars(top.slice(0,10).map(r=>[bname(r[0]),r[1],r[0]+" · "+subName(r[0])])),1):"")+
+      (areas.length?card("메뉴별 열람",hbars(areas.map(r=>[pname[r[0]],r[1]]))):"")+
+      (d.devices&&d.devices.length?card("기기",donut(d.devices.map(r=>[{phone:"휴대폰",tablet:"태블릿",computer:"컴퓨터"}[r[0]]||r[0],r[1]]))):"")+
       (d.os&&d.os.length?card("운영체제",hbars(d.os)):"")+
       (d.survey&&d.survey.n?card("만족도 설문",`<div class="sttiles">${tile(fmt(d.survey.n),"응답")}${tile(d.survey.avg==null?"–":d.survey.avg+" ★","평균 별점")}${tile(d.survey.recPct==null?"–":d.survey.recPct+"%","추천 의향")}</div>`+vbars(["1★","2★","3★","4★","5★"].map((l,i)=>[l,(d.survey.dist||[])[i]||0]),"#C0801F")):"")+
       (d.quizHist&&d.quizHist.some(Boolean)?card("퀴즈 점수 분포",vbars(["0–19%","20–39%","40–59%","60–79%","80–100%"].map((l,i)=>[l,d.quizHist[i]||0]),"#1E7F4F")):"")+
