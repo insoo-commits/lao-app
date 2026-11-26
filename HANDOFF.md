@@ -10,7 +10,7 @@
 
 ## 1. 앱 정보
 
-- **이름:** LAO Lang (탭 이름과 홈 화면 이름이 같음). 헤더 제목은 `ຮຽນ ພາສາລາວ`, 부제는 "라오스어, 주제별로 공부하기"
+- **이름:** StudyLAO (2026-11-26 v4.1, 예전 이름 LAO Lang) (탭 이름과 홈 화면 이름이 같음). 헤더 제목은 `ຮຽນ ພາສາລາວ`, 부제는 "라오스어, 주제별로 공부하기"
 - **주소:** https://insoo-commits.github.io/lao-app/ (GitHub Pages, main 브랜치 루트)
 - **저장소:** insoo-commits/lao-app. push하면 Actions가 Pages로 자동 배포함
 - **설치:** iPhone/iPad Safari > 공유 > 홈 화면에 추가. 홈 아이콘을 지웠다가 다시 추가하면 저장된 음성과 진도가 지워질 수 있음
@@ -124,7 +124,7 @@
 - 내 학습 카드(#mine): lao-seen(처음 연 날), lao-days, lao-td(오늘 묶음·퀴즈). 진도는 lao-seen 또는 lao-done. 소분류 진도 막대 .sprog
 - 퀴즈 결과 화면(점수 고리, 틀린 단어, 틀린 것만 다시), 복습 탭 위 오답 노트(.wbook, 틀린 단어 + ☆, ✕로 빼기)
 - 화면 자동/밝게/어둡게(lao-pref.theme, data-theme; @media 어두운 규칙을 실행 때 [data-theme=dark]용으로 복사), 글자 크기(--fz, #view·#band zoom)
-- 폰: 팁은 그림 아래 "팁 N" 버튼 안에 접힘. 제목·고정 줄 LAO Lang 누르면 1-01-01. 아래 줄 Copyleft
+- 폰: 팁은 그림 아래 "팁 N" 버튼 안에 접힘. 제목·고정 줄 StudyLAO 누르면 1-01-01. 아래 줄 Copyleft
 - 아기 코끼리 img/ele/{main,happy,think,try}.webp (한국어배우기 앱 그림 그대로): 머리, 다음 새 묶음, 퀴즈 결과(80%↑ happy, 50%↑ think, 그 밖 try), 도움말 10-01-01
 - 도움말 10-01-01 맨 위 포스터 img/poster.webp (프로젝트 파일 poster/LAO_Lang_사용안내_A4.png를 1200px webp로)
 - 익명 통계·설문: STATS_URL = RYU의 라오어 전용 Apps Script 시트, 코드 tools/stats/Code.gs (KoJey와 같음). 도움말 10-01-04 사용 통계, 10-01-05 설문. 설문 카드는 묶음 5개·이틀 뒤 내 학습 아래에 뜸. localhost에서는 보내지 않음

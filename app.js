@@ -180,7 +180,7 @@ function gapThen(tok,ms){const a=aud();let fired=false;const fb=()=>{if(fired)re
   if(tok!==P.token)return;a.onended=()=>{if(fired)return;fired=true;a.onended=a.onerror=null;nextPlay(tok)};a.onerror=fb;
   try{a.src=ABLOB["_gap"+ms]||("audio/_gap"+ms+".mp3");a.playbackRate=1;a.defaultPlaybackRate=1;const pr=a.play();if(pr&&pr.catch)pr.catch(fb)}catch(e){fb()}}
 function msMeta(it){if(!("mediaSession" in navigator))return;try{
-  navigator.mediaSession.metadata=new MediaMetadata({title:it.ko?koSay(it.text):rep(it.text),artist:"LAO Lang",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
+  navigator.mediaSession.metadata=new MediaMetadata({title:it.ko?koSay(it.text):rep(it.text),artist:"StudyLAO",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
   if(!msMeta._h){msMeta._h=1;const ms=navigator.mediaSession;
     ms.setActionHandler("pause",()=>setPaused(true));
     ms.setActionHandler("play",()=>setPaused(false));
@@ -867,7 +867,7 @@ function applyPrefs(){const r=document.documentElement,th=PREF.theme||"auto",fz=
 document.addEventListener("click",e=>{const t=e.target.closest("[data-pref]");if(!t)return;e.stopPropagation();PREF[t.dataset.pref]=t.dataset.pref==="fz"?+t.dataset.v:t.dataset.v;store.set("lao-pref",PREF);applyPrefs();if(S.mode==="cards")try{fitBig()}catch(_){}else try{fitNotes();placeTones()}catch(_){}},true);
 applyPrefs();
 
-/* ---------- 제목(또는 위 고정 줄의 LAO Lang)을 누르면 첫 메뉴 첫 묶음, 맨 위로 ---------- */
+/* ---------- 제목(또는 위 고정 줄의 StudyLAO)을 누르면 첫 메뉴 첫 묶음, 맨 위로 ---------- */
 for(const el of [document.querySelector("#app header .brand"),document.querySelector("#stick .strow > b")])if(el){el.style.cursor="pointer";el.setAttribute("role","link");el.setAttribute("tabindex","0");el.title="처음으로";
   const home=ev=>{if(ev)ev.stopPropagation();if(P.active)stopPlay();goto(PARTS[0].subs[0].b[0]);setTimeout(()=>window.scrollTo(0,0),60)};
   el.addEventListener("click",home);el.addEventListener("keydown",ev=>{if(ev.key==="Enter")home(ev)})}
