@@ -29,7 +29,7 @@
 - **ID 재번호:** 묶음 번호를 바꾸면 IDMAPn 블록을 추가하고 `lao-idv`를 올려서 진도 데이터를 한 번 옮김 (예: v12=12, v12.2=13, v12.3=14)
 - **기타 자료:** 원본 데이터와 스크립트는 프로젝트 파일 `/mnt/project-files/lao-app/src/`에 있음 (새 프로젝트에서는 보이지 않음. 필요한 것은 저장소로 옮겨야 함)
 
-## 1-1. Cloudflare Pages (studylao.pages.dev, v3.44, 2026-11-25)
+## 1-1. Cloudflare Pages (phasalao.pages.dev, 2026-11-26부터. 예전 studylao.pages.dev, v3.44)
 
 - 같은 저장소를 Cloudflare Pages에도 올림. Cloudflare 설정: Build command `node tools/cf-build.js`, Build output directory `cf`, 브랜치 main. push하면 두 곳 모두 다시 배포됨
 - Cloudflare 무료 요금제는 사이트당 파일 2만 개까지라서, `tools/cf-build.js`가 낱개 mp3(약 34,600개) 대신 묶음마다 음성 파일 하나(`cf/audio/p/<묶음>.bin`)를 만들어 올림. 올라가는 파일은 약 820개(RYU 희망 1~1.5만 개 밑)

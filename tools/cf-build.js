@@ -1,4 +1,4 @@
-/* Cloudflare Pages build (studylao.pages.dev), v3.44, 2026-11-25.
+/* Cloudflare Pages build (phasalao.pages.dev, was studylao.pages.dev), v3.44, 2026-11-25.
    Cloudflare settings:  Build command  node tools/cf-build.js   ·  Build output directory  cf
    Copies the site into cf/ without the ~34,600 single mp3 clips, and instead joins the clips of each bundle into one pack
    cf/audio/p/<bundle>.bin, so the site has about 1,000 files (Cloudflare Pages free plan: 20,000; RYU wants under 10-15k).

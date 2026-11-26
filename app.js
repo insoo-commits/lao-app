@@ -144,7 +144,7 @@ const BLOBP={};
 /* replaced clips get a version in AUDIO_INDEX (value >1): new URL + new IndexedDB key, so saved old copies are not reused */
 function aurl(k){const v=AUD&&AUD[k];return "audio/"+k+".mp3"+(v>1?"?v="+v:"")}
 function keyOf(it){if(!AUD||it.noAud)return null;let k=akey(it.text);if(it.ko)k="k_"+k;else if(it.m&&AUD["m_"+k])k="m_"+k;return AUD[k]?k:null}
-/* v3.44 (2026-11-25, Cloudflare copy studylao.pages.dev): the clips of one bundle come joined in one file audio/p/<bundle>.bin
+/* v3.44 (2026-11-25, Cloudflare copy phasalao.pages.dev, was studylao): the clips of one bundle come joined in one file audio/p/<bundle>.bin
    (tools/cf-build.js makes them; there are no single mp3s on Cloudflare). Opening a bundle loads its pack and then the next bundle's;
    every clip of the pack is then ready in memory as before (ABLOB). Packs are kept in IndexedDB ("lao-audio" / "c", key "p:"+bundle,
    {h: hash, b: bytes}) for next time and offline. Without window.AUDIO_PACKS (GitHub Pages) APK is null and single mp3s are used as before. */
