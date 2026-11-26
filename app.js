@@ -795,7 +795,7 @@ const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#
 
 /* ---------- 도움말: 포스터 + 아기 코끼리 (10-01-01 맨 위), 사용 통계·설문 쪽 추가 ---------- */
 {const h0=B["10-01-01"];if(h0&&!h0._v40){h0._v40=1;
-  h0.info=`<figure class="poster"><img src="img/poster.webp" alt="Study Lao 사용 안내 포스터" loading="lazy" width="1200" height="1697"><figcaption>사용 안내 포스터 · 길게 누르거나 오른쪽 클릭으로 저장할 수 있어요</figcaption></figure>`+h0.info+
+  h0.info=`<figure class="poster"><img src="img/poster.webp" alt="phasaLAO 사용 안내 포스터" loading="lazy" width="1200" height="1697"><figcaption>사용 안내 포스터 · 길게 누르거나 오른쪽 클릭으로 저장할 수 있어요</figcaption></figure>`+h0.info+
   `<h3>함께 공부하는 아기 코끼리</h3><p>라오스는 옛날에 <span class="lo">ລ້ານຊ້າງ</span>(란쌍, 코끼리 백만 마리)의 나라라고 불렸어요. 헤드폰을 쓰고 라오 스카프를 두른 아기 코끼리가 공부를 함께해요.</p><div class="elerow"><figure>${ele("main","")}<figcaption>반가워요</figcaption></figure><figure>${ele("happy","")}<figcaption>잘했어요 (퀴즈 80% 이상)</figcaption></figure><figure>${ele("think","")}<figcaption>다음 묶음은?</figcaption></figure><figure>${ele("try","")}<figcaption>다시 해 봐요</figcaption></figure></div>`}
   const ph=PARTS.find(p=>p.id==="PH");if(ph&&STATS_URL&&!B["10-01-04"]){const mk=(t,info)=>({t,h:"",i:"",w:[],tp:[],nx:[],pr:[],dl:[],sm:null,qz:[],info});
     B["10-01-04"]=mk("사용 통계",`<h2>사용 통계</h2><div class="sub2">이 앱을 얼마나, 어떻게 쓰는지</div><p>몇 명이 이 앱으로 공부하는지, 어떤 묶음을 많이 여는지, 퀴즈 점수는 어떤지 모은 합계예요. 이름이나 이메일은 모으지 않고, 기기마다 무작위 번호만 써요.</p><div id="stbox"></div>`);
