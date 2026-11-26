@@ -779,7 +779,13 @@ const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#
   function vbars(rows,color){const W=CW,H=160,Bm=24,T=16,n=rows.length,bw=(W-8)/n,m=Math.max(1,...rows.map(r=>r[1])),k=[];rows.forEach((r,i)=>{const hh=(H-Bm-T)*r[1]/m,x=4+i*bw;k.push(sv("rect",{x:x+bw*.12,y:H-Bm-hh,width:bw*.76,height:hh,rx:3,style:"fill:"+color}));if(r[1]&&n<=12)k.push(sv("text",{x:x+bw/2,y:H-Bm-hh-4,class:"stax","text-anchor":"middle"},fmt(r[1])));if(n<=12||i%3===0)k.push(sv("text",{x:x+bw/2,y:H-7,class:"stax","text-anchor":"middle"},r[0]))});return svg(W,H,k)}
   function draw(box,d){CW=Math.max(280,Math.min(1000,(box.clientWidth||640)-30));const t=d.totals||{};
     const pname={};PARTS.forEach((p,i)=>{pname[String(i+1)]=p.ko});
-    /* v4.5: 시트에 다른 앱(복사해 온 시트) 기록이 섞여 있어도 이 앱 묶음·메뉴만 보여 줌 */const top=(d.top||[]).filter(r=>B[r[0]]),areas=(d.areas||[]).filter(r=>pname[r[0]]);
+    /* v4.5: 시트에 다른 앱(복사해 온 시트) 기록이 섞여 있어도 이 앱 묶음·메뉴만 보여 줌 *//* v4.14: 구글 시트가 "1-01-01" 같은 묶음 번호를 날짜(2001-01-01)로 바꿔 저장해서, 통계가 "Mon Jan 01 2001 ..." 같은 글로 와요. 다시 묶음 번호로 되돌림 */
+    const MON={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12},p2=n=>String(n).padStart(2,"0");
+    const fixCode=c=>{c=String(c||"");if(B[c])return c;const m=/^[A-Z][a-z]{2} ([A-Z][a-z]{2}) (\d{1,2}) (\d{4})/.exec(c)||/^(\d{4})-(\d{2})-(\d{2})T/.exec(c);if(!m)return c;
+      let y,mo,da;if(MON[m[1]]){y=+m[3];mo=MON[m[1]];da=+m[2]}else{y=+m[1];mo=+m[2];da=+m[3]}const yy=y%100;
+      for(const k of [yy+"-"+p2(mo)+"-"+p2(da),mo+"-"+p2(da)+"-"+p2(yy),da+"-"+p2(mo)+"-"+p2(yy)])if(B[k])return k;return yy+"-"+p2(mo)+"-"+p2(da)};
+    const merge=(rows,f)=>{const o={};(rows||[]).forEach(r=>{const k=f(r[0]);o[k]=(o[k]||0)+r[1]});return Object.keys(o).map(k=>[k,o[k]]).sort((a,b)=>b[1]-a[1])};
+    const top=merge(d.top,fixCode).filter(r=>B[r[0]]),areas=merge(d.areas,c=>{const f=fixCode(c);return B[f]||/^\d+-/.test(f)?f.split("-")[0]:String(c)}).filter(r=>pname[r[0]]);
     const subName=id=>{const s=Object.values(SUBS).find(x=>x.b.includes(id));return s?s.name:""};
     const tile=(v,ko,sub)=>`<div class="sttile"><b>${v}</b><span>${ko}</span>${sub?`<small>${sub}</small>`:""}</div>`;
     box.innerHTML=`<div class="stwrap"><div class="sttiles">${tile(fmt(t.devices),"학습자","기기 수")}${tile(fmt(t.returning),"다시 온 학습자","이틀 이상")}${tile(fmt(t.lessons),"묶음 열람")}${tile(t.perLearner==null?"–":t.perLearner,"1인당 묶음")}${tile(fmt(t.quizzes),"퀴즈 완료")}${tile(t.quizAvg==null?"–":t.quizAvg+"%","퀴즈 평균")}${tile(fmt(t.plays),"음성 재생")}</div>`+

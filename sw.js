@@ -1,4 +1,4 @@
-const SHELL="lao-shell-v4.13",AUD="lao-audio-v2";
+const SHELL="lao-shell-v4.14",AUD="lao-audio-v2";
 const JS="lao-js";/* versioned app.js?v=… lives here, kept across versions, only newest entry kept */
 const FILES=["./","index.html","manifest.webmanifest","audio/index.js","icon-180.png","icon-192.png","icon-32.png","icon-512.png","header.svg","header-day.svg","img/ele/main.webp","img/ele/happy.webp","img/ele/think.webp","img/ele/try.webp"];
 /* Audio clips live in IndexedDB ("lao-audio" / store "c", key = clip name, value = ArrayBuffer).

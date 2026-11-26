@@ -11,6 +11,7 @@
  * Sheet "summary": totals and tables made with formulas from "events".
  * Sheet "survey" (v1.11): one row per answer of the in-app satisfaction survey.
  *   received | device id | stars (1-5) | most helpful menu | recommend (yes/maybe/no) | comment | app version | device | OS | language
+ * v4.14: lesson codes like 1-01-01 are written as text (leading ') because Sheets turned them into dates; old date cells are read back as yy-MM-dd.
  * After changing this file: Deploy > Manage deployments > edit (pencil) > Version: New version > Deploy (the URL stays the same).
  */
 var EVENTS = 'events', SUMMARY = 'summary';
@@ -26,7 +27,7 @@ function doPost(e) {
     var id = clean_(d.id, 40), now = new Date(), rows = [];
     (d.ev || []).slice(0, 200).forEach(function (x) {
       if (!x || !OK_EVENTS[x[1]]) return;
-      rows.push([now, clean_(x[0], 30), id, x[1], clean_(x[2], 20), num_(x[3]), num_(x[4]),
+      rows.push([now, clean_(x[0], 30), id, x[1], (x[2] ? "'" : '') + clean_(x[2], 20), num_(x[3]), num_(x[4]),
         clean_(d.dev, 12), clean_(d.os, 12), clean_(d.v, 30), clean_(d.lang, 12), d.pwa ? 'yes' : '']);
     });
     if (rows.length) {
@@ -66,7 +67,7 @@ function stats_() {
   var qR = 0, qN = 0, tR = 0, tN = 0, spS = 0, first = null;
   rows.forEach(function (r) {
     var when = r[0] instanceof Date ? r[0] : new Date(r[0]); if (isNaN(when)) return;
-    var id = String(r[2]), ev = r[3], code = String(r[4] || ''), day = Utilities.formatDate(when, TZ, 'yyyy-MM-dd'), mon = day.slice(0, 7);
+    var id = String(r[2]), ev = r[3], code = r[4] instanceof Date ? Utilities.formatDate(r[4], TZ, 'yy-MM-dd').replace(/^0/, '') : String(r[4] || ''), day = Utilities.formatDate(when, TZ, 'yyyy-MM-dd'), mon = day.slice(0, 7);
     if (!first || when < first) first = when;
     var d = dev[id] || (dev[id] = {days: {}, dev: '', os: '', pwa: false});
     d.days[day] = 1; if (r[7]) d.dev = r[7]; if (r[8]) d.os = r[8]; if (r[11] === 'yes') d.pwa = true;
