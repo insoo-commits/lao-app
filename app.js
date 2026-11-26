@@ -897,12 +897,13 @@ function helpDeco(art,bid){if(!art||art.dataset.deco)return;art.dataset.deco="1"
   const h2=art.querySelector(":scope>h2"),s2=h2&&h2.nextElementSibling&&h2.nextElementSibling.classList.contains("sub2")?h2.nextElementSibling:null;
   if(h2){const hd=document.createElement("div");hd.className="hhd";art.prepend(hd);hd.append(h2);if(s2)hd.append(s2);hd.insertAdjacentHTML("afterbegin",`<img class="hhele" src="img/ele/main.webp" alt="" loading="lazy">`)}
   const sh=HELPSHOTS[bid];if(sh&&h2){const f=document.createElement("div");f.className="shots";f.innerHTML=sh.map(([n,c])=>`<figure class="shot"><img class="hl-l" src="img/help/${n}.jpg" alt="${esc(c)}" loading="lazy"><img class="hl-d" src="img/help/${n}-d.jpg" alt="" loading="lazy"><figcaption>${esc(c)}</figcaption></figure>`).join("");
-    const first=art.querySelector(":scope>table.facts,:scope>h3");(first||art.lastChild).before(f)}
+    const first=art.querySelector(":scope>h3");if(first)first.before(f);else art.append(f);f.insertAdjacentHTML("beforebegin","<h3>화면 보기</h3>")}
   art.querySelectorAll(":scope>table.facts").forEach(t=>{const g=document.createElement("div");g.className="hgrid";
     for(const tr of t.querySelectorAll("tr")){const th=tr.querySelector("th"),td=tr.querySelector("td");if(!th||!td)continue;const c=document.createElement("div");c.className="hc";c.innerHTML=`<b class="hct">${th.innerHTML}</b><div class="hcd">${td.innerHTML}</div>`;g.append(c)}
     if(g.children.length>=5)g.classList.add("many");if([...g.querySelectorAll(".hcd")].every(x=>x.textContent.length<=40))g.classList.add("short");t.replaceWith(g)});
   [...art.children].filter(e=>e.tagName==="H3").forEach(h3=>{const box=document.createElement("div"),bb=document.createElement("div");box.className="hbox";bb.className="hbb";h3.before(box);box.append(h3,bb);
     let n=box.nextSibling;while(n&&!(n.nodeType===1&&(/^H[23]$/.test(n.tagName)||n.classList.contains("hbox")))){const x=n.nextSibling;bb.append(n);n=x}});
-  const lead=[...art.children].find(e=>e.tagName==="P");if(lead&&!lead.closest(".hbox"))lead.classList.add("hlead")}
+  const lead=[...art.children].find(e=>e.tagName==="P");if(lead&&!lead.closest(".hbox"))lead.classList.add("hlead");
+  art.querySelectorAll(":scope>.hbox").forEach((bx,i)=>{bx.dataset.c=String(i%4);bx.querySelector("h3").insertAdjacentHTML("afterbegin",`<i class="hnum">${i+1}</i>`)})}
 {const _r46=render;render=function(){_r46();const b=curBun();if(!S.q.trim()&&/^10-0[12]-/.test(b))helpDeco(document.querySelector("#view article.info"),b)}}
 render();
