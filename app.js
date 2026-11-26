@@ -779,7 +779,7 @@ const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#
   function vbars(rows,color){const W=CW,H=160,Bm=24,T=16,n=rows.length,bw=(W-8)/n,m=Math.max(1,...rows.map(r=>r[1])),k=[];rows.forEach((r,i)=>{const hh=(H-Bm-T)*r[1]/m,x=4+i*bw;k.push(sv("rect",{x:x+bw*.12,y:H-Bm-hh,width:bw*.76,height:hh,rx:3,style:"fill:"+color}));if(r[1]&&n<=12)k.push(sv("text",{x:x+bw/2,y:H-Bm-hh-4,class:"stax","text-anchor":"middle"},fmt(r[1])));if(n<=12||i%3===0)k.push(sv("text",{x:x+bw/2,y:H-7,class:"stax","text-anchor":"middle"},r[0]))});return svg(W,H,k)}
   function draw(box,d){CW=Math.max(280,Math.min(1000,(box.clientWidth||640)-30));const t=d.totals||{};
     const pname={};PARTS.forEach((p,i)=>{pname[String(i+1)]=p.ko});
-    /* v4.5: 시트에 다른 앱(복사해 온 시트) 기록이 섞여 있어도 이 앱 묶음·메뉴만 보여 줌 */const top=(d.top||[]).filter(r=>B[r[0]]&&!B[r[0]].info),areas=(d.areas||[]).filter(r=>pname[r[0]]);
+    /* v4.5: 시트에 다른 앱(복사해 온 시트) 기록이 섞여 있어도 이 앱 묶음·메뉴만 보여 줌 */const top=(d.top||[]).filter(r=>B[r[0]]),areas=(d.areas||[]).filter(r=>pname[r[0]]);
     const subName=id=>{const s=Object.values(SUBS).find(x=>x.b.includes(id));return s?s.name:""};
     const tile=(v,ko,sub)=>`<div class="sttile"><b>${v}</b><span>${ko}</span>${sub?`<small>${sub}</small>`:""}</div>`;
     box.innerHTML=`<div class="stwrap"><div class="sttiles">${tile(fmt(t.devices),"학습자","기기 수")}${tile(fmt(t.returning),"다시 온 학습자","이틀 이상")}${tile(fmt(t.lessons),"묶음 열람")}${tile(t.perLearner==null?"–":t.perLearner,"1인당 묶음")}${tile(fmt(t.quizzes),"퀴즈 완료")}${tile(t.quizAvg==null?"–":t.quizAvg+"%","퀴즈 평균")}${tile(fmt(t.plays),"음성 재생")}</div>`+
@@ -811,7 +811,7 @@ const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#
 /* ---------- 내 학습 카드 ---------- */
 {const sr=document.querySelector(".search");if(sr&&!document.getElementById("mine")){sr.insertAdjacentHTML("afterend",`<div class="mine" id="mine"></div><div id="svbox"></div>`)}
  const hd=document.querySelector("#app header");if(hd&&!hd.querySelector(".elehd"))hd.insertAdjacentHTML("beforeend",`<img class="elehd" src="img/ele/main.webp" width="268" height="290" alt="">`)}
-function track(id){if(!id||!B[id]||B[id].info)return;const t=today();if(!SEEN[id]){SEEN[id]=t.d;store.set("lao-seen",SEEN)}
+function track(id){if(!id||!B[id])return;/* v4.13: 도움말·라오스 같은 읽을거리도 통계에는 보냄 (phasaKAO처럼), 내 진도에는 넣지 않음 */if(B[id].info){ST.lesson(id);return}const t=today();if(!SEEN[id]){SEEN[id]=t.d;store.set("lao-seen",SEEN)}
   if(DAYS[DAYS.length-1]!==t.d){DAYS.push(t.d);DAYS=DAYS.slice(-400);store.set("lao-days",DAYS)}
   if(!t.s[id]){t.s[id]=1;store.set("lao-td",t)}ST.lesson(id)}
 function streak(){const set=new Set(DAYS),d=new Date();let n=0;if(!set.has(dayStr(d)))d.setDate(d.getDate()-1);while(set.has(dayStr(d))){n++;d.setDate(d.getDate()-1)}return n}
