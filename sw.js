@@ -1,6 +1,6 @@
-const SHELL="lao-shell-v3.46",AUD="lao-audio-v2";
+const SHELL="lao-shell-v4.0",AUD="lao-audio-v2";
 const JS="lao-js";/* versioned app.js?v=… lives here, kept across versions, only newest entry kept */
-const FILES=["./","index.html","manifest.webmanifest","audio/index.js","icon-180.png","icon-192.png","icon-512.png","header.svg","header-day.svg"];
+const FILES=["./","index.html","manifest.webmanifest","audio/index.js","icon-180.png","icon-192.png","icon-512.png","header.svg","header-day.svg","img/ele/main.webp","img/ele/happy.webp","img/ele/think.webp","img/ele/try.webp"];
 /* Audio clips live in IndexedDB ("lao-audio" / store "c", key = clip name, value = ArrayBuffer).
    They used to live in CacheStorage, but with 16k entries iPhone needs 10-15 s just to open CacheStorage,
    which blocked offline launches. CacheStorage now only holds the ~10 app files. */

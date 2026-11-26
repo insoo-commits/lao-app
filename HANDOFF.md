@@ -117,3 +117,14 @@
 - `load.py`, `show.py`, `grepi.py`: 데이터 로드와 검색
 - v12.38 전체 검토 후 남은 경고는 외래어, 약어, 라오 문자로 쓴 한국어뿐임
 - v2.14 (2026-11-18, RYU): 1-01 기초 회화는 처음 배우는 사람용으로 아주 쉬운 단어와 짧은 예문만 둠. 순서 01 첫인사, 02 자기소개, 03 짧은 대답, 04 모를 때 쓰는 말, 05 느낌 한마디, 06 묻고 답하기(버·맨·뻰), 07 같이 쓰는 말. 전화·메시지는 1-10-04. 스크립트 src/v2/build_v214.py.
+
+## v4.0 (2026-11-26): 한국어배우기·KoJey 기능 가져오기
+
+- app.js 맨 끝 "v4.0" 블록, index.html 마지막 head `<style>` 끝 "v4.0" CSS. renderTop/renderBand/renderQuiz/renderAutoQuiz/render를 감싸서 덧붙임
+- 내 학습 카드(#mine): lao-seen(처음 연 날), lao-days, lao-td(오늘 묶음·퀴즈). 진도는 lao-seen 또는 lao-done. 소분류 진도 막대 .sprog
+- 퀴즈 결과 화면(점수 고리, 틀린 단어, 틀린 것만 다시), 복습 탭 위 오답 노트(.wbook, 틀린 단어 + ☆, ✕로 빼기)
+- 화면 자동/밝게/어둡게(lao-pref.theme, data-theme; @media 어두운 규칙을 실행 때 [data-theme=dark]용으로 복사), 글자 크기(--fz, #view·#band zoom)
+- 폰: 팁은 그림 아래 "팁 N" 버튼 안에 접힘. 제목·고정 줄 LAO Lang 누르면 1-01-01. 아래 줄 Copyleft
+- 아기 코끼리 img/ele/{main,happy,think,try}.webp (한국어배우기 앱 그림 그대로): 머리, 다음 새 묶음, 퀴즈 결과(80%↑ happy, 50%↑ think, 그 밖 try), 도움말 10-01-01
+- 도움말 10-01-01 맨 위 포스터 img/poster.webp (프로젝트 파일 poster/LAO_Lang_사용안내_A4.png를 1200px webp로)
+- 익명 통계·설문: STATS_URL = RYU의 라오어 전용 Apps Script 시트, 코드 tools/stats/Code.gs (KoJey와 같음). 도움말 10-01-04 사용 통계, 10-01-05 설문. 설문 카드는 묶음 5개·이틀 뒤 내 학습 아래에 뜸. localhost에서는 보내지 않음

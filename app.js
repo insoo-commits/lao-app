@@ -702,3 +702,182 @@ addEventListener("resize",close);
     upd();
   }
 })();
+
+/* ===== v4.0 (RYU 2026-11-26): KoJey · 한국어배우기 v2.74 기능을 가져옴 =====
+   내 학습 카드(연속 학습·진도·오늘·다음 새 묶음·복습), 소분류 진도 막대, 퀴즈 결과 화면, 오답 노트, 화면(밝게/어둡게)·글자 크기,
+   폰 팁 접기, 제목 누르면 처음으로, 아기 코끼리, 도움말 포스터, 익명 사용 통계·설문(Apps Script 시트). 기록은 이 기기에만 저장. */
+const STATS_URL="https://script.google.com/macros/s/AKfycbzBXdj9CzEfE0YMj-6gySDfHw3Sketrw4-5WnS4uLMd-LljN8ck7NNblAtf4gFjlLj3/exec";/* RYU 2026-11-26: 라오어 앱 전용 시트 (tools/stats/Code.gs) */
+const APPVER=((document.querySelector(".ver")||{}).textContent||"").split("·")[0].trim();
+const dayStr=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+let SEEN=store.get("lao-seen",{}),DAYS=store.get("lao-days",[]),TD=store.get("lao-td",null),PREF=store.get("lao-pref",{});
+const LORDER=()=>PARTS.flatMap(p=>p.subs.flatMap(s=>s.b)).filter(id=>B[id]&&!B[id].info);
+const isSeen=id=>!!(SEEN[id]||DONE[id]);
+const today=()=>{const t=dayStr(new Date());if(!TD||TD.d!==t)TD={d:t,s:{},q:0};return TD};
+const bname=id=>(BLAB[id]||[B[id]?B[id].t:id])[0];
+const ele=(n,c)=>`<img class="${c}" src="img/ele/${n}.webp" alt="" loading="lazy">`;
+
+/* ---------- 익명 사용 통계 (KoJey v1.3 / kor-app v2.68 방식) ---------- */
+const ST=(()=>{const QK="lao-stats",IK="lao-sid",MAX=400;const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},put=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+  let id=get(IK);if(!id){id=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)).replace(/-/g,"").slice(0,16);put(IK,id)}
+  const ua=navigator.userAgent,os=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)?"iOS":/Android/.test(ua)?"Android":/Windows/.test(ua)?"Windows":/Mac OS/.test(ua)?"Mac":/CrOS/.test(ua)?"ChromeOS":/Linux/.test(ua)?"Linux":"other";
+  const dev=/iPad/.test(ua)||(os==="iOS"&&!/iPhone|iPod/.test(ua))||(os==="Android"&&!/Mobile/.test(ua))?"tablet":/iPhone|iPod|Mobile/.test(ua)?"phone":"computer";
+  const pwa=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  const load=()=>{try{const q=JSON.parse(get(QK)||"[]");return Array.isArray(q)?q:[]}catch(e){return []}};
+  const stamp=()=>{const d=new Date(),z=-d.getTimezoneOffset(),p=n=>String(Math.abs(n)).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds())+(z<0?"-":"+")+p(z/60|0)+":"+p(z%60)};
+  let busy=false;
+  function log(ev,code,a,b){if(!STATS_URL)return;const q=load();q.push([stamp(),ev,code||"",a==null?"":a,b==null?"":b]);put(QK,JSON.stringify(q.slice(-MAX)))}
+  function send(beacon){if(!STATS_URL||busy||!navigator.onLine)return;const q=load();if(!q.length)return;
+    const n=Math.min(q.length,100),body=JSON.stringify({id,v:APPVER,dev,os,pwa,lang:navigator.language||"",ev:q.slice(0,n)});const done=()=>{const r=load();put(QK,JSON.stringify(r.slice(n)))};
+    if(beacon&&navigator.sendBeacon){if(navigator.sendBeacon(STATS_URL,new Blob([body],{type:"text/plain"})))done();return}
+    busy=true;fetch(STATS_URL,{method:"POST",mode:"no-cors",body,keepalive:body.length<60000}).then(()=>{done();busy=false;if(load().length)setTimeout(send,2000)},()=>{busy=false})}
+  if(STATS_URL&&!/^(localhost|127\.)/.test(location.hostname)){log("open","",dev,pwa?"installed":"browser");setTimeout(send,4000);setInterval(send,60000);addEventListener("online",()=>send());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")send(true)})}
+  let last="";return {log,send,meta:()=>({id,v:APPVER,dev,os,pwa,lang:navigator.language||""}),lesson(c){if(c&&c!==last){last=c;log("lesson",c)}}};
+})();
+
+/* ---------- 만족도 설문: 내 학습 카드 아래 (묶음 5개, 이틀 이상 공부한 뒤), 도움말에서는 언제든 ---------- */
+const SV=(()=>{const DK="lao-survey",PK="lao-svq";const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},put=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+  const state=()=>{try{return JSON.parse(get(DK)||"{}")}catch(e){return {}}};const ymd=()=>dayStr(new Date());
+  function flush(){const p=get(PK);if(!p||!STATS_URL||!navigator.onLine)return;fetch(STATS_URL,{method:"POST",mode:"no-cors",body:p,keepalive:true}).then(()=>put(PK,""),()=>{})}
+  function form(box,inPage){const st=state();
+    if(st.done){box.innerHTML=`<div class="svcard svdone"><p><b>의견 고마워요!</b> 앱을 고치는 데 잘 쓸게요.</p></div>`;return}
+    const a={stars:0,menu:"",rec:"",text:""};
+    box.innerHTML=`<div class="svcard">${inPage?"":`<button type="button" class="svx" aria-label="나중에" title="나중에">×</button>`}<p class="svq"><b>이 앱 어때요?</b> <span class="svs">별을 눌러 주세요</span></p>
+      <div class="svstars" role="radiogroup" aria-label="별점">${[1,2,3,4,5].map(i=>`<button type="button" class="svstar" data-i="${i}" aria-label="별 ${i}개">★</button>`).join("")}</div>
+      <div class="svmore" hidden><p class="svq">가장 도움이 된 메뉴</p><div class="svchips" data-k="menu">${PARTS.filter(p=>p.id!=="PH").map(p=>`<button type="button" class="svchip" data-v="${p.id}">${esc(p.ko)}</button>`).join("")}</div>
+      <p class="svq">친구에게 추천할래요?</p><div class="svchips" data-k="rec"><button type="button" class="svchip" data-v="yes">네</button><button type="button" class="svchip" data-v="maybe">글쎄요</button><button type="button" class="svchip" data-v="no">아니요</button></div>
+      <textarea class="svtext" maxlength="300" rows="3" placeholder="바라는 점이나 고칠 점 (선택)"></textarea><div class="svbtns"><button type="button" class="primary svsend">보내기</button></div></div></div>`;
+    const c=box.firstChild,more=c.querySelector(".svmore");
+    c.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;e.stopPropagation();
+      if(t.classList.contains("svx")){const d=new Date();d.setDate(d.getDate()+3);put(DK,JSON.stringify({later:dayStr(d)}));box.innerHTML="";return}
+      if(t.classList.contains("svstar")){a.stars=+t.dataset.i;c.querySelectorAll(".svstar").forEach((b,k)=>b.classList.toggle("on",k<a.stars));more.hidden=false;return}
+      if(t.classList.contains("svchip")){const g=t.parentNode;a[g.dataset.k]=t.dataset.v;g.querySelectorAll(".svchip").forEach(b=>b.classList.toggle("on",b===t));return}
+      if(t.classList.contains("svsend")){if(!a.stars)return;a.text=c.querySelector(".svtext").value.trim().slice(0,300);put(PK,JSON.stringify(Object.assign(ST.meta(),{survey:a})));put(DK,JSON.stringify({done:ymd()}));flush();form(box,inPage);if(!inPage)setTimeout(()=>{box.innerHTML=""},4000)}})}
+  function offer(box,seen,days){if(!box||!STATS_URL)return;const st=state();
+    if(st.done||(st.later&&st.later>ymd())||seen<5||days<2){if(!box.querySelector(".svmore:not([hidden])"))box.innerHTML="";return}
+    if(!box.firstChild)form(box,false)}
+  if(STATS_URL){setTimeout(flush,5000);addEventListener("online",flush)}
+  return {form,offer};
+})();
+
+/* ---------- 공개 사용 통계 쪽 (도움말 > 사용 통계): 시트가 낸 합계만 ---------- */
+const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#8A4A16","#C0801F","#0F8A8A","#2E6BC4","#B33A3A","#6B4FA0","#1E7F4F","#D08A2E"];
+  const fmt=n=>n==null||n===""?"–":Number(n).toLocaleString("en-US");
+  const sv=(t,at,tx)=>{const e=document.createElementNS(NS,t);for(const k in at)e.setAttribute(k,at[k]);if(tx!=null)e.textContent=tx;return e};
+  const svg=(w,h,kids)=>{const s=sv("svg",{viewBox:`0 0 ${w} ${h}`,class:"stsvg",role:"img"});kids.flat().forEach(k=>k&&s.appendChild(k));return s.outerHTML};
+  const card=(t,body,wide)=>`<section class="stcard${wide?" wide":""}"><h3>${t}</h3>${body}</section>`;
+  let CW=640;
+  function timeChart(rows){const W=CW,H=Math.round(Math.min(240,Math.max(180,CW*.3))),L=34,Bm=26,T=12,n=rows.length||1,bw=(W-L-8)/n,mA=Math.max(1,...rows.map(r=>r[1])),mB=Math.max(1,...rows.map(r=>r[2])),y=(v,m)=>T+(H-T-Bm)*(1-v/m),k=[];
+    for(let g=0;g<=4;g++){const v=Math.round(mA*g/4),yy=y(v,mA);k.push(sv("line",{x1:L,x2:W-4,y1:yy,y2:yy,class:"stgrid"}),sv("text",{x:L-6,y:yy+4,class:"stax","text-anchor":"end"},fmt(v)))}
+    const step=Math.ceil(n/Math.max(3,Math.floor(CW/70)));rows.forEach((r,i)=>{const x=L+i*bw;k.push(sv("rect",{x:x+bw*.15,y:y(r[1],mA),width:Math.max(1,bw*.7),height:Math.max(0,H-Bm-y(r[1],mA)),rx:2,style:"fill:"+PAL[0]}));if(i%step===0||i===n-1)k.push(sv("text",{x:x+bw/2,y:H-8,class:"stax","text-anchor":"middle"},r[0].length>7?r[0].slice(5):r[0]))});
+    if(rows.length>1)k.push(sv("polyline",{points:rows.map((r,i)=>(L+i*bw+bw/2)+","+y(r[2],mB)).join(" "),class:"stline"}));
+    return svg(W,H,k)+`<div class="stleg"><span class="sw" style="background:${PAL[0]}"></span>학습자 <span class="sw ln"></span>열어 본 묶음 (오른쪽 기준, 최대 ${fmt(mB)})</div>`}
+  const hbars=rows=>{const m=Math.max(1,...rows.map(r=>r[1]));return `<div class="sthb">${rows.map((r,i)=>`<div class="sthr"><div class="sthl">${esc(r[0])}${r[2]?`<small>${esc(r[2])}</small>`:""}</div><div class="stht"><i style="width:${(100*r[1]/m).toFixed(1)}%;background:${PAL[i%PAL.length]}"></i></div><b>${fmt(r[1])}</b></div>`).join("")}</div>`};
+  function vbars(rows,color){const W=CW,H=160,Bm=24,T=16,n=rows.length,bw=(W-8)/n,m=Math.max(1,...rows.map(r=>r[1])),k=[];rows.forEach((r,i)=>{const hh=(H-Bm-T)*r[1]/m,x=4+i*bw;k.push(sv("rect",{x:x+bw*.12,y:H-Bm-hh,width:bw*.76,height:hh,rx:3,style:"fill:"+color}));if(r[1]&&n<=12)k.push(sv("text",{x:x+bw/2,y:H-Bm-hh-4,class:"stax","text-anchor":"middle"},fmt(r[1])));if(n<=12||i%3===0)k.push(sv("text",{x:x+bw/2,y:H-7,class:"stax","text-anchor":"middle"},r[0]))});return svg(W,H,k)}
+  function draw(box,d){CW=Math.max(280,Math.min(1000,(box.clientWidth||640)-30));const t=d.totals||{};
+    const pname={};PARTS.forEach((p,i)=>{pname[String(i+1)]=p.ko});
+    const tile=(v,ko,sub)=>`<div class="sttile"><b>${v}</b><span>${ko}</span>${sub?`<small>${sub}</small>`:""}</div>`;
+    box.innerHTML=`<div class="stwrap"><div class="sttiles">${tile(fmt(t.devices),"학습자","기기 수")}${tile(fmt(t.returning),"다시 온 학습자","이틀 이상")}${tile(fmt(t.lessons),"묶음 열람")}${tile(t.perLearner==null?"–":t.perLearner,"1인당 묶음")}${tile(fmt(t.quizzes),"퀴즈 완료")}${tile(t.quizAvg==null?"–":t.quizAvg+"%","퀴즈 평균")}${tile(fmt(t.plays),"음성 재생")}</div>`+
+      (d.daily&&d.daily.length?card("날마다",timeChart(d.daily),1):"")+(d.monthly&&d.monthly.length>1?card("달마다",timeChart(d.monthly),1):"")+
+      (d.top&&d.top.length?card("많이 본 묶음",hbars(d.top.slice(0,10).map(r=>[B[r[0]]?bname(r[0]):r[0],r[1],r[0]])),1):"")+
+      (d.areas&&d.areas.length?card("메뉴별 열람",hbars(d.areas.map(r=>[pname[r[0]]||r[0],r[1]]))):"")+
+      (d.devices&&d.devices.length?card("기기",hbars(d.devices.map(r=>[{phone:"휴대폰",tablet:"태블릿",computer:"컴퓨터"}[r[0]]||r[0],r[1]]))):"")+
+      (d.os&&d.os.length?card("운영체제",hbars(d.os)):"")+
+      (d.survey&&d.survey.n?card("만족도 설문",`<div class="sttiles">${tile(fmt(d.survey.n),"응답")}${tile(d.survey.avg==null?"–":d.survey.avg+" ★","평균 별점")}${tile(d.survey.recPct==null?"–":d.survey.recPct+"%","추천 의향")}</div>`+vbars(["1★","2★","3★","4★","5★"].map((l,i)=>[l,(d.survey.dist||[])[i]||0]),"#C0801F")):"")+
+      (d.quizHist&&d.quizHist.some(Boolean)?card("퀴즈 점수 분포",vbars(["0–19%","20–39%","40–59%","60–79%","80–100%"].map((l,i)=>[l,d.quizHist[i]||0]),"#1E7F4F")):"")+
+      (d.hours&&d.hours.some(Boolean)?card("공부하는 시간 (한국 시간)",vbars(d.hours.map((v,i)=>[String(i),v]),"#0F8A8A"),1):"")+
+      `<p class="stnote">${d.updated?"업데이트 "+esc(d.updated):""}${d.first?" · "+esc(d.first)+"부터":""}. 이름 없이 모은 전체 합계예요. 기기 번호나 한 사람의 점수는 보여 주지 않아요.</p></div>`}
+  function page(box){requestAnimationFrame(()=>{let old=null;try{old=JSON.parse(localStorage.getItem(CK)||"null")}catch(e){}
+    if(window.__STATS_DEMO){draw(box,window.__STATS_DEMO);return}
+    if(old)draw(box,old);else box.innerHTML=`<p class="empty">통계를 불러오는 중…</p>`;
+    fetch(STATS_URL+"?stats=1",{cache:"no-store"}).then(r=>r.json()).then(d=>{if(!d||!d.totals)throw 0;try{localStorage.setItem(CK,JSON.stringify(d))}catch(e){}if(box.isConnected)draw(box,d)}).catch(()=>{if(!old&&box.isConnected)box.innerHTML=`<p class="empty">통계를 불러오지 못했어요. 인터넷이 연결되면 다시 열어 보세요.</p>`})})}
+  return {page};
+})();
+
+/* ---------- 도움말: 포스터 + 아기 코끼리 (10-01-01 맨 위), 사용 통계·설문 쪽 추가 ---------- */
+{const h0=B["10-01-01"];if(h0&&!h0._v40){h0._v40=1;
+  h0.info=`<figure class="poster"><img src="img/poster.webp" alt="Study Lao 사용 안내 포스터" loading="lazy" width="1200" height="1697"><figcaption>사용 안내 포스터 · 길게 누르거나 오른쪽 클릭으로 저장할 수 있어요</figcaption></figure>`+h0.info+
+  `<h3>함께 공부하는 아기 코끼리</h3><p>라오스는 옛날에 <span class="lo">ລ້ານຊ້າງ</span>(란쌍, 코끼리 백만 마리)의 나라라고 불렸어요. 헤드폰을 쓰고 라오 스카프를 두른 아기 코끼리가 공부를 함께해요.</p><div class="elerow"><figure>${ele("main","")}<figcaption>반가워요</figcaption></figure><figure>${ele("happy","")}<figcaption>잘했어요 (퀴즈 80% 이상)</figcaption></figure><figure>${ele("think","")}<figcaption>다음 묶음은?</figcaption></figure><figure>${ele("try","")}<figcaption>다시 해 봐요</figcaption></figure></div>`}
+  const ph=PARTS.find(p=>p.id==="PH");if(ph&&STATS_URL&&!B["10-01-04"]){const mk=(t,info)=>({t,h:"",i:"",w:[],tp:[],nx:[],pr:[],dl:[],sm:null,qz:[],info});
+    B["10-01-04"]=mk("사용 통계",`<h2>사용 통계</h2><div class="sub2">이 앱을 얼마나, 어떻게 쓰는지</div><p>몇 명이 이 앱으로 공부하는지, 어떤 묶음을 많이 여는지, 퀴즈 점수는 어떤지 모은 합계예요. 이름이나 이메일은 모으지 않고, 기기마다 무작위 번호만 써요.</p><div id="stbox"></div>`);
+    B["10-01-05"]=mk("설문",`<h2>이 앱 어때요?</h2><div class="sub2">짧은 만족도 설문</div><p>별점과 한두 가지 질문이에요. 이름 없이 보내지고, 앱을 고치는 데 써요.</p><div id="svpage"></div>`);
+    ph.subs[0].b.push("10-01-04","10-01-05");Object.assign(BLAB,{"10-01-04":["사용 통계",""],"10-01-05":["설문",""]})}}
+
+/* ---------- 내 학습 카드 ---------- */
+{const sr=document.querySelector(".search");if(sr&&!document.getElementById("mine")){sr.insertAdjacentHTML("afterend",`<div class="mine" id="mine"></div><div id="svbox"></div>`)}
+ const hd=document.querySelector("#app header");if(hd&&!hd.querySelector(".elehd"))hd.insertAdjacentHTML("beforeend",`<img class="elehd" src="img/ele/main.webp" width="268" height="290" alt="">`)}
+function track(id){if(!id||!B[id]||B[id].info)return;const t=today();if(!SEEN[id]){SEEN[id]=t.d;store.set("lao-seen",SEEN)}
+  if(DAYS[DAYS.length-1]!==t.d){DAYS.push(t.d);DAYS=DAYS.slice(-400);store.set("lao-days",DAYS)}
+  if(!t.s[id]){t.s[id]=1;store.set("lao-td",t)}ST.lesson(id)}
+function streak(){const set=new Set(DAYS),d=new Date();let n=0;if(!set.has(dayStr(d)))d.setDate(d.getDate()-1);while(set.has(dayStr(d))){n++;d.setDate(d.getDate()-1)}return n}
+function drawMine(){const box=document.getElementById("mine");if(!box)return;
+  const L=LORDER(),n=L.filter(isSeen).length,pct=L.length?Math.round(1000*n/L.length)/10:0,cb=curBun(),at=L.indexOf(cb);
+  const nx=L.slice(at+1).concat(L.slice(0,at+1)).find(id=>!isSeen(id))||L[(at+1)%L.length];
+  const t=today(),tl=Object.keys(t.s).length,st=streak(),rv=revKeys().length;
+  SV.offer(document.getElementById("svbox"),Object.keys(SEEN).length,DAYS.length);
+  box.innerHTML=`<div class="mn mn-st${st?" on":""}"><b><span class="fire" aria-hidden="true">🔥</span>${st}일</b><span>연속 학습</span></div>`+
+   `<div class="mn mn-pr"><b>${pct}%</b><span>${n.toLocaleString()} / ${L.length.toLocaleString()} 묶음</span><small>내 진도</small><div class="mbar"><i style="width:${Math.max(pct,n?1.5:0)}%"></i></div></div>`+
+   `<div class="mn mn-td"><b>${tl}묶음</b><span>오늘 공부${t.q?" · 퀴즈 "+t.q+"번":""}</span></div>`+
+   (nx?`<button class="mn mn-nx" type="button" data-mine="next" data-id="${nx}"><small>다음 새 묶음</small><span>${esc(bname(nx))}</span><i aria-hidden="true">→</i>${ele("think","nxele")}</button>`:"")+
+   (rv?`<button class="mn mn-wb" type="button" data-mine="rev"><small>오답·별표 복습</small><span>${rv}단어</span><i aria-hidden="true">→</i></button>`:"")}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-mine]");if(!t)return;e.stopPropagation();if(P.active)stopPlay();
+  if(t.dataset.mine==="next"){goto(t.dataset.id);window.scrollTo({top:0})}
+  else{S.mode="quiz";S.qkind="rev";S.quiz=null;S.q="";$("#q").value="";save();render();const s=document.getElementById("sheet");if(s)s.scrollIntoView({block:"start"})}},true);
+
+/* ---------- 소분류 진도 막대 ---------- */
+const _renderTop=renderTop;renderTop=function(){_renderTop();
+  document.querySelectorAll("#subs .sub").forEach(b=>{const s=SUBS[b.dataset.sub];if(!s)return;const L=s.b.filter(id=>B[id]&&!B[id].info);if(!L.length)return;const n=L.filter(isSeen).length;if(!n)return;
+    b.insertAdjacentHTML("beforeend",`<i class="sprog${n===L.length?" full":""}" style="--p:${(100*n/L.length).toFixed(0)}%" title="${n} / ${L.length}"></i>`)})};
+
+/* ---------- 폰: 팁을 그림 아래 버튼 안에 접기 ---------- */
+let TIPOPEN=false;
+const _renderBand=renderBand;renderBand=function(){_renderBand();const band=$("#band"),bx=band.querySelector(".box");band.classList.toggle("tipopen",TIPOPEN);
+  if(bx&&!band.querySelector(".tiptog")){const n=bx.children.length;bx.insertAdjacentHTML("beforebegin",`<button class="tiptog" type="button" aria-expanded="${TIPOPEN}">팁 ${n}<i aria-hidden="true">▾</i></button>`)}};
+document.addEventListener("click",e=>{const t=e.target.closest(".tiptog");if(!t)return;e.stopPropagation();TIPOPEN=!TIPOPEN;$("#band").classList.toggle("tipopen",TIPOPEN);t.setAttribute("aria-expanded",String(TIPOPEN))},true);
+
+/* ---------- 퀴즈 결과 화면 + 오답 노트 ---------- */
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t||t.dataset.opt===undefined||!S.quiz)return;const Q=S.quiz,q=Q.qs[Q.i];if(q&&Q.picked!==null&&q.got==null)q.got=q.opts[Q.picked]===q.answer});
+const _renderAutoQuiz=renderAutoQuiz;renderAutoQuiz=function(){const Q=S.quiz;
+  if(!Q||!Q.qs||!Q.qs.length||Q.i<Q.qs.length||!!Q.rev!==(S.qkind==="rev"))return _renderAutoQuiz();
+  const N=Q.qs.length,R=Q.score,pct=N?Math.round(100*R/N):0,wrong=Q.qs.filter(q=>q.got===false);
+  if(!Q.logged){Q.logged=1;if(!Q.rev&&!Q.again){const t=today();t.q++;store.set("lao-td",t);ST.log("quiz",curBun(),R,N)}setTimeout(drawMine,0)}
+  const C=2*Math.PI*52,msg=pct===100?"완벽해요!":pct>=80?"잘했어요!":pct>=50?"좋아요, 조금만 더!":"다시 해 봐요.";
+  const wq=q=>{const i=(q.key||"").indexOf("::"),bid=i>0?q.key.slice(0,i):"",w=bid&&B[bid]?B[bid].w.find(w=>w[0]===q.key.slice(i+2)):null;return w?[w[0],w[2],w[3]]:[q.answer,"",""]};
+  return `${Q.rev?`<p class="qrev">오답·별표 복습 · 남은 단어 ${revKeys().length}개</p>`:""}<div class="qend"><div class="qringw"><svg viewBox="0 0 120 120" class="qring"><circle cx="60" cy="60" r="52" class="qr0"/><circle cx="60" cy="60" r="52" class="qr1${pct>=80?" hi":pct<50?" lo":""}" stroke-dasharray="${C*pct/100} ${C}" transform="rotate(-90 60 60)"/></svg><div class="qrt"><b>${pct}%</b><span>${R} / ${N}</span></div></div><p class="qmsg">${msg}</p>${ele(pct>=80?"happy":pct>=50?"think":"try","qele")}</div>`+
+   (wrong.length?`<div class="qwrong"><h3>다시 볼 단어</h3>${wrong.map(q=>{const w=wq(q);return `<div class="qw"><span class="lo">${esc(w[0])}</span><span class="r">${esc(w[1])}</span><b>${esc(w[2])}</b></div>`}).join("")}</div>`:"")+
+   `<div class="row qbtns">${wrong.length&&wrong.length<N?`<button class="primary" type="button" data-qagain="1">틀린 것만 다시</button>`:""}${S.qkind!=="rev"&&revKeys().length?`<button class="ghost" type="button" data-qkind="rev">오답·별표 복습 ${revKeys().length}</button>`:""}<button class="${wrong.length&&wrong.length<N?"ghost":"primary"}" id="retry" type="button">새 문제 풀기</button></div>`};
+document.addEventListener("click",e=>{const t=e.target.closest("[data-qagain]");if(!t||!S.quiz)return;e.stopPropagation();if(P.active)stopPlay();const Q=S.quiz;
+  S.quiz={qs:Q.qs.filter(q=>q.got===false).map(q=>Object.assign({},q,{got:null,opts:shuffle(q.opts)})),i:0,score:0,picked:null,rev:Q.rev,again:1};render()},true);
+/* 오답 노트: 복습 탭 위에 단어 목록 (틀린 단어 + ☆), 하나씩 지울 수 있음 */
+const _renderQuiz=renderQuiz;renderQuiz=function(){const html=_renderQuiz();if(S.qkind!=="rev")return html;const ks=revKeys();if(!ks.length)return html;
+  const rows=ks.map(k=>{const i=k.indexOf("::"),bid=k.slice(0,i),w=B[bid].w.find(w=>w[0]===k.slice(i+2));return `<li><span class="lo">${esc(w[0])}</span><span class="r">${esc(w[2])}</span><span class="m">${esc(w[3])}</span><span class="src">${WRONG[k]?"틀림":""}${WRONG[k]&&STAR[k]?" · ":""}${STAR[k]?"★":""}</span><button type="button" class="wbgo" data-goto="${bid}" title="${esc(bname(bid))}">${bid}</button><button type="button" class="wbdel" data-wbdel="${esc(k)}" aria-label="목록에서 빼기">✕</button></li>`}).join("");
+  const nb=`<details class="wbook"${S.wbOpen?" open":""}><summary>오답 노트 · ${ks.length}단어</summary><ul>${rows}</ul><p class="wbhint">퀴즈에서 틀린 단어와 단어공부에서 ☆를 누른 단어예요. 복습 퀴즈에서 맞히면 틀린 목록에서 빠져요.</p></details>`;
+  const j=html.indexOf("</div></div>");return j<0?nb+html:html.slice(0,j+12)+nb+html.slice(j+12)};
+document.addEventListener("toggle",e=>{if(e.target.classList&&e.target.classList.contains("wbook"))S.wbOpen=e.target.open},true);
+document.addEventListener("click",e=>{const t=e.target.closest("[data-wbdel]");if(!t)return;e.stopPropagation();const k=t.dataset.wbdel;delete WRONG[k];delete STAR[k];store.set("lao-wrong",WRONG);store.set("lao-star",STAR);S.quiz=null;render()},true);
+
+/* ---------- 화면(자동/밝게/어둡게)과 글자 크기 ---------- */
+{/* 어두운 화면 규칙은 대부분 OS 설정(@media)에만 있어서, 같은 규칙을 [data-theme="dark"]용으로 한 번 복사 */
+ const out=[];for(const sh of document.styleSheets){let rs;try{rs=sh.cssRules}catch(e){continue}
+  for(const r of rs)if(r.media&&/prefers-color-scheme:\s*dark/.test(r.media.mediaText))for(const x of r.cssRules){if(!x.selectorText)continue;const sel=x.selectorText.split(",").map(s=>s.trim()).filter(s=>s.includes(':root:not([data-theme="light"])')).map(s=>s.replace(/:root:not\(\[data-theme="light"\]\)/g,':root[data-theme="dark"]'));if(sel.length)out.push(sel.join(",")+"{"+x.style.cssText+"}")}}
+ const st=document.createElement("style");st.id="v40dark";st.textContent=out.join("\n");document.head.appendChild(st)}
+function applyPrefs(){const r=document.documentElement,th=PREF.theme||"auto",fz=PREF.fz||1;if(th==="light"||th==="dark")r.setAttribute("data-theme",th);else r.removeAttribute("data-theme");r.style.setProperty("--fz",String(fz));
+  let box=document.getElementById("prefs");if(!box){const v=document.querySelector(".ver");if(!v)return;v.insertAdjacentHTML("beforebegin",`<div class="prefs" id="prefs"></div>`);box=document.getElementById("prefs")}
+  const seg=(k,lab,opts,cur)=>`<div class="pseg" role="group" aria-label="${lab}" title="${lab}"><div class="pbtns">${opts.map(([v,t])=>`<button type="button" class="pb${String(cur)===String(v)?" on":""}" data-pref="${k}" data-v="${v}" aria-pressed="${String(cur)===String(v)}">${t}</button>`).join("")}</div></div>`;
+  box.innerHTML=seg("theme","화면",[["auto","자동"],["light","☀ 밝게"],["dark","☾ 어둡게"]],th)+seg("fz","글자 크기",[[0.9,"A−"],[1,"A"],[1.15,"A+"],[1.3,"A++"]],fz)}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-pref]");if(!t)return;e.stopPropagation();PREF[t.dataset.pref]=t.dataset.pref==="fz"?+t.dataset.v:t.dataset.v;store.set("lao-pref",PREF);applyPrefs();if(S.mode==="cards")try{fitBig()}catch(_){}else try{fitNotes();placeTones()}catch(_){}},true);
+applyPrefs();
+
+/* ---------- 제목(또는 위 고정 줄의 LAO Lang)을 누르면 첫 메뉴 첫 묶음, 맨 위로 ---------- */
+for(const el of [document.querySelector("#app header .brand"),document.querySelector("#stick .strow > b")])if(el){el.style.cursor="pointer";el.setAttribute("role","link");el.setAttribute("tabindex","0");el.title="처음으로";
+  const home=ev=>{if(ev)ev.stopPropagation();if(P.active)stopPlay();goto(PARTS[0].subs[0].b[0]);setTimeout(()=>window.scrollTo(0,0),60)};
+  el.addEventListener("click",home);el.addEventListener("keydown",ev=>{if(ev.key==="Enter")home(ev)})}
+
+/* ---------- 재생 기록 (통계) ---------- */
+document.addEventListener("click",e=>{const t=e.target.closest("[data-playbundle]");if(t&&!P.active)ST.log("play",t.dataset.playbundle,t.dataset.chain?"chain":"bundle")},true);
+
+/* ---------- render: 기록, 내 학습, 도움말 쪽 ---------- */
+const _render40=render;render=function(){_render40();if(!S.q.trim()){const b=curBun();track(b);
+  if(b==="10-01-04"){const x=document.getElementById("stbox");if(x)STP.page(x)}
+  if(b==="10-01-05"){const x=document.getElementById("svpage");if(x)SV.form(x,true)}}
+  drawMine()};
+render();
