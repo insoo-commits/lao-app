@@ -127,4 +127,4 @@
 - 폰: 팁은 그림 아래 "팁 N" 버튼 안에 접힘. 제목·고정 줄 phasaLAO 누르면 1-01-01. 아래 줄 Copyleft
 - 아기 코끼리 img/ele/{main,happy,think,try}.webp (한국어배우기 앱 그림 그대로): 머리, 다음 새 묶음, 퀴즈 결과(80%↑ happy, 50%↑ think, 그 밖 try), 도움말 10-01-01
 - 도움말 10-01-01 맨 위 포스터 img/poster.webp (프로젝트 파일 poster/LAO_Lang_사용안내_A4.png를 1200px webp로)
-- 익명 통계·설문: STATS_URL = RYU의 라오어 전용 Apps Script 시트, 코드 tools/stats/Code.gs (KoJey와 같음). 도움말 10-01-04 사용 통계, 10-01-05 설문. 설문 카드는 묶음 5개·이틀 뒤 내 학습 아래에 뜸. localhost에서는 보내지 않음
+- 익명 통계·설문: STATS_URL = RYU의 라오어 전용 Apps Script 시트, 코드 tools/stats/Code.gs (KoJey와 같음). 도움말 소분류 통계·의견(PH-C): 10-03-01 사용 통계, 10-03-02 의견 보내기. 설문 카드는 묶음 5개·이틀 뒤 내 학습 아래에 뜸. localhost에서는 보내지 않음
