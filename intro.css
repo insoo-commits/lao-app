@@ -246,3 +246,6 @@ html.introon,html.introon body{overflow:hidden}
 
 /* PhasaLAO: zoom of the app (html 1.12/1.3 on PC) is undone inside the intro so its sizes match the mockup */
 @media (hover:hover) and (pointer:fine){#intro{zoom:calc(1/1.12)}}@media (hover:hover) and (pointer:fine) and (min-width:900px){#intro{zoom:calc(1.1/1.3)}}
+
+/* volume row (2026-11-27) */
+#intro .rate.vol .ticks{margin:0 9px}
