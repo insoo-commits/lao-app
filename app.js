@@ -881,7 +881,7 @@ applyPrefs();
 
 /* ---------- 제목(또는 위 고정 줄의 PhasaLAO)을 누르면 첫 메뉴 첫 묶음, 맨 위로 ---------- */
 for(const el of [document.querySelector("#app header .brand"),document.querySelector("#stick .strow > b")])if(el){el.style.cursor="pointer";el.setAttribute("role","link");el.setAttribute("tabindex","0");el.title="처음으로";
-  const home=ev=>{if(ev)ev.stopPropagation();if(P.active)stopPlay();goto(PARTS[0].subs[0].b[0]);setTimeout(()=>window.scrollTo(0,0),60)};
+  const home=ev=>{if(ev)ev.stopPropagation();if(P.active)stopPlay();/* v4.17 RYU: the title opens the intro page */if(window.PL_INTRO){window.PL_INTRO();return}goto(PARTS[0].subs[0].b[0]);setTimeout(()=>window.scrollTo(0,0),60)};
   el.addEventListener("click",home);el.addEventListener("keydown",ev=>{if(ev.key==="Enter")home(ev)})}
 
 /* ---------- 재생 기록 (통계) ---------- */
