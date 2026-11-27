@@ -249,3 +249,6 @@ html.introon,html.introon body{overflow:hidden}
 
 /* volume row (2026-11-27) */
 #intro .rate.vol .ticks{margin:0 9px}
+/* speed and volume sliders line up (RYU 2026-11-28): same label and value widths */
+#intro .rate .lab{flex:0 0 5.6em;min-width:0;overflow-wrap:anywhere}
+#intro .rate output{min-width:3.8em;flex:none}
