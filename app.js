@@ -8,6 +8,8 @@
   try { var s = localStorage.getItem(KEY); if (s !== null && !isNaN(+s)) V = Math.max(0, Math.min(1, +s)); } catch (e) {}
   var FIXED = false;                       /* true where element volume is read-only (iOS) */
   try { var t = document.createElement("audio"); t.volume = 0.5; FIXED = Math.abs(t.volume - 0.5) > 0.01; } catch (e) {}
+  /* v2 (RYU: no change on phones): newer iPhones read back the value they ignore, so detect iPhone/iPad by name too */
+  try { var ua = navigator.userAgent || ""; if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) FIXED = true; } catch (e) {}
   var ctx = null, gain = null, routed = [], seen = [];
   function ensureCtx(){
     if (ctx) return ctx;
@@ -41,7 +43,9 @@
     set: function(v){
       V = Math.max(0, Math.min(1, +v || 0));
       try { localStorage.setItem(KEY, String(V)); } catch (e) {}
+      if (FIXED && V < 0.999) ensureCtx();   /* made during the slider touch, so iOS lets it run */
       if (gain) try { gain.gain.value = V; } catch (e) {}
+      wake();
       seen.forEach(apply);
     }
   };
