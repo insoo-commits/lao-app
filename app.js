@@ -864,7 +864,7 @@ const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#
   const ph=PARTS.find(p=>p.id==="PH");if(ph&&STATS_URL&&!B["10-03-01"]){const mk=(t,info)=>({t,h:"",i:"",w:[],tp:[],nx:[],pr:[],dl:[],sm:null,qz:[],info});
     B["10-03-01"]=mk("사용 통계",`<h2>사용 통계</h2><div class="sub2">이 앱을 얼마나, 어떻게 쓰는지</div><p>몇 명이 이 앱으로 공부하는지, 어떤 묶음을 많이 여는지, 퀴즈 점수는 어떤지 모은 합계예요. 이름이나 이메일은 모으지 않고, 기기마다 무작위 번호만 써요.</p><div id="stbox"></div>`);
     B["10-03-02"]=mk("의견 보내기",`<h2>이 앱 어때요?</h2><div class="sub2">짧은 만족도 설문</div><p>별점과 한두 가지 질문이에요. 이름 없이 보내지고, 앱을 고치는 데 써요.</p><div id="svpage"></div>`);
-    {/* v4.4 RYU: 한국어배우기처럼 도움말에 "통계·의견" 소분류 */const sc={id:"PH-C",name:"통계·의견",b:["10-03-01","10-03-02"],part:"PH",code:(PARTS.indexOf(ph)+1)+"-"+String(ph.subs.length+1).padStart(2,"0")};ph.subs.push(sc);SUBS[sc.id]=sc}Object.assign(BLAB,{"10-03-01":["사용 통계",""],"10-03-02":["의견 보내기 (설문)",""]})}}
+    {/* v4.4 RYU: 한국어배우기처럼 도움말에 "통계·의견" 소분류 */const sc={id:"PH-C",name:"통계·의견",b:["10-03-01","10-03-02"],part:"PH",code:(PARTS.indexOf(ph)+1)+"-"+String(ph.subs.length+1).padStart(2,"0")};ph.subs.push(sc);SUBS[sc.id]=sc;/* v4.30 RYU: 새로고침해도 통계·의견 화면 그대로 (이 소분류는 S보다 늦게 생겨서 첫 메뉴로 돌아갔음) */if(saved.part==="PH"&&saved.sub===sc.id&&S.sub!==sc.id){S.part="PH";S.sub=sc.id;S.lastSub.PH=sc.id;try{render()}catch(_){}}}Object.assign(BLAB,{"10-03-01":["사용 통계",""],"10-03-02":["의견 보내기 (설문)",""]})}}
 
 /* ---------- 내 학습 카드 ---------- */
 {const sr=document.querySelector(".search");if(sr&&!document.getElementById("mine")){sr.insertAdjacentHTML("afterend",`<div class="mine" id="mine"></div><div id="svbox"></div>`)}
