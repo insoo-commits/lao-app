@@ -119,7 +119,7 @@ function phone(){ return `
  ${foot(true)}
  <div class="sticky">${cta()}</div>`; }
 function pad(){ return `
- <div class="hero"><img class="bg" src="img/intro/luangprabang.jpg" alt="">
+ <div class="hero"><img class="bg" src="img/intro/nightmarket.jpg" alt="">
   <div class="top">${brand()}${free(true)}</div>
   <div class="copy">${heroCopy()}</div></div>
  <div class="wrap">
@@ -140,7 +140,7 @@ function pc(){ return `
   <div class="nav">${brand()}${[0, 1, 8, 9].map(i => `<a href="#" data-area="${MENUS[i][0]}">${esc(MENUS[i][2])}</a>`).join("")}<span class="sp"></span>${free(true)}${cta()}</div>
   <div class="hgrid">
    <div class="copy">${heroCopy()}<div class="cta">${cta()}${howBtn("ghost")}</div>
-    <div class="strip"><img src="img/intro/koreandept.jpg" alt="한국어학과"><img src="img/intro/vangvieng.jpg" alt="방비엥 열기구"></div></div>
+    <div class="strip"><img src="img/intro/koreandept.jpg" alt="한국어학과"><img src="img/intro/vangvieng2.jpg" alt="방비엥 카약"></div></div>
    <div class="passwrap"><img class="elep" src="img/ele/main.webp" alt="">${pass(true)}</div>
   </div></div>
  <div class="band">
