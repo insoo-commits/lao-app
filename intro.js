@@ -8,7 +8,7 @@ const LEARN = 8;
 const x = {
  hello:"ສະບາຍດີ! 싸바이디!", losub:"라오스어, 주제별로 공부하기",
  lead:"인사부터 식당·시장·교통까지 주제별 묶음으로 배워요. 원어민 라오어 음성과 한글 독음, 한국어 뜻이 함께 나오고, 짝말·비슷한말·발음·듣기 연습과 라오스 이야기까지 담았어요.",
- st:["묶음","단어","문장","메뉴"], free:"무료",
+ st:["묶음","단어","문장","학습자"], free:"무료",
  s1:"재생 설정", s1n:"공부하는 중에도 언제든 바꿀 수 있어요. 앱이 기억해요.",
  pass:"나의 학습 설정", rep:"반복", spd:"배속", vol:"음량", voice:"한국어 음성", voiceN:"라오어 → 한국어 뜻 → 라오어",
  theme:"화면", th:["자동","밝게","어둡게"], fz:"글자 크기", listen:"들어 보기",
@@ -65,7 +65,15 @@ function heroCopy(){ const c = counts(); return `
   <h1 lang="lo">ຮຽນ ພາສາລາວ</h1>
   <p class="losub">${esc(x.losub)}</p>
   <p class="lead">${esc(x.lead)}</p>
-  <div class="stats">${c.map((n, i) => `<div><b>${esc(n)}</b><span>${x.st[i]}</span></div>`).join("")}</div>`; }
+  <div class="stats">${c.slice(0, 3).map((n, i) => `<div><b>${esc(n)}</b><span>${x.st[i]}</span></div>`).join("")}<div><b data-learners>${learners()}</b><span>${x.st[3]}</span></div></div>`; }
+
+/* RYU 2026-11-28: "메뉴" out, "학습자" last = devices counted by the anonymous stats (same number as 도움말 > 통계), from the saved copy at once, then refreshed once per visit */
+let LRN = null, LRNF = false;
+const lfmt = n => Number(n).toLocaleString("en-US");
+function learners(){ if (LRN == null){ try { const d = JSON.parse(localStorage.getItem("lao-statspage") || "null"); if (d && d.totals && d.totals.devices) LRN = +d.totals.devices; } catch (e) {} getLearners(); } return LRN ? lfmt(LRN) : "–"; }
+function getLearners(){ if (LRNF) return; LRNF = true; try { if (typeof STATS_URL === "undefined" || !STATS_URL || !navigator.onLine) return;
+  fetch(STATS_URL + "?stats=1", {cache: "no-store"}).then(r => r.json()).then(d => { if (!d || !d.totals) return; try { localStorage.setItem("lao-statspage", JSON.stringify(d)); } catch (e) {}
+    if (d.totals.devices){ LRN = +d.totals.devices; document.querySelectorAll("#intro [data-learners]").forEach(b => { b.textContent = lfmt(LRN); }); } }).catch(() => {}); } catch (e) {} }
 function brand(){ return `<div class="brand"><img src="icon-192.png" alt=""><div><b>PhasaLAO</b><span class="lo">ພາສາລາວ</span></div></div>`; }
 function free(long){ return `<span class="freepill"><i></i>${x.free}${long ? ` · <span class="lo">ສະບາຍດີ</span>` : ""}</span>`; }
 function step(n, k, note){ return `<div class="sh">${n ? `<span class="n">${n}</span>` : ""}<div><h2>${esc(x[k])}${LO[k] ? ` <span class="kosub lo">${LO[k]}</span>` : ""}</h2>${note ? `<p>${esc(x[note])}</p>` : ""}</div></div>`; }
