@@ -187,21 +187,23 @@ function setPref(k, v){ PREF[k] = v; store.set("lao-pref", PREF); applyPrefs(); 
 
 /* sample: the first line of 1-01-01 with the app's own recordings: Lao (repeat × at the chosen speed), the Korean meaning once after the first when 한국어 음성 is on */
 const SAMPLE_LO = "ສະບາຍດີ ສະບາຍດີບໍ?", SAMPLE_RD = "싸바이디, 싸바이디 버?", SAMPLE_KO = "안녕하세요, 잘 지내요?";
+let RUN = 0;   // each play has its own number: a stopped play never wakes up and talks over a new one (RYU 2026-11-27, as JeyCampus v1.30.6)
 let playing = false, IA = null;
-function stopSample(){ if (playing){ playing = false; try { IA && IA.pause(); } catch (e) {} } }
-function playClip(text, ko){ return new Promise(res => { let k = null; try { k = keyOf({text, ko}); } catch (e) {} if (!k){ res(); return; }
-  blobUrl(k).then(u => { if (!playing){ res(); return; } IA = IA || new Audio(); IA.src = u; IA.playbackRate = ko ? 1 : RATE; try { IA.preservesPitch = true; } catch (e) {}
+function stopSample(){ RUN++; if (playing){ playing = false; try { IA && IA.pause(); } catch (e) {} } }
+function playClip(text, ko){ const me = RUN; return new Promise(res => { let k = null; try { k = keyOf({text, ko}); } catch (e) {} if (!k){ res(); return; }
+  blobUrl(k).then(u => { if (!playing || RUN !== me){ res(); return; } IA = IA || new Audio(); IA.src = u; IA.playbackRate = ko ? 1 : RATE; try { IA.preservesPitch = true; } catch (e) {}
     IA.onended = IA.onerror = () => res(); const p = IA.play(); if (p && p.catch) p.catch(() => res()); }, () => res()); }); }
 async function sample(){
   if (playing){ stopSample(); render(); return; }
   try { if (P.active) stopPlay(); } catch (e) {}
+  const me = ++RUN, on = () => playing && RUN === me;
   playing = true; render(); const n = +rep() || 1;
-  for (let i = 0; i < n && playing; i++){
+  for (let i = 0; i < n && on(); i++){
     await playClip(SAMPLE_LO, false);
-    if (i === 0 && voice() && playing) await playClip(SAMPLE_KO, true);
-    if (playing) await new Promise(r => setTimeout(r, 350));
+    if (i === 0 && voice() && on()) await playClip(SAMPLE_KO, true);
+    if (on()) await new Promise(r => setTimeout(r, 350));
   }
-  playing = false; render();
+  if (RUN === me){ playing = false; render(); }
 }
 function toast(msg){ if (!box) return; const el = document.createElement("div"); el.className = "toast"; el.textContent = msg; box.appendChild(el); setTimeout(() => el.remove(), 2200); }
 /* the app's own "음성 mp3 내려받기" link does the work; its progress text is copied here */
