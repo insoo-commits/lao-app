@@ -10,7 +10,7 @@ const x = {
  lead:"인사부터 식당·시장·교통까지 주제별 묶음으로 배워요. 원어민 라오어 음성과 한글 독음, 한국어 뜻이 함께 나오고, 짝말·비슷한말·발음·듣기 연습과 라오스 이야기까지 담았어요.",
  st:["묶음","단어","문장","메뉴"], free:"무료",
  s1:"재생 설정", s1n:"공부하는 중에도 언제든 바꿀 수 있어요. 앱이 기억해요.",
- pass:"나의 학습 설정", rep:"반복", spd:"배속", voice:"한국어 음성", voiceN:"라오어 → 한국어 뜻 → 라오어",
+ pass:"나의 학습 설정", rep:"반복", spd:"배속", vol:"음량", voice:"한국어 음성", voiceN:"라오어 → 한국어 뜻 → 라오어",
  theme:"화면", th:["자동","밝게","어둡게"], fz:"글자 크기", listen:"들어 보기",
  start:"시작하기", how:"설치 방법",
  s2:"공부 방법", s2n:"묶음마다 세 가지로 공부해요.", h3:[["예문보기","듣고 따라 말하기","main"],["단어공부","낱말카드·성조 색","happy"],["확인퀴즈","4지선다로 확인","think"]], h3k:["S","W","E"],
@@ -77,6 +77,7 @@ function pass(withCta){
   <div class="passbody">
    <div class="row"><div class="lab">${esc(x.rep)}<small>문장마다 몇 번 들을지</small></div>${seg("rep", [1,2,3,4,5].map(n => [n, n + "회"]), rep())}</div>
    <div class="row full"><div class="rate"><div class="lab">${esc(x.spd)}<small>느리게 · 빠르게</small></div><div class="rtrack"><input type="range" min="0.7" max="2" step="0.1" value="${rate()}" data-rate aria-label="${esc(x.spd)}"><div class="ticks" aria-hidden="true">${[0.7, 1, 1.5, 2].map(v => `<span style="left:${((v - 0.7) / 1.3 * 100).toFixed(2)}%">${v.toFixed(1)}</span>`).join("")}</div></div><output>×${(+rate()).toFixed(1)}</output></div></div>
+   <div class="row full"><div class="rate vol"><div class="lab">${esc(x.vol)}<small>작게 · 크게</small></div><div class="rtrack"><input type="range" min="0" max="100" step="5" value="${volP()}" data-vol aria-label="${esc(x.vol)}"><div class="ticks" aria-hidden="true">${[0, 50, 100].map(v => `<span style="left:${v}%">${v}</span>`).join("")}</div></div><output>${volP()}%</output></div></div>
    <div class="row"><div class="lab">${esc(x.voice)}<small>${esc(x.voiceN)}</small></div><button type="button" class="sw${voice() ? " on" : ""}" data-voice role="switch" aria-checked="${voice()}" aria-label="${esc(x.voice)}"></button></div>
    <div class="row"><div class="lab">${esc(x.theme)}<small>밝은 화면 · 어두운 화면</small></div>${seg("theme", [["auto", x.th[0]], ["light", x.th[1]], ["dark", x.th[2]]], theme(), "txt")}</div>
    <div class="row"><div class="lab">${esc(x.fz)}<small>읽기 편한 크기로</small></div>${seg("fz", [[0.9, "A−"], [1, "A"], [1.15, "A+"], [1.3, "A++"]], fz())}</div>
@@ -229,6 +230,9 @@ document.addEventListener("click", ev => {
   else if (a === "audio"){ const d = document.querySelector(".dlp a.dla"); if (d) d.click(); }
   else if (a === "how"){ const el = box.querySelector(".steps"); if (el) el.scrollIntoView({behavior: "smooth", block: "center"}); }
 });
+/* volume (RYU 2026-11-27): vol.js (window.AVOL) sets one level for all app sound; iPhone/iPad included */
+function volP(){ try { return window.AVOL ? AVOL.pct() : 100; } catch (e) { return 100; } }
+document.addEventListener("input", ev => { if (box && ev.target.matches("#intro [data-vol]")){ const v = +ev.target.value; try { if (window.AVOL) AVOL.set(v / 100); } catch (e) {} const o = ev.target.closest(".rate").querySelector("output"); if (o) o.textContent = v + "%"; } });
 document.addEventListener("input", ev => { if (box && ev.target.matches("#intro [data-rate]")){ const v = (+ev.target.value).toFixed(1).replace(/\.0$/, ""); setRate(v); const o = ev.target.closest(".rate").querySelector("output"); if (o) o.textContent = "×" + (+v).toFixed(1); } });
 document.addEventListener("change", ev => { if (box && ev.target.matches("#intro [data-rate]")) render(); });
 /* while the intro is open, the app's keys stay off; Esc closes it */
