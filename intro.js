@@ -139,13 +139,12 @@ function pc(){ return `
  <div class="hero"><img class="bg" src="img/intro/nongkhiaw.jpg" alt=""><span class="glow2"></span>
   <div class="nav">${brand()}${[0, 1, 8, 9].map(i => `<a href="#" data-area="${MENUS[i][0]}">${esc(MENUS[i][2])}</a>`).join("")}<span class="sp"></span>${free(true)}${cta()}</div>
   <div class="hgrid">
-   <div class="copy">${heroCopy()}<div class="cta">${cta()}${howBtn("ghost")}</div>
-    <div class="strip"><img src="img/intro/koreandept.jpg" alt="한국어학과"><img src="img/intro/vangvieng2.jpg" alt="방비엥 카약"></div></div>
+   <div class="copy">${heroCopy()}<div class="cta">${cta()}${howBtn("ghost")}</div></div>
    <div class="passwrap"><img class="elep" src="img/ele/main.webp" alt="">${pass(true)}</div>
   </div></div>
  <div class="band">
   <div style="display:grid;gap:14px;align-content:start"><h2>${esc(x.s2)} <span class="kosub lo">${LO.s2}</span></h2><p style="margin:0;color:var(--mm);font-size:.92em">${esc(x.s2n)} ${esc(x.s1n)}</p>${how3()}</div>
-  <div><h2 style="margin-bottom:12px">${esc(x.inside)} <span class="kosub lo">${LO.inside}</span></h2>${menus()}<div class="gal"><img src="img/intro/patuxai.jpg" alt="빠뚜싸이 분수"><img src="img/la/alms.jpg" alt="탁발"><img src="img/la/sinh.jpg" alt="씬" style="object-position:center 25%"></div></div>
+  <div><h2 style="margin-bottom:12px">${esc(x.inside)} <span class="kosub lo">${LO.inside}</span></h2>${menus()}<div class="gal"><img src="img/intro/patuxai.jpg" alt="빠뚜싸이 분수"><img src="img/intro/koreandept.jpg" alt="한국어학과"><img src="img/la/alms.jpg" alt="탁발"></div></div>
  </div>
  <div class="inst"><img class="bg" src="img/intro/sunset.jpg" alt="">
   <div style="display:grid;gap:14px;align-content:start">${detectChip("pc")}<h2 style="font-size:1.5em">${esc(x.it)}</h2><p style="margin:0;opacity:.85;font-size:.92em">${esc(x.itn)}</p>${osTabs("pc")}${steps("pc")}</div>
