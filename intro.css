@@ -234,7 +234,7 @@ html.introon,html.introon body{overflow:hidden}
 #intro .passhead .pid{white-space:nowrap}
 #intro.D .band{align-items:start}
 /* (PhasaKAO v2.82): the elephant at the bottom right about as tall as the name and text beside it */
-#intro .frow .frpic{height:86px;width:auto;display:block}
+#intro .frow .frpic{height:64px;width:auto;display:block}
 #intro .frow{align-items:center}
 /* RYU's own photos in img/intro/ (2026-11-27): brown over them so the text stays readable */
 #intro.D .hero{background:#3A1C08}

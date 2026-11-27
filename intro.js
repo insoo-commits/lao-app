@@ -134,7 +134,7 @@ function pad(){ return `
   <div style="display:grid;gap:14px;align-content:start">${detectChip("pad")}<h2 style="font-size:1.4em">${esc(x.it)}</h2><p style="margin:0;opacity:.85;font-size:.9em">${esc(x.itn)}</p>${osTabs("pad")}${steps("pad")}</div>
   <div style="display:grid;gap:12px;align-content:start"><h3 style="font-size:1em;opacity:.9">${esc(x.dlt)}</h3>${downloads("pad")}${addr()}</div>
  </div>
- <div class="frow">${foot(false)}<img src="img/ele/happy.webp" alt="" style="width:140px;height:auto"></div>`; }
+ <div class="frow">${foot(false)}<img src="img/ele/happy.webp" alt="" class="frpic"></div>`; }
 function pc(){ return `
  <div class="hero"><img class="bg" src="img/intro/nongkhiaw.jpg" alt=""><span class="glow2"></span>
   <div class="nav">${brand()}${[0, 1, 8, 9].map(i => `<a href="#" data-area="${MENUS[i][0]}">${esc(MENUS[i][2])}</a>`).join("")}<span class="sp"></span>${free(true)}${cta()}</div>
@@ -152,7 +152,7 @@ function pc(){ return `
   <div style="display:grid;gap:12px;align-content:start;justify-items:start"><h3 style="font-size:1em">${esc(x.qr)}</h3><div class="qrbox"><img src="img/qr.svg" alt="QR ${URL_APP}"></div><p style="margin:0;opacity:.85;font-size:.85em">${esc(x.qrd)}</p>${addr()}</div>
   <div style="display:grid;gap:12px;align-content:start"><h3 style="font-size:1em;opacity:.9">${esc(x.dlt)}</h3>${downloads("pc")}</div>
  </div>
- <div class="frow">${foot(false)}<img src="img/ele/happy.webp" alt="" style="width:140px;height:auto"></div>`; }
+ <div class="frow">${foot(false)}<img src="img/ele/happy.webp" alt="" class="frpic"></div>`; }
 
 /* ---- show, redraw, close ---- */
 let box = null, curDev = null;
