@@ -79,7 +79,7 @@ PhasaLAO(라오스 사람용이 아니라 **한국 사람이 라오스어를 배
 - **인쇄 교재:** 목차·앱 연결 계획 문서 https://claude.ai/artifact/RrWNihVoynXnFyyoHCLBsV (1부 글자와 소리, 2부 문장의 뼈대, 3부 장면 회화, 부록). 12장 교안 docx 완성(`tools/source/book/`). 정할 것: 판형·장별 쪽수, 수업활동 25묶음 별책 여부, QR 여부(앱에 `#2-01-01` 바로가기 기능이 먼저 필요), 책에 독음 넣을지.
 - **열린 ə 독음**(ເດີ 더 등 ㅓ 유지)은 RYU 확인 대기.
 - **원어민 확인:** ເທີ່ຍວບິນ(→ ຖ້ຽວບິນ), ຍ່າງ(꼬치), ຊອບ, 교재 리뷰의 Thai식 표현(ເຄື່ອງບິນ, ນິດໜ່ອຍ).
-- **라오스 탭 사진 없는 8쪽:** central, kaysone, rocket, boatlight, boatrace, nop, family, lamvong (무료 사진을 못 찾음, Wikimedia만 됨).
+- **라오스 탭 사진 없는 쪽:** v4.38(2026-11-28)에 7쪽(central, kaysone, rocket, boatrace, nop, family, lamvong)을 Wikimedia Commons 사진으로 채움(`tools/source/src/v2/laos_photos_v438.py`, 출처는 `laos_credits.json`). 남은 쪽: **boatlight(9-05-03 안거의 시작과 끝, 불배)** — Commons에 라오스 불배(ໄຫຼເຮືອໄຟ) 사진이 없음. 클라우드에서 Commons 접속은 KOR Language 환경 허용 목록에 commons/upload.wikimedia.org를 넣어 둠(내려받기는 1분에 1장 정도로 천천히, 빠르면 429).
 - **디자인 A/B 시안**은 시안 B로 적용 끝(v3.31). 따로 남은 선택 없음.
 - iPhone 실기에서 음량 슬라이더 + 잠금화면 재생 확인.
 - 예전 studylao.pages.dev Cloudflare 프로젝트를 지울지는 RYU 결정.
