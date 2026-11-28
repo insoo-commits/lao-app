@@ -4,11 +4,48 @@
 window.APPCFG = {
   app: "PhasaLAO",
   store: "lao-",                /* this app's storage prefix (lao-snap …); core parts that save new things use it */
+  prefs: { theme: "화면", themes: ["자동", "☀ 밝게", "☾ 어둡게"], fz: "글자 크기", stop: true },   /* core prefs: labels of the theme / text size buttons */
   ptr: { bg: "rgba(40,44,52,.88)", go: "rgba(26,115,232,.95)" },   /* core ptr: pull-to-refresh button colour, and once far enough */
   stick: { title: function(){ var o = document.querySelector("#bsel option:checked"); return o ? (o.dataset.ko || o.textContent || "").trim() : ""; },
            watch: ["band"], strip: ["data-part"], stop: true },   /* core stick: lesson line from the lesson select; the band refreshes it */
   vol: { sub: "작게 · 크게" }   /* core vol: small Korean label under the volume slider's title */
 };
+/* core prefs v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO.
+   Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
+   Screen theme (auto / light / dark) and text size (A− A A+ A++), kept on this device (KoJey v1.4, RYU).
+   "auto" follows the phone's setting: no data-theme on <html>. Text size = the CSS variable --fz on <html>.
+   The row of buttons goes in #prefs: two groups .pseg > .pbtns > button.pb(.on); the look is each app's own CSS.
+   The app keeps its own saved values and calls once:
+     PREFS.init({get: () => ({theme, fz}), set: (key, value) => save it, box: () => the #prefs element or null, after: () => re-fit text})
+   then PREFS.apply() whenever the values changed elsewhere (the intro page). Labels from window.APPCFG.prefs (app-config.js):
+     theme  the theme group's label     themes  [auto, light, dark] button texts     fz  the size group's label
+     stop   true = a tap on these buttons does not reach the page's other click handlers */
+(function(){
+  if (window.PREFS) return;
+  var C = (window.APPCFG && window.APPCFG.prefs) || {}, O = {};
+  var SIZES = [[0.9, "A−"], [1, "A"], [1.15, "A+"], [1.3, "A++"]];
+  var esc = function(s){ return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
+  var seg = function(k, lab, opts, cur){
+    return '<div class="pseg" role="group" aria-label="' + esc(lab) + '" title="' + esc(lab) + '"><div class="pbtns">' + opts.map(function(o){
+      var on = String(cur) === String(o[0]);
+      return '<button type="button" class="pb' + (on ? " on" : "") + '" data-pref="' + k + '" data-v="' + o[0] + '" aria-pressed="' + on + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>"; };
+  function apply(){
+    if (!O.get) return;
+    var p = O.get() || {}, th = p.theme || "auto", fz = p.fz || 1, r = document.documentElement;
+    if (th === "light" || th === "dark") r.setAttribute("data-theme", th); else r.removeAttribute("data-theme");
+    r.style.setProperty("--fz", String(fz));
+    var box = O.box && O.box(); if (!box) return;
+    var t = C.themes || ["Auto", "☀ Light", "☾ Dark"];
+    box.innerHTML = seg("theme", C.theme || "Theme", [["auto", t[0]], ["light", t[1]], ["dark", t[2]]], th) + seg("fz", C.fz || "Text size", SIZES, fz);
+  }
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("#prefs [data-pref]"); if (!b || !O.set) return;
+    if (C.stop) e.stopPropagation();
+    var k = b.getAttribute("data-pref"), v = b.getAttribute("data-v");
+    O.set(k, k === "fz" ? +v : v); apply(); if (O.after) try { O.after(); } catch (_) {}
+  }, true);
+  window.PREFS = {init: function(o){ O = o || {}; apply(); }, apply: apply};
+})();
 /* core ptr v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO.
    Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
    Pull to refresh (RYU 2026-11-27): on phones and tablets, pull down from the very top of the page and let go to reload
@@ -1037,12 +1074,11 @@ document.addEventListener("click",e=>{const t=e.target.closest("[data-wbdel]");i
  const out=[];for(const sh of document.styleSheets){let rs;try{rs=sh.cssRules}catch(e){continue}
   for(const r of rs)if(r.media&&/prefers-color-scheme:\s*dark/.test(r.media.mediaText))for(const x of r.cssRules){if(!x.selectorText)continue;const sel=x.selectorText.split(",").map(s=>s.trim()).filter(s=>s.includes(':root:not([data-theme="light"])')).map(s=>s.replace(/:root:not\(\[data-theme="light"\]\)/g,':root[data-theme="dark"]'));if(sel.length)out.push(sel.join(",")+"{"+x.style.cssText+"}")}}
  const st=document.createElement("style");st.id="v40dark";st.textContent=out.join("\n");document.head.appendChild(st)}
-function applyPrefs(){const r=document.documentElement,th=PREF.theme||"auto",fz=PREF.fz||1;if(th==="light"||th==="dark")r.setAttribute("data-theme",th);else r.removeAttribute("data-theme");r.style.setProperty("--fz",String(fz));
-  let box=document.getElementById("prefs");if(!box){const v=document.querySelector(".ver");if(!v)return;v.insertAdjacentHTML("beforebegin",`<div class="prefs" id="prefs"></div>`);box=document.getElementById("prefs")}
-  const seg=(k,lab,opts,cur)=>`<div class="pseg" role="group" aria-label="${lab}" title="${lab}"><div class="pbtns">${opts.map(([v,t])=>`<button type="button" class="pb${String(cur)===String(v)?" on":""}" data-pref="${k}" data-v="${v}" aria-pressed="${String(cur)===String(v)}">${t}</button>`).join("")}</div></div>`;
-  box.innerHTML=seg("theme","화면",[["auto","자동"],["light","☀ 밝게"],["dark","☾ 어둡게"]],th)+seg("fz","글자 크기",[[0.9,"A−"],[1,"A"],[1.15,"A+"],[1.3,"A++"]],fz)}
-document.addEventListener("click",e=>{const t=e.target.closest("[data-pref]");if(!t)return;e.stopPropagation();PREF[t.dataset.pref]=t.dataset.pref==="fz"?+t.dataset.v:t.dataset.v;store.set("lao-pref",PREF);applyPrefs();if(S.mode==="cards")try{fitBig()}catch(_){}else try{fitNotes();placeTones()}catch(_){}},true);
-applyPrefs();
+/* 화면·글자 크기 단추: 공용 부품 core prefs (tools/core/prefs.js, 위 core 블록, 2026-11-28). 값은 lao-pref에 그대로 저장 */
+function applyPrefs(){PREFS.apply()}
+PREFS.init({get:()=>PREF,set:(k,v)=>{PREF[k]=v;store.set("lao-pref",PREF)},
+  box:()=>{let box=document.getElementById("prefs");if(!box){const v=document.querySelector(".ver");if(!v)return null;v.insertAdjacentHTML("beforebegin",`<div class="prefs" id="prefs"></div>`);box=document.getElementById("prefs")}return box},
+  after:()=>{if(S.mode==="cards")try{fitBig()}catch(_){}else try{fitNotes();placeTones()}catch(_){}}});
 
 /* ---------- 제목(또는 위 고정 줄의 PhasaLAO)을 누르면 첫 메뉴 첫 묶음, 맨 위로 ---------- */
 for(const el of [document.querySelector("#app header .brand"),document.querySelector("#stick .strow > b")])if(el){el.style.cursor="pointer";el.setAttribute("role","link");el.setAttribute("tabindex","0");el.title="처음으로";
