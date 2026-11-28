@@ -402,7 +402,7 @@ function utterOf(it){const u=new SpeechSynthesisUtterance();
   else{u.text=it.rd;u.lang="ko-KR";if(VKO)u.voice=VKO;u.rate=RATE}return u}
 function mark(id){document.querySelectorAll(".playing").forEach(e=>e.classList.remove("playing"));if(id){const el=document.getElementById(id);if(el){el.classList.add("playing");if(P.follow){/* v2.53 RYU: keep the playing item at the vertical centre (above the player bar) */const r=el.getBoundingClientRect(),pl=document.getElementById("player"),ph=pl&&!pl.hidden?pl.getBoundingClientRect().height+16:0,H=innerHeight-ph,c=r.top+r.height/2,d=c-H/2;/* v3.45 RYU: the top limit is the bottom of the pinned menu bar; an item fully visible near the top stays put (no jump back to the middle) */const st=document.getElementById("stick"),T=st&&!st.hidden?Math.max(0,st.getBoundingClientRect().bottom):0;/* v2.79 RYU: move only when the item leaves the middle area or is cut off */if(r.top<T+4||c>H*.75||(r.bottom>H&&r.height<H)){/* v3.07 RYU: going down, put the item at ~25% so it can run to 75% before the next move */let dd=d;if(c>H*.75||(r.bottom>H&&r.top>=0)){dd=c-H*.25;if(r.top-dd<8)dd=r.top-8}else if(r.top<T+4){dd=r.top-T-H*.12}window.scrollBy({top:dd,behavior:"smooth"})}}}}}
 function showPlayer(){const el=$("#player");if(!P.active){el.hidden=true;document.body.classList.remove("has-player");return}
-  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)b.textContent=P.hold!=null?"▶ 계속":P.paused?"▶ 재개":"❙❙ 일시정지"}
+  el.hidden=false;document.body.classList.add("has-player");{const b=document.getElementById("ppause");if(b)pbtn(b,P.hold!=null?"▶ 계속":P.paused?"▶ 재개":"❙❙ 일시정지")}
   const cur=P.queue[Math.min(P.i,P.queue.length-1)]||{gi:0};const g0=P.queue[cur.gs]||cur,txt=esc(g0.text||"");
   /* RYU v12.58: like kor-app: icon · count · current sentence */
   $("#pt").innerHTML=P.loading?"⏳ 소리 준비 중…":`<span class="pic">${SPK}</span>`+(()=>{try{const c=curBun();if(!(c&&B[c]))return "";/* v2.51b RYU: [5-02-15/23] big screens, [15/23] phone */const sb=Object.values(SUBS).find(x=>x.b.includes(c)),n=sb?sb.b.length:0,big=(typeof isBig==="function")&&isBig();return `[${big?c:c.split("-").pop()}${n?"/"+n:""}] `}catch(e){return ""}})()+(P.single||P.hold!=null?`∞ · ${P.k+1} · `:cur.rv?`복습 ${cur.ri+1}/${cur.rn} · ↻${(P.rk||0)+1} · `:`${cur.gi+1}/${P.ng} · ↻${P.k+1} · `)+`<span class="lo">${txt}</span>`}
@@ -432,7 +432,9 @@ function setPaused(v){if(!P.active)return;P.paused=!!v;
   if(!v&&P._resume){const r=P._resume;P._resume=null;r()}else try{if(v)aud().pause();else{const pr=aud().play();if(pr&&pr.catch)pr.catch(()=>{})}}catch(e){}
   try{if(hasSS){if(v)speechSynthesis.pause();else speechSynthesis.resume()}}catch(e){}
   try{navigator.mediaSession.playbackState=v?"paused":"playing"}catch(e){}
-  const b=document.getElementById("ppause");if(b)b.textContent=v?"▶ 재개":"❙❙ 일시정지"}
+  const b=document.getElementById("ppause");if(b)pbtn(b,v?"▶ 재개":"❙❙ 일시정지")}
+/* v4.52 (RYU 2026-11-28): player button = mark + word; phones show only the mark (same bar as PhasaKAO / JeyCampus) */
+function pbtn(b,s){const i=s.indexOf(" ");b.innerHTML='<span class="pm">'+s.slice(0,i)+'</span><span class="bt">'+s.slice(i)+'</span>';b.setAttribute("aria-label",s.slice(i+1))}
 /* audio comes as blobs (fast start on iPhone, avoids slow service-worker range requests); next clips are fetched ahead */
 const BLOBP={};
 /* replaced clips get a version in AUDIO_INDEX (value >1): new URL + new IndexedDB key, so saved old copies are not reused */
