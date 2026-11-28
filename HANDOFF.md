@@ -48,7 +48,7 @@ PhasaLAO(라오스 사람용이 아니라 **한국 사람이 라오스어를 배
 - 통계 Apps Script 코드는 이미 `tools/stats/Code.gs`에 있음(예전 폴더 Code_stats_v4.14.gs와 같음).
 
 **저장소에 없고 RYU가 새 프로젝트 파일로 올리면 좋은 것 (용량 때문):**
-- `[최종] 라오스어 B1.pdf` (42MB)와 `표준교재 라오스어 B2.pdf` — 라오스어 교재. 문법·표현 검토와 성조 번호 기준(교재 본문 32~49쪽)에 씀. 필요할 때만.
+- `[최종] 라오스어 B1.pdf` (42MB)와 `표준교재 라오스어 B2.pdf` (58MB) — 라오스어 교재. 문법·표현 검토와 성조 번호 기준(교재 본문 32~49쪽)에 씀. 필요할 때만.
 - mp3 원본은 **올릴 필요 없음**: 모든 음성 mp3가 저장소 `audio/`에 이미 있습니다. (예전 폴더 `pwa_out/audio.tar` 81MB는 2026-11-12 초기 빌드 3,523개로 지금은 쓰지 않음.)
 - RYU 사진 원본: Google Drive 폴더 https://drive.google.com/drive/folders/14CVNxct9HjWOiOLzoIV9akZxaTyc2r-C (LAOS 폴더만, 얼굴 클로즈업 빼고 작게). 앱에 쓴 것은 `img/intro/`, `img/la/`에 있음.
 
