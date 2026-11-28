@@ -1,0 +1,14 @@
+/* core edge v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO (RYU 2026-11-28).
+   Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
+   The top edge of the screen: the menu bar that sticks to the top (.stick, driven by core stick.js) and the intro's strip under the status bar.
+   Comes before each app's own CSS, so an app can still change sizes, zoom and spacing inside the bar (.stick .stin …).
+   Per-app value: --stick-shade (colour of the soft shadow under the bar on PC/phone), set in the app's own CSS; default rgba(0,0,0,.10).
+   - Home-screen app: half a status bar more plain space above the menu, so the iPadOS status-bar blur does not smear it (0 in a browser tab).
+   - iPad: the bar is solid, no blur, only a thin line under it (also when the iPad is not detected as html.tab).
+   - Intro: the strip under the status bar is painted in the hero's --deep colour, not the light page colour (looked like a hazy band). */
+.stick[hidden]{display:none!important}
+.stick{position:fixed;top:0;left:0;right:0;z-index:25;background:color-mix(in srgb,var(--sheet) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 1px 0 var(--line),0 8px 20px var(--stick-shade,rgba(0,0,0,.10));padding-top:calc(env(safe-area-inset-top,0px) * 1.5)}
+html.tab .stick{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--sheet)!important;box-shadow:0 1px 0 var(--line)!important}
+@media (min-width:601px) and (any-pointer:coarse){.stick{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--sheet)!important;box-shadow:0 1px 0 var(--line)!important}}
+#intro .wrapin{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(var(--deep),var(--deep)) top/100% env(safe-area-inset-top,0px) no-repeat}
