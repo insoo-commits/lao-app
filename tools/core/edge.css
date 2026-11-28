@@ -1,4 +1,4 @@
-/* core edge v1.1 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO (RYU 2026-11-28).
+/* core edge v1.2 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO (RYU 2026-11-28).
    Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
    The top edge of the screen: the menu bar that sticks to the top (.stick, driven by core stick.js) and the intro's strip under the status bar.
    Comes before each app's own CSS, so an app can still change sizes, zoom and spacing inside the bar (.stick .stin …).
@@ -9,14 +9,17 @@
    - v1.1 (RYU 2026-11-28): home-screen app on iPad/iPhone: the page starts under the status bar, and a solid strip covers the status-bar area
      on every screen (page colour, just under the top menu bar, which covers it with its own solid top; the intro's dark colour, above everything, while the intro is open), so iPadOS has
      no page content to blur there. Nothing changes in a browser tab (the inset is 0 there).
+   - v1.2 (RYU 2026-11-28): iPadOS 26 home-screen app blurs about the top 35px (window buttons, clock) but reports a status-bar inset of 0,
+     so on iPad in a home-screen app the top space is at least 36px (--sat = the larger of the two). Browser tabs and phones unchanged.
    - Intro: the strip under the status bar is painted in the hero's --deep colour, not the light page colour (looked like a hazy band). */
 .stick[hidden]{display:none!important}
 .stick{position:fixed;top:0;left:0;right:0;z-index:25;background:color-mix(in srgb,var(--sheet) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  box-shadow:0 1px 0 var(--line),0 8px 20px var(--stick-shade,rgba(0,0,0,.10));padding-top:calc(env(safe-area-inset-top,0px) * 1.5)}
+  box-shadow:0 1px 0 var(--line),0 8px 20px var(--stick-shade,rgba(0,0,0,.10));padding-top:calc(var(--sat) + env(safe-area-inset-top,0px) * .5)}
 html.tab .stick{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--sheet)!important;box-shadow:0 1px 0 var(--line)!important}
 @media (min-width:601px) and (any-pointer:coarse){.stick{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--sheet)!important;box-shadow:0 1px 0 var(--line)!important}}
-#intro .wrapin{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(var(--deep),var(--deep)) top/100% env(safe-area-inset-top,0px) no-repeat}
+#intro .wrapin{padding-top:var(--sat);padding-bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(var(--deep),var(--deep)) top/100% var(--sat) no-repeat}
 /* v1.1: status-bar strip (see above) */
-:root{padding-top:env(safe-area-inset-top,0px)}
-body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:24;pointer-events:none}
+:root{--sat:max(env(safe-area-inset-top,0px),var(--sat-min,0px));padding-top:var(--sat)}
+@media (display-mode:standalone){html.tab{--sat-min:36px}}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);background:var(--bg);z-index:24;pointer-events:none}
 html.introon body::before{background:var(--intro-deep,#000);z-index:2147483000}
