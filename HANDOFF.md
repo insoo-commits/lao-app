@@ -1,3 +1,86 @@
+# 인수인계: PhasaLAO (라오스어 앱) → 프로젝트 "웹앱/ 한국어 학습"
+
+기준일: 2026-11-28 · 현재 버전 **v4.31** (+ 링크 미리보기 og.jpg, PR #12, 버전 그대로) · 작성: 프로젝트 "웹앱/ 다국어 (PhasaLAO, 기타)"에서 옮김 · 사용자: RYU
+
+PhasaLAO(라오스 사람용이 아니라 **한국 사람이 라오스어를 배우는 앱**)는 PhasaKAO(라오스 사람이 한국어를 배우는 앱)와 짝이라서 같은 프로젝트에서 관리합니다. 이 문서 아래쪽(“LAO Lang 인수인계” 이하)은 예전부터 쓰던 앱 규칙 문서이고, 바로 아래 0장이 2026-11-28 기준으로 새로 정리한 내용입니다. 둘이 다르면 0장이 맞습니다.
+
+## 0-1. 이 문서를 쓰는 방법
+
+- 새 프로젝트 **"웹앱/ 한국어 학습"**에 이 문서를 붙여 넣거나 저장소의 `HANDOFF.md`를 읽게 하고 "이 문서를 기준으로 PhasaLAO 작업을 이어서 해줘"라고 말하면 됩니다.
+- 새 프로젝트 설정에 저장소 **`insoo-commits/lao-app`**을 추가하세요(Project settings > 저장소).
+- 계정 스킬 `language-app-build`, `language-app-audio`, `language-app-release`를 빌드·음성·배포 전에 불러오세요.
+- 스레드 제목 앞에 **[PhasaLAO]**.
+
+## 0-2. 앱 정보
+
+- **이름:** PhasaLAO (대문자 P. 예전 LAO Lang → StudyLAO → PhasaLAO, v4.2/v4.16). 헤더 h1은 라오스어 `ຮຽນ ພາສາລາວ` 그대로(RYU가 한국어 제목을 거절), 위 알약 "PhasaLAO · 라오스어, 주제별로 공부하기".
+- **학생용 주소:** https://phasalao.pages.dev/ (Cloudflare Pages 프로젝트 "phasalao", 빌드 `node tools/cf-build.js`, 출력 `cf`, main). 예전 studylao.pages.dev 프로젝트도 아직 서비스 중. 보조: https://insoo-commits.github.io/lao-app/ (GitHub Pages, main 루트).
+- **저장소:** `insoo-commits/lao-app`. 저장소 루트 파일(index.html, app.js, intro.js/css, sw.js, audio/)이 **원본 그 자체**입니다(v10.4부터 app.js가 기준). 빌드 단계가 따로 없고, 고친 파일을 그대로 커밋합니다.
+- **규모:** 607묶음 이상, 단어 약 3,600, mp3 약 34,600개(`audio/`, 16kbps). 파일이 많아 clone에 몇 분 걸립니다(`git clone --depth 1`, 넉넉한 시간).
+- **최근 변경 (2026-11-27, PR #1~#12):** v4.21 인트로 예시 재생 겹침 · v4.22 한 문장 반복 중 ←→ = 이전/다음 문장 · v4.23~4.26 위에 붙는 메뉴(PC·iPad·폰) = 페이지 메뉴만, iPad 흐림 없음 · v4.27 당겨서 새로고침 · v4.28~4.29 인트로 음량 슬라이더(iPhone GainNode) · v4.30 새로고침해도 도움말 > 통계·의견 유지 · v4.31 인트로 숫자 줄에서 메뉴 수 빼고 학습자 수 맨 뒤 · PR #12 링크 미리보기 og.jpg.
+
+## 0-3. 배포 (release)
+
+1. 브랜치 `claude/...` → PR → main merge (RYU 지정·리뷰 요청). 최근엔 RYU가 PR로 받는 방식.
+2. **버전을 배포할 때마다 올림:** 작은 수정 v4.31 → v4.32, 큰 변경만 앞자리(v5.0). 세 곳: index.html의 날짜+버전 표시(부팅 화면+하단), `app.js?v=`(그리고 intro.js/css ?v=), sw.js의 SHELL 캐시 이름.
+3. 다른 스레드도 배포했을 수 있으니 **배포 전에 git pull + 현재 버전 확인.**
+4. push하면 GitHub Pages(Actions)와 Cloudflare Pages가 둘 다 다시 배포. Cloudflare는 파일 2만 개 제한이라 cf-build.js가 mp3를 묶음 팩(`cf/audio/p/*.bin`)으로 합침(15,000개 넘으면 빌드가 멈춤).
+5. 기능을 바꾸면 **도움말(HELPINFO, app.js)도 같은 배포에서 고침**(RYU가 확인함). 도움말 스크린샷: `tools/help_shots.js`(저장소를 :8811로 열고 실행).
+6. 포스터: 앱 숫자·버전·주소가 바뀌면 `tools/source/poster/src/`로 다시 그림(Playwright A4, 하단 1123px 안).
+
+## 0-4. 예전 프로젝트 폴더에만 있던 자료 → 이제 저장소 `tools/source/`
+
+2026-11-28에 예전 공유 폴더 `/mnt/project-files/lao-app/`의 작업 자료를 저장소 `tools/source/`로 옮겼습니다(약 21MB, 243개). `tools/`는 Cloudflare 빌드에서 빠지므로 앱에는 영향이 없습니다.
+
+- `tools/source/src/` 예전 빌드·데이터 스크립트 전체. 아래 문서의 `src/...` 경로는 이제 `tools/source/src/...`입니다. 그중 자주 쓰는 것:
+  - `src/tts/edge_tts_gen.py` 음성 생성(Edge TTS, 16kbps), `src/pwa_gen_list*.js` 클립 목록
+  - `src/review_tools/` 독음·음절 검사(syl.py, tr.py, chk3.py)
+  - `src/v2/laos_info.py`, `laos_02..11.py`, `build_v263.py`, `laos_credits.json` 라오스 탭(8-xx) 내용과 사진 출처
+  - `src/v2/build_rep.py`(--check: 같은 예문 3번 이상 쓰는지), `laonum_v313.py`(라오 숫자·약어 읽기), `content_v313_p76.py`(TTS 바꿔 읽기 표)
+  - `src/v3/pics.py`, `subpics.py`, `fit_text.py` 소분류 그림(SUBPIC)과 글 길이 맞추기. **pics.py가 그림 원본(master)**이고 PhasaKAO tools/pics, HotelEng src에 복사본이 있음
+  - `src/ord/`, `src/doc/bundles.json`, `extra_bundles.json`, `cross.json`, `id_map_*.json` 예전 원본 데이터(지금은 app.js가 기준이라 참고용)
+  - 스크립트 7개 안에 `/mnt/project-files/lao-app/...` 절대 경로가 남아 있음. 다시 쓸 때 `tools/source/`로 바꿔서 쓰세요.
+- `tools/source/book/` 인쇄 교재 12장 교안(docx + 생성기 ch12.js)
+- `tools/source/design/` 디자인 시안 A/B와 skin_mock(적용 끝: v3.31 = 시안 B)
+- `tools/source/mockup/intro/` 인트로 승인 시안
+- `tools/source/poster/` 사용안내 A4 포스터(PDF·PNG + src), `tools/source/cardnews/` 카드뉴스
+- `tools/source/taxonomy.json`, `분류체계.md` 처음 분류 설계, `CHANGELOG-memory.md` v3.28 이전 전체 버전 기록
+- 통계 Apps Script 코드는 이미 `tools/stats/Code.gs`에 있음(예전 폴더 Code_stats_v4.14.gs와 같음).
+
+**저장소에 없고 RYU가 새 프로젝트 파일로 올리면 좋은 것 (용량 때문):**
+- `[최종] 라오스어 B1.pdf` (42MB)와 `표준교재 라오스어 B2.pdf` (58MB) — 라오스어 교재. 문법·표현 검토와 성조 번호 기준(교재 본문 32~49쪽)에 씀. 필요할 때만.
+- mp3 원본은 **올릴 필요 없음**: 모든 음성 mp3가 저장소 `audio/`에 이미 있습니다. (예전 폴더 `pwa_out/audio.tar` 81MB는 2026-11-12 초기 빌드 3,523개로 지금은 쓰지 않음.)
+- RYU 사진 원본: Google Drive 폴더 https://drive.google.com/drive/folders/14CVNxct9HjWOiOLzoIV9akZxaTyc2r-C (LAOS 폴더만, 얼굴 클로즈업 빼고 작게). 앱에 쓴 것은 `img/intro/`, `img/la/`에 있음.
+
+**예전 프로젝트에 남겨 둘 것:** 예전 폴더 `lao-app/src/v3/pics.py`는 태국어·크메르어·르완다어·스와힐리어 앱 그림(design4)이 지금도 불러 쓰므로 지우지 않습니다.
+
+## 0-5. 꼭 지킬 규칙 (요약, 자세한 것은 아래 본문)
+
+- **음성:** Edge TTS. 여자 lo-LA-KeomanyNeural(단어·예문1 등), 남자 lo-LA-ChanthavongNeural(예문2, 짧은 대화 짝수 줄, 파일 `m_<akey>.mp3`), 한국어 뜻 ko-KR-SunHiNeural(`k_<akey>.mp3`). **모두 16kbps 모노 16kHz.** 새 단어는 음성을 Claude가 만들어 push → RYU가 앱에서 "음성 전체 저장".
+- **TTS 바꿔 읽기 (화면 글자는 그대로, TTS 문장만):** ໂມງ→ມົງ · ໃສ→ໄຊ(뒤에 성조 부호 없을 때만, ໃສ່ 그대로) · ມື້→ມື່ · ໄຜ່→ໄຜ · ຜ້າໄໝ→' ຜ້າ ໄໝ' · 라오 숫자·약어는 읽는 말로(낱말 전체 일치만). 클립을 다시 만들면 AUDIO_INDEX 값 +1 하고 RYU에게 "음성 전체 저장"을 알림.
+- **ໆ:** 바로 앞의 가장 짧은 알려진 낱말을 반복(rep()). 음성 키 = akey(rep(text))라서 rep를 바꾸면 음성도 다시 만들어야 함.
+- **재생:** 🔊 하나 = 무한 반복, 횟수 1~5, 속도 x0.8~2.0. 단어·문장 모두 라오어→한국어 한 번, 그다음 (N-1)번은 라오어만.
+- **독음:** ㅅ계열 ㅆ, 받침 ສ/ດ ㄷ, 모음 사이 ລ/ຫຼ ㄹ받침(단어 안만, ບໍລິ = 버리 예외), 닫힌 ə = ㅡ, 열린 ə = ㅓ(RYU 확인 대기), 고정 독음(ນ້ອຍ 너이, ນ້ອງ 넝, ຟັງ 팡, ແຈກ 짹, ຢ່າງ 양, ເທິງ/ເຖິງ 틍, ແຍກ 냭, ແພດ 퍁). 표제어 독음 w[2]도 같은 규칙.
+- **성조 표시:** RYU 교재 6성조 번호(본문 32~49쪽 표기). 앱 음성이 아니라 책에 맞춤.
+- **예문:** 같은 문장을 3곳 이상에 쓰지 않음(build_rep.py --check). 문장은 교재에서 베끼지 않고 새로 씀.
+- **서비스워커 교훈:** 음성은 IndexedDB("lao-audio")에. CacheStorage 전체 검색·ignoreSearch 금지(iPhone 실행 10~15초). index.html은 network-first (v10.6~10.8 SWR 방식 다시 쓰지 말 것).
+- **DATA 고치기:** app.js의 `const DATA=JSON.parse("…")` → json.loads 두 번 읽고 json.dumps 두 번 써서 다시 넣음. 묶음 번호를 바꾸면 IDMAPn 블록 추가 + lao-idv 올리기.
+- **익명 통계:** STATS_URL = RYU의 라오어 전용 Apps Script(app.js). 시트가 1-01-01 같은 코드를 날짜로 바꾸는 문제 → 코드 앞에 ' (Code.gs v4.14, RYU가 붙여 넣고 재배포 필요했음). 클라우드 환경에서는 script.google.com에 못 닿을 수 있음.
+- **PhasaKAO와 같이 맞추는 것:** 키 S W E C G K, 인트로·하단 설정(글자 크기, 낮밤), 위에 붙는 메뉴, PC 헤더 크기(Lao PC zoom 1.3, header 1.1/1.3), 음량 슬라이더, 당겨서 새로고침, 링크 미리보기. 한쪽을 바꾸면 다른 쪽도 맞출지 RYU에게 한 줄로 물어보기.
+- **작업 방식:** 더 빠르거나 크레딧을 아끼는 방법이 보이면 먼저 한 줄로 알림. 프로젝트 파일 한도 5만 개(mp3를 프로젝트 폴더에 낱개로 쌓지 말 것).
+
+## 0-6. 남은 일 / RYU 결정 대기
+
+- **인쇄 교재:** 목차·앱 연결 계획 문서 https://claude.ai/artifact/RrWNihVoynXnFyyoHCLBsV (1부 글자와 소리, 2부 문장의 뼈대, 3부 장면 회화, 부록). 12장 교안 docx 완성(`tools/source/book/`). 정할 것: 판형·장별 쪽수, 수업활동 25묶음 별책 여부, QR 여부(앱에 `#2-01-01` 바로가기 기능이 먼저 필요), 책에 독음 넣을지.
+- **열린 ə 독음**(ເດີ 더 등 ㅓ 유지)은 RYU 확인 대기.
+- **원어민 확인:** ເທີ່ຍວບິນ(→ ຖ້ຽວບິນ), ຍ່າງ(꼬치), ຊອບ, 교재 리뷰의 Thai식 표현(ເຄື່ອງບິນ, ນິດໜ່ອຍ).
+- **라오스 탭 사진 없는 8쪽:** central, kaysone, rocket, boatlight, boatrace, nop, family, lamvong (무료 사진을 못 찾음, Wikimedia만 됨).
+- **디자인 A/B 시안**은 시안 B로 적용 끝(v3.31). 따로 남은 선택 없음.
+- iPhone 실기에서 음량 슬라이더 + 잠금화면 재생 확인.
+- 예전 studylao.pages.dev Cloudflare 프로젝트를 지울지는 RYU 결정.
+
+---
+
 # LAO Lang 인수인계: 앱 정보와 라오스어 독음·문법 규칙
 
 기준일: 2026-11-13 · 앱 버전 v12.41 · 사용자: RYU
@@ -27,7 +110,7 @@
   ```
 - **DATA 수정:** app.js 안의 DATA는 JSON을 문자열로 한 번 더 감싼 형태. `json.loads(json.loads(lit))`로 읽고 `json.dumps`를 두 번 해서 다시 씀
 - **ID 재번호:** 묶음 번호를 바꾸면 IDMAPn 블록을 추가하고 `lao-idv`를 올려서 진도 데이터를 한 번 옮김 (예: v12=12, v12.2=13, v12.3=14)
-- **기타 자료:** 원본 데이터와 스크립트는 프로젝트 파일 `/mnt/project-files/lao-app/src/`에 있음 (새 프로젝트에서는 보이지 않음. 필요한 것은 저장소로 옮겨야 함)
+- **기타 자료:** 원본 데이터와 스크립트는 2026-11-28부터 저장소 `tools/source/`에 있음 (예전 프로젝트 폴더 `/mnt/project-files/lao-app/`에서 옮김). 이 문서의 `src/...` = `tools/source/src/...`
 
 ## 1-1. Cloudflare Pages (phasalao.pages.dev, 2026-11-26부터. 예전 studylao.pages.dev, v3.44)
 

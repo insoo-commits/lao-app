@@ -1,0 +1,522 @@
+<meta charset="utf-8">
+<title>PhasaLAO 인트로 시안</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+Lao+Looped:wght@500;600;700&family=Noto+Sans+Lao:wght@400;500;600;700&display=swap">
+<style>
+/* Viewer (device tabs + stage) showing one of three fixed-size mock screens, scaled to fit.
+   Colours follow the PhasaLAO app: amber-brown title gradient (#C0801F / #8A4A16) with the orange sun glow of the header,
+   and the baby elephant's scarf (red with gold diamonds, like a sinh hem). Text is Korean with Lao beside it; no language picker. */
+:root{
+  --bg:#F3EEE6;--panel:#FFFFFF;--ink:#2A1D12;--muted:#7A6A5A;--line:#E6DACA;--accent:#8A4A16;--accent2:#C0801F;
+  --display:"Space Grotesk","IBM Plex Sans KR",system-ui,sans-serif;
+  --ko:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --txt:"IBM Plex Sans KR","Noto Sans Lao",system-ui,sans-serif;
+  --lao:"Noto Sans Lao Looped","Noto Sans Lao",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17110B;--panel:#221A12;--ink:#F1E8DC;--muted:#B5A28C;--line:#3A2C1E;--accent:#F0B868;--accent2:#D9973A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17110B;--panel:#221A12;--ink:#F1E8DC;--muted:#B5A28C;--line:#3A2C1E;--accent:#F0B868;--accent2:#D9973A;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--ko);margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+
+/* ---------- viewer ---------- */
+.vw{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 40px;max-width:1440px;margin:0 auto}
+.vbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;justify-content:space-between}
+.vtitle{display:flex;align-items:center;gap:10px;min-width:0}
+.vtitle img{width:38px;height:38px;border-radius:10px}
+.vtitle h1{font-family:var(--display);font-size:20px;margin:0;line-height:1.2;letter-spacing:-.01em}
+.vtitle p{margin:0;color:var(--muted);font-size:13px}
+.vopts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{border:0;background:none;border-radius:9px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted);display:flex;align-items:center;gap:6px}
+.tabs button small{font-weight:500;font-family:var(--display);opacity:.7}
+.tabs button.on{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .tabs button.on{color:#17110B}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabs button.on{color:#17110B}}
+.zbtn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer}
+.vnote{margin:12px 0 0;font-size:13px;color:var(--muted);line-height:1.6}
+.vnote b{color:var(--ink)}
+.stage{margin-top:18px;display:flex;justify-content:center;overflow-x:auto}
+.scaler{transform-origin:top left;flex:none}
+.stage.fit{overflow:hidden}
+
+/* device frames */
+.frame{position:relative;background:#0E1621;flex:none}
+.frame.phone{width:414px;padding:12px;border-radius:56px;box-shadow:0 30px 60px rgba(60,30,10,.25)}
+.frame.phone .screen{width:390px;height:820px;border-radius:44px}
+.frame.phone::before{content:"";position:absolute;top:22px;left:50%;transform:translateX(-50%);width:110px;height:30px;border-radius:20px;background:#0E1621;z-index:5}
+.frame.pad{width:860px;padding:20px;border-radius:38px;box-shadow:0 30px 60px rgba(10,30,70,.22)}
+.frame.pad .screen{width:820px;height:1100px;border-radius:20px}
+.frame.pc{width:1280px;border-radius:14px;padding:0;background:#E6DCCD;box-shadow:0 30px 70px rgba(10,30,70,.22);overflow:hidden}
+.frame.pc .screen{width:1280px;height:820px;border-radius:0}
+.chrome{height:44px;display:flex;align-items:center;gap:14px;padding:0 16px;background:#EFE8DE;border-bottom:1px solid #DDD0C0}
+.dots{display:flex;gap:7px}.dots i{width:12px;height:12px;border-radius:50%;background:#F26B5E;display:block}.dots i:nth-child(2){background:#F5BE4F}.dots i:nth-child(3){background:#5CC567}
+.url{flex:1;max-width:560px;height:28px;border-radius:8px;background:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;font:13px var(--display);color:#5A4634}
+.url .inst{margin-left:auto;display:flex;align-items:center;color:#8A4A16}
+.screen{overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:thin}
+
+/* ---------- mock (its own light/dark, chosen by the mock's Theme setting) ---------- */
+.m{--mb:#F5F0E8;--ms:#FFFFFF;--mi:#2A1D12;--mm:#7A6A5A;--ml:#EADFCF;--blue:#8A4A16;--blue2:#C0801F;--sky:#E0A04A;--red:#C8341F;--gold:#F2C230;--tint:#F8EEDF;--deep:#3A1C08;--on:#FFFFFF;
+  background:var(--mb);color:var(--mi);font-family:var(--txt);font-size:calc(16px * var(--fz,1));line-height:1.65;min-height:100%}
+.m.dk{--mb:#17110B;--ms:#221A12;--mi:#F1E8DC;--mm:#B5A28C;--ml:#3A2C1E;--blue:#F0B868;--blue2:#D9973A;--tint:#2E2216;--deep:#1E0E04;--on:#17110B}
+.m .lo{font-family:var(--lao)}
+.m .ko{font-family:var(--ko)}
+.m h2,.m h3{margin:0;line-height:1.3;text-wrap:balance}
+.m button{cursor:pointer}
+.m .kosub{font-family:var(--ko);font-size:.78em;color:var(--mm);font-weight:500}
+/* the elephant's scarf: red with yellow diamonds */
+.scarf{height:8px;background:
+  linear-gradient(135deg,transparent 0 35%,var(--gold) 35% 65%,transparent 65%) 0 0/12px 8px,
+  linear-gradient(45deg,transparent 0 35%,var(--gold) 35% 65%,transparent 65%) 0 0/12px 8px,var(--red)}
+
+/* brand */
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:36px;height:36px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.brand b{font-family:var(--display);font-size:20px;letter-spacing:-.01em;line-height:1}
+.brand span{display:block;font-size:11px;letter-spacing:.02em;opacity:.85;margin-top:3px}
+.freepill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.5);background:rgba(58,28,8,.35);backdrop-filter:blur(6px);color:#fff;border-radius:99px;padding:5px 12px;font-size:13px;font-weight:600}
+.freepill i{width:8px;height:8px;border-radius:50%;background:var(--gold);display:block}
+
+/* hero */
+.hero{position:relative;color:#fff;overflow:hidden;isolation:isolate}
+.hero>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(58,28,8,.25) 0%,rgba(58,28,8,0) 26%,rgba(138,74,22,.62) 58%,var(--deep) 100%)}
+.hero .badge{display:inline-flex;align-self:flex-start;justify-self:start;align-items:center;gap:8px;background:#fff;color:#8A4A16;border-radius:99px;padding:3px 12px 3px 4px;font-family:var(--display);font-weight:700;font-size:.82em;letter-spacing:.01em}
+.hero .badge img{width:22px;height:22px;border-radius:50%}
+.hero h1{font-family:var(--lao);font-weight:700;letter-spacing:0;line-height:1.15;margin:0}
+.hero .losub{font-weight:600;line-height:1.45;margin:0;opacity:.96}
+.hero .lead{opacity:.9;margin:0}
+
+/* stats */
+.stats{display:flex;gap:0;font-variant-numeric:tabular-nums}
+.stats div{flex:1;padding:0 12px;border-left:1px solid rgba(255,255,255,.25)}
+.stats div:first-child{border-left:0;padding-left:0}
+.stats b{display:block;font-family:var(--display);font-size:1.45em;line-height:1.1;font-weight:700}
+.stats span{font-size:.76em;opacity:.88}
+
+/* PASS: settings styled as a study card, with the scarf band */
+.pass{color:var(--mi);background:var(--ms);border-radius:22px;box-shadow:0 1px 2px rgba(70,40,15,.06),0 18px 40px rgba(70,40,15,.16);overflow:hidden;position:relative;border:1px solid var(--ml)}
+.passhead{background:radial-gradient(120% 160% at 0% 0%,#D9973A 0%,#A65A1C 50%,#4A2008 100%);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden}
+.passhead::after{content:"";position:absolute;right:-40px;top:-60px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#FFC46A 0%,transparent 68%);opacity:.6}
+.passhead .ph{width:50px;height:56px;border-radius:12px;background:rgba(255,255,255,.95);display:grid;place-items:end center;overflow:hidden;flex:none}
+.passhead .ph img{width:48px;height:auto;display:block;margin-bottom:-4px}
+.passhead .pt{font-family:var(--display);font-weight:700;letter-spacing:.12em;font-size:.74em;opacity:.85}
+.passhead .pn{font-weight:600;font-size:1em;line-height:1.35}
+.passhead .pn small{display:block;font-family:var(--ko);font-weight:500;font-size:.74em;opacity:.8}
+.passhead .pid{margin-left:auto;font-family:var(--display);font-size:.72em;letter-spacing:.08em;text-align:right;opacity:.85;line-height:1.4;position:relative;z-index:1}
+.passbody{padding:6px 18px 16px;display:grid;gap:2px}
+.row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 12px;padding:11px 0;border-bottom:1px dashed var(--ml)}
+.row:last-of-type{border-bottom:0}
+.row .lab{font-weight:600;font-size:.92em;line-height:1.35}
+.row .lab small{display:block;font-family:var(--ko);color:var(--mm);font-weight:500;font-size:.78em}
+.row.full{grid-template-columns:1fr}
+.seg{display:inline-flex;background:var(--tint);border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:8px;padding:5px 10px;font-weight:600;font-size:.85em;color:var(--mm);font-family:var(--display);min-width:34px}
+.seg button.on{background:var(--ms);color:var(--blue);box-shadow:0 1px 3px rgba(70,40,15,.18)}
+.m.dk .seg button.on{background:var(--blue2);color:#0F1720}
+.seg.txt button{font-family:inherit}
+.rate{display:flex;align-items:center;gap:10px}
+.rate input{flex:1;accent-color:var(--blue2);min-width:0}
+.rate output{font-family:var(--display);font-weight:700;color:var(--blue);min-width:3.4em;text-align:right;font-variant-numeric:tabular-nums}
+.ticks{display:flex;justify-content:space-between;font-family:var(--display);font-size:.68em;color:var(--mm);padding:0 2px;margin-top:-4px}
+.sw{width:50px;height:30px;border-radius:99px;border:0;background:var(--ml);position:relative;flex:none;transition:background .2s}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.sw.on{background:var(--blue2)}
+.sw.on::after{transform:translateX(20px)}
+.sample{display:flex;align-items:center;gap:12px;background:var(--tint);border-radius:14px;padding:10px 12px;margin-top:8px}
+.play{width:42px;height:42px;border-radius:50%;border:0;background:var(--blue2);color:#fff;display:grid;place-items:center;flex:none}
+.play svg{width:18px;height:18px}
+.sample .s1{font-family:var(--ko);font-weight:600;line-height:1.35}
+.sample .s2{font-size:.85em;color:var(--mm);line-height:1.4}
+.sample .s3{margin-left:auto;font-family:var(--display);font-size:.72em;color:var(--mm);text-align:right;line-height:1.3;font-variant-numeric:tabular-nums}
+.passfoot{font-size:.8em;color:var(--mm);padding:10px 18px 12px;background:var(--mb);border-top:1px solid var(--ml);line-height:1.45}
+
+/* CTA */
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:14px;padding:14px 20px;font-weight:700;font-size:1em;display:inline-flex;align-items:center;justify-content:center;gap:10px;line-height:1.25}
+.btn .ko{font-weight:600;opacity:.85;font-size:.85em}
+.btn.pri{background:var(--red);color:#fff;box-shadow:0 6px 18px rgba(200,52,31,.35)}
+.btn.sec{background:var(--tint);color:var(--blue)}
+.btn.ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.btn svg{width:18px;height:18px}
+
+/* section headings */
+.sh{display:flex;align-items:flex-start;gap:12px}
+.sh .n{width:28px;height:28px;border-radius:50%;background:var(--blue2);color:#fff;font-family:var(--display);font-weight:700;display:grid;place-items:center;flex:none;font-size:.85em;margin-top:2px}
+.sh h2{font-size:1.12em}
+.sh p{margin:2px 0 0;font-size:.85em;color:var(--mm);line-height:1.5}
+
+/* how you learn: listen, say, quiz with the elephant */
+.how3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hw{background:var(--ms);border:1px solid var(--ml);border-radius:16px;padding:10px 8px 10px;text-align:center;display:grid;justify-items:center;gap:2px;position:relative}
+.hw img{width:64px;height:auto;display:block}
+.hw b{font-size:.9em;line-height:1.3}
+.hw small{font-family:var(--ko);font-size:.74em;color:var(--mm);line-height:1.2}
+.hw .k{position:absolute;top:8px;left:8px;font-family:var(--display);font-weight:700;font-size:.7em;color:var(--blue2);background:var(--tint);border-radius:6px;padding:0 6px;line-height:1.7}
+.hw+.hw::before{content:"";position:absolute;left:-7px;top:46px;width:6px;height:6px;border-top:2px solid var(--mm);border-right:2px solid var(--mm);transform:rotate(45deg);opacity:.6}
+
+/* menus */
+.menus{display:grid;gap:8px}
+.mgl{grid-column:1/-1;font-size:.8em;font-weight:600;color:var(--mm);display:flex;align-items:center;gap:8px;margin-top:4px}
+.mgl::after{content:"";flex:1;height:1px;background:var(--ml)}
+.mt{display:flex;align-items:center;gap:10px;background:var(--ms);border:1px solid var(--ml);border-radius:12px;padding:6px 10px 6px 6px;min-width:0}
+.mt .g{width:38px;height:38px;border-radius:10px;background:var(--tint);color:var(--blue);font-family:var(--ko);font-weight:700;display:grid;place-items:center;flex:none;font-size:.78em;letter-spacing:-.04em}
+.mt.live .g{background:#E4EEF8;color:#1F5C9A}
+.m.dk .mt.live .g{background:#1A2A3A;color:#9AC8F0}
+.mt .t{min-width:0;line-height:1.3}
+.mt .t b{display:block;font-size:.88em;font-weight:600;line-height:1.3}
+.mt .t small{font-family:var(--ko);color:var(--mm);font-size:.72em;line-height:1.2;display:block}
+
+/* install */
+.inst{border-radius:24px;overflow:hidden;position:relative;color:#fff;isolation:isolate;background:var(--deep)}
+.inst>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:.5}
+.inst::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(160deg,rgba(30,14,4,.6),rgba(138,74,22,.93))}
+.detect{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:99px;padding:5px 12px 5px 6px;font-size:.82em;justify-self:start}
+.detect i{width:22px;height:22px;border-radius:50%;background:var(--gold);display:grid;place-items:center;color:#1A1400;font-style:normal}
+.detect i svg{width:13px;height:13px}
+.otabs{display:flex;gap:6px;flex-wrap:wrap}
+.otabs button{border:1px solid rgba(255,255,255,.3);background:none;color:#fff;border-radius:99px;padding:5px 12px;font-size:.8em;font-weight:600;font-family:var(--display)}
+.otabs button.on{background:#fff;color:#8A4A16;border-color:#fff}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;line-height:1.55;font-size:.92em}
+.steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:.8em}
+.kbd{display:inline-grid;place-items:center;vertical-align:-.3em;width:1.6em;height:1.6em;border-radius:6px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);margin:0 2px}
+.kbd svg{width:.95em;height:.95em}
+.dls{display:grid;gap:10px}
+.dl{display:flex;align-items:center;gap:12px;background:var(--ms);color:var(--mi);border-radius:16px;padding:12px 14px;min-width:0}
+.dl .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--tint);color:var(--blue);flex:none;overflow:hidden}
+.dl .ic img{width:34px;height:34px;border-radius:9px}
+.dl .ic img.pst{width:42px;height:42px;border-radius:0;object-fit:cover;object-position:top}
+.dl .ic svg{width:20px;height:20px}
+.dl .tx{min-width:0;flex:1;line-height:1.4}
+.dl .tx b{display:block;font-size:.92em}
+.dl .tx small{color:var(--mm);font-size:.78em;display:block}
+.dl .go{border:0;border-radius:10px;padding:8px 12px;font-weight:700;font-size:.82em;background:var(--blue2);color:#fff;flex:none;white-space:nowrap}
+.dl .go.y{background:var(--red);color:#fff}
+.qrbox{background:#fff;border-radius:16px;padding:12px;display:inline-grid;place-items:center}
+.qrbox canvas,.qrbox img{display:block;width:132px!important;height:132px!important}
+.addr{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:6px 6px 6px 12px;font-family:var(--display);font-size:.9em}
+.addr button{margin-left:auto;border:0;background:#fff;color:#8A4A16;border-radius:8px;padding:6px 10px;font-weight:700;font-size:.78em;font-family:var(--txt)}
+.foot{color:var(--mm);font-size:.78em;line-height:1.6}
+.foot b{font-family:var(--display);color:var(--mi);font-size:1.15em}
+.toast{background:var(--mi);color:var(--mb);padding:8px 14px;border-radius:10px;font-size:.85em;z-index:20}
+
+/* ---------- phone ---------- */
+.P .hero{padding:58px 20px 24px;min-height:470px;display:flex;flex-direction:column}
+.P .hero>img.bg{object-position:center 30%}
+.P .hero .top{display:flex;align-items:center;justify-content:space-between}
+.P .hero .copy{margin-top:auto;display:grid;gap:9px}
+.P .hero h1{font-size:2.5em}
+.P .hero .losub{font-size:1.02em}
+.P .hero .lead{font-size:.88em}
+.P .hero .stats{margin-top:6px}
+.P .sec{padding:22px 18px 0;display:grid;gap:14px}
+.P .menus{grid-template-columns:1fr 1fr}
+.P .sticky{position:sticky;bottom:0;padding:12px 16px 26px;background:linear-gradient(180deg,rgba(0,0,0,0),var(--mb) 30%);z-index:4;margin-top:8px}
+.P .sticky .btn{width:100%}
+.P .inst{margin:24px 12px 0;padding:22px 18px;display:grid;gap:14px}
+.P .foot{padding:22px 20px 8px;display:flex;gap:12px;align-items:flex-end}
+.P .foot img{width:64px;flex:none}
+
+/* ---------- iPad ---------- */
+.T .hero{padding:30px 36px 100px;min-height:580px;display:flex;flex-direction:column}
+.T .hero::after{background:linear-gradient(180deg,rgba(58,28,8,.45) 0%,rgba(58,28,8,0) 26%,rgba(138,74,22,.62) 62%,var(--deep) 100%)}
+.T .hero .top{display:flex;align-items:center;justify-content:space-between}
+.T .hero .copy{margin-top:auto;display:grid;gap:12px;max-width:620px}
+.T .hero h1{font-size:3.4em}
+.T .hero .losub{font-size:1.2em}
+.T .hero .stats{max-width:520px;margin-top:8px}
+.T .wrap{padding:0 30px;display:grid;gap:26px}
+.T .duo{display:grid;grid-template-columns:300px 1fr;gap:22px;margin-top:-62px;position:relative;z-index:2;align-items:start}
+.T .lcard{background:var(--ms);border-radius:22px;padding:18px;border:1px solid var(--ml);box-shadow:0 18px 40px rgba(70,40,15,.14);display:grid;gap:14px}
+.T .lcard .how3{grid-template-columns:1fr}
+.T .lcard .hw{grid-template-columns:64px 1fr;text-align:left;justify-items:start;align-items:center;column-gap:12px;padding:8px 12px 8px 8px}
+.T .lcard .hw img{grid-row:span 2;width:60px}
+.T .lcard .hw .k{left:auto;right:10px;top:10px}
+.T .lcard .hw+.hw::before{left:36px;top:-7px;transform:rotate(135deg)}
+.T .menus{grid-template-columns:repeat(3,1fr)}
+.T .ctarow{display:grid;grid-template-columns:1fr 3fr;gap:14px}
+.T .ctarow .btn{padding:20px;font-size:1.2em;border-radius:18px;white-space:nowrap}
+.T .inst{margin:6px 30px 0;padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.T .frow{padding:26px 30px 30px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+
+/* ---------- PC ---------- */
+.D .hero{min-height:620px;padding:22px 64px 46px;background:radial-gradient(120% 140% at 0% 0%,#D9973A 0%,#A65A1C 42%,#4A2008 100%)}
+.D .hero::after{background:linear-gradient(90deg,rgba(58,24,6,.94) 0%,rgba(122,62,18,.82) 42%,rgba(90,44,12,.45) 72%,rgba(58,28,8,.6) 100%),linear-gradient(180deg,rgba(0,0,0,0) 60%,rgba(40,18,4,.55) 100%)}
+.D .hero>img.bg{object-position:center 45%}
+.D .hero .glow1,.D .hero .glow2{position:absolute;border-radius:50%;z-index:-1;pointer-events:none}
+.D .hero .glow1{width:520px;height:520px;right:-120px;top:-260px;background:radial-gradient(circle,#FFE2A8 0%,rgba(255,196,106,.6) 45%,transparent 70%);opacity:.75}
+.D .hero .glow2{width:620px;height:620px;right:260px;bottom:-460px;background:radial-gradient(circle,#F28A2E 0%,transparent 66%);opacity:.55}
+.D .nav{display:flex;align-items:center;gap:26px}
+.D .nav a{color:#fff;opacity:.85;text-decoration:none;font-size:.88em;font-weight:500}
+.D .nav .sp{margin-left:auto}
+.D .nav .btn{padding:10px 18px;font-size:.9em;border-radius:12px}
+.D .hgrid{display:grid;grid-template-columns:1fr 430px;gap:64px;align-items:center;margin-top:30px}
+.D .copy{display:grid;gap:16px;max-width:620px}
+.D .hero h1{font-size:4.2em}
+.D .hero .losub{font-size:1.3em}
+.D .hero .lead{font-size:1.02em;max-width:560px}
+.D .hero .stats{max-width:520px;margin-top:6px}
+.D .copy .cta .btn{padding:17px 28px;font-size:1.1em;border-radius:16px}
+.D .strip{display:flex;gap:8px;margin-top:6px}
+.D .strip img{width:120px;height:72px;object-fit:cover;border-radius:12px;border:2px solid rgba(255,255,255,.35);display:block}
+.D .passwrap{position:relative}
+.D .passwrap .elep{position:absolute;left:-128px;bottom:-18px;width:140px;z-index:3;filter:drop-shadow(0 10px 18px rgba(0,0,0,.3))}
+.D .passcta{padding:0 18px 14px}
+.D .passcta .btn{width:100%;padding:15px}
+.D .band{padding:52px 64px 10px;display:grid;grid-template-columns:300px 1fr;gap:48px}
+.D .band h2{font-size:1.6em}
+.D .menus{grid-template-columns:repeat(3,1fr)}
+.T .menus .mt:last-child,.D .menus .mt:last-child{grid-column:span 2}
+.D .how3 .hw img{width:76px}
+.D .gal{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;margin-top:18px}
+.D .gal img{width:100%;height:130px;object-fit:cover;border-radius:14px;display:block}
+.D .inst{margin:46px 64px 0;padding:36px;display:grid;grid-template-columns:1.15fr .8fr 1.1fr;gap:34px}
+.D .frow{padding:30px 64px 40px;display:flex;justify-content:space-between;align-items:flex-end}
+@media (prefers-reduced-motion:no-preference){.m .pass{animation:rise .6s ease-out both}@keyframes rise{from{transform:translateY(14px)}to{transform:none}}}
+</style>
+
+<div class="vw">
+  <div class="vbar">
+    <div class="vtitle"><img src="img/icon-192.png" alt=""><div><h1>PhasaLAO 인트로 시안</h1><p>첫 화면 · 재생 설정 · 메뉴 소개 · 앱 설치 안내</p></div></div>
+    <div class="vopts">
+      <div class="tabs" role="tablist" aria-label="기기">
+        <button type="button" id="t-phone" data-dev="phone">폰 <small>390</small></button>
+        <button type="button" id="t-pad" data-dev="pad">아이패드 <small>820</small></button>
+        <button type="button" id="t-pc" data-dev="pc">PC <small>1280</small></button>
+      </div>
+      <button type="button" class="zbtn" id="zoom">실제 크기</button>
+    </div>
+  </div>
+  <p class="vnote" id="vnote"></p>
+  <div class="stage fit" id="stage"><div class="scaler" id="scaler"></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+const URL_APP = "phasalao.pages.dev";
+/* the app's 10 menus: [code, tile text, Korean name, what is inside] (app.js PARTS + poster) */
+const MENUS = [["P5","인사","기초회화","인사·식당·시장·교통…"],["P8","ກຂ","문자학습","자음·모음·받침·성조"],["P3","어순","문장규칙","어순·부정·시제·분류사"],["P1","짝","짝말비교","반대말·짝을 이루는 말"],["P2","≈","비슷한말","뜻이 비슷해 헷갈리는 말"],
+  ["P4","가족","단어가족","같은 뿌리에서 넓혀 가기"],["P6","발음","발음구별","성조·긴 모음·된소리"],["P7","듣기","듣기연습","대화·이야기 듣고 풀기"],["P9","ລາວ","라오스","나라·문화 읽을거리"],["PH","?","도움말","앱 사용법 전체"]];
+const LEARN = 8;
+const x = {
+ hello:"ສະບາຍດີ! 싸바이디!", losub:"라오스어, 주제별로 공부하기",
+ lead:"인사부터 식당·시장·교통까지 주제별 묶음으로 배워요. 원어민 라오어 음성과 한글 독음, 한국어 뜻이 함께 나오고, 짝말·비슷한말·발음·듣기 연습과 라오스 이야기까지 담았어요.",
+ st:["묶음","단어","문장","메뉴"], free:"무료",
+ s1:"재생 설정", s1n:"공부하는 중에도 언제든 바꿀 수 있어요. 앱이 기억해요.",
+ pass:"나의 학습 설정", rep:"반복", spd:"배속", voice:"한국어 음성", voiceN:"라오어 → 한국어 뜻 → 라오어",
+ theme:"화면", th:["자동","밝게","어둡게"], fz:"글자 크기", listen:"들어 보기",
+ start:"시작하기", how:"설치 방법",
+ s2:"공부 방법", s2n:"묶음마다 세 가지로 공부해요.", h3:[["예문보기","듣고 따라 말하기","main"],["단어공부","낱말카드·성조 색","happy"],["확인퀴즈","4지선다로 확인","think"]], h3k:["S","W","E"],
+ inside:"메뉴", learn:"라오어 공부", live:"라오스와 도움말",
+ it:"PhasaLAO를 홈 화면에 설치", itn:"앱처럼 화면 가득 열리고, 음성을 저장하면 인터넷 없이도 들을 수 있어요. 앱스토어는 필요 없어요.", det:"지금 쓰는 기기",
+ dlt:"내려받기", dla:"앱 설치", dlad:"홈 화면 아이콘으로 바로 열어요.", inst:"설치", seehow:"방법 보기",
+ dlv:"음성 전체 저장", dlvd:"라오어 + 한국어 뜻 음성, 약 260MB. 와이파이에서 받으세요.", save:"저장",
+ dlp:"사용 안내 포스터", dlpd:"A4 한 장. 주변에 소개해 주세요.", dl:"받기",
+ qr:"휴대폰으로 열기", qrd:"휴대폰 카메라로 찍으면 바로 열려요.", copy:"복사", copied:"주소를 복사했어요",
+ foot:"라오스어를 배우는 모든 분께 무료로.",
+ steps:{ios:["Safari로 이 페이지를 열어요.","아래쪽 공유 단추 {share} 를 눌러요.","아래로 내려 ‘홈 화면에 추가’를 골라요.","‘추가’를 누르면 홈 화면에 PhasaLAO가 생겨요."],
+  android:["아래 ‘설치’를 눌러요.","안 보이면 Chrome 메뉴 {dots} 에서 ‘앱 설치’를 골라요.","‘설치’를 누르고 홈 화면에서 PhasaLAO를 열어요."],
+  ipad:["Safari로 이 페이지를 열어요.","오른쪽 위 공유 단추 {share} 를 눌러요.","‘홈 화면에 추가’ → ‘추가’를 눌러요."],
+  chrome:["Chrome이나 Edge 주소창 끝의 설치 아이콘 {inst} 을 눌러요.","‘설치’를 누르면 PhasaLAO가 자기 창으로 열리고 바탕화면 바로가기가 생겨요."],
+  safari:["Mac의 Safari에서 ‘파일’ 메뉴를 열어요.","‘Dock에 추가’ → ‘추가’를 눌러요."]}
+};
+const LO = {s1:"ຕັ້ງຄ່າ",s2:"ວິທີຮຽນ",inside:"ເມນູ",it:"ຕິດຕັ້ງ",pass:"ຂອງຂ້ອຍ"};
+const ICON = {
+ play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
+ stop:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+ arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+ share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg>',
+ inst:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M12 8v6M9 11l3 3 3-3"/></svg>',
+ dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>',
+ audio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/></svg>',
+ phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="7" y="3" width="10" height="18" rx="2.5"/></svg>',
+ pc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg>'
+};
+
+const ua = navigator.userAgent || "";
+const isIPad = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+const REAL = isIPad ? "ipad" : /iPhone|iPod/.test(ua) ? "ios" : /Android/.test(ua) ? (/Mobile/.test(ua) ? "android" : "atab") : /Mac/.test(ua) ? "mac" : "pc";
+const REAL_NAME = {ios:"iPhone · Safari", android:"Android · Chrome", atab:"Android 태블릿", ipad:"iPad · Safari", mac:"Mac", pc:"Windows PC · Chrome/Edge"}[REAL];
+
+const st = {dev: REAL === "ios" || REAL === "android" ? "phone" : (REAL === "ipad" || REAL === "atab") ? "pad" : "pc",
+  rep:"2", rate:"1", voice:true, theme:"auto", fz:1, zoom:false,
+  os:{phone: REAL === "android" ? "android" : "ios", pad: REAL === "atab" ? "atab" : "ipad", pc: REAL === "mac" ? "safari" : "chrome"}};
+try { const s = JSON.parse(localStorage.getItem("pl-intro-mock") || "{}"); ["dev","rep","rate","voice","theme","fz"].forEach(k => { if (s[k] != null) st[k] = s[k]; }); } catch (e) {}
+const keep = () => { try { localStorage.setItem("pl-intro-mock", JSON.stringify({dev:st.dev,rep:st.rep,rate:st.rate,voice:st.voice,theme:st.theme,fz:st.fz})); } catch (e) {} };
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const kb = s => esc(s).replace(/\{(share|inst|dots)\}/g, (m, k) => '<span class="kbd">' + ICON[k] + '</span>');
+
+function heroCopy(){ return `
+  <span class="badge"><img src="img/icon-192.png" alt="">PhasaLAO</span>
+  <h1 lang="lo">ຮຽນ ພາສາລາວ</h1>
+  <p class="losub">${esc(x.losub)}</p>
+  <p class="lead">${esc(x.lead)}</p>
+  <div class="stats"><div><b>735</b><span>${x.st[0]}</span></div><div><b>4,506</b><span>${x.st[1]}</span></div><div><b>16,889</b><span>${x.st[2]}</span></div><div><b>10</b><span>${x.st[3]}</span></div></div>`; }
+function brand(){ return `<div class="brand"><img src="img/icon-192.png" alt=""><div><b>PhasaLAO</b><span class="lo">ພາສາລາວ</span></div></div>`; }
+function free(){ return `<span class="freepill"><i></i>${x.free} · <span class="lo">ສະບາຍດີ</span></span>`; }
+function step(n, k, note){ return `<div class="sh">${n ? `<span class="n">${n}</span>` : ""}<div><h2>${esc(x[k])}${LO[k] ? ` <span class="kosub lo">${LO[k]}</span>` : ""}</h2>${note ? `<p>${esc(x[note])}</p>` : ""}</div></div>`; }
+function seg(name, opts, cur, cls){ return `<div class="seg${cls ? " " + cls : ""}" role="group">${opts.map(([v, l]) => `<button type="button" data-${name}="${v}" class="${String(v) === String(cur) ? "on" : ""}" aria-pressed="${String(v) === String(cur)}">${esc(l)}</button>`).join("")}</div>`; }
+function pass(id, withCta){
+  return `<div class="pass">
+  <div class="passhead"><span class="ph"><img src="img/main.webp" alt=""></span><div><div class="pt">PHASALAO PASS</div><div class="pn">${esc(x.pass)}<small class="lo">ການຮຽນ${LO.pass}</small></div></div><div class="pid">KOR · <span class="lo">ລາວ</span><br>2026</div></div>
+  <div class="scarf"></div>
+  <div class="passbody">
+   <div class="row"><div class="lab">${esc(x.rep)}<small>문장마다 몇 번 들을지</small></div>${seg("rep", [1,2,3,4,5].map(n => [n, n + "회"]), st.rep)}</div>
+   <div class="row full"><div class="rate"><div class="lab">${esc(x.spd)}<small>느리게 · 빠르게</small></div><input type="range" id="rate-${id}" min="0.7" max="2" step="0.1" value="${st.rate}" data-rate aria-label="${esc(x.spd)}"><output>×${(+st.rate).toFixed(1)}</output></div>
+     <div class="ticks"><span>0.7</span><span>1.0</span><span>1.5</span><span>2.0</span></div></div>
+   <div class="row"><div class="lab">${esc(x.voice)}<small>${esc(x.voiceN)}</small></div><button type="button" class="sw${st.voice ? " on" : ""}" data-voice role="switch" aria-checked="${st.voice}" aria-label="${esc(x.voice)}"></button></div>
+   <div class="row"><div class="lab">${esc(x.theme)}<small>밝은 화면 · 어두운 화면</small></div>${seg("theme", [["auto", x.th[0]], ["light", x.th[1]], ["dark", x.th[2]]], st.theme, "txt")}</div>
+   <div class="row"><div class="lab">${esc(x.fz)}<small>읽기 편한 크기로</small></div>${seg("fz", [[0.9, "A−"], [1, "A"], [1.15, "A+"], [1.3, "A++"]], st.fz)}</div>
+   <div class="sample"><button type="button" class="play" data-act="sample" aria-label="${esc(x.listen)}">${playing ? ICON.stop : ICON.play}</button><div><div class="s1 lo">ສະບາຍດີ ສະບາຍດີບໍ?</div><div class="s2">싸바이디, 싸바이디 버? · 안녕하세요, 잘 지내요?</div></div><div class="s3">${st.rep}회 · ×${(+st.rate).toFixed(1)}<br>${esc(x.listen)}</div></div>
+  </div>
+  ${withCta ? `<div class="passcta">${cta()}</div>` : ""}
+  <div class="passfoot">${esc(x.s1n)}</div>
+ </div>`; }
+function how3(){ return `<div class="how3">${x.h3.map((h, i) => `<div class="hw"><span class="k">${x.h3k[i]}</span><img src="img/${h[2]}.webp" alt=""><b>${esc(h[0])}</b><small>${esc(h[1])}</small></div>`).join("")}</div>`; }
+function menus(){ const tile = (m, i) => `<div class="mt${i >= LEARN ? " live" : ""}"><span class="g${/[຀-໿]/.test(m[1]) ? " lo" : ""}">${esc(m[1])}</span><span class="t"><b>${esc(m[2])}</b><small>${esc(m[3])}</small></span></div>`;
+  return `<div class="menus"><div class="mgl">${esc(x.learn)}</div>${MENUS.slice(0, LEARN).map(tile).join("")}<div class="mgl">${esc(x.live)}</div>${MENUS.slice(LEARN).map((m, i) => tile(m, i + LEARN)).join("")}</div>`; }
+function osTabs(dev){ const o = dev === "phone" ? [["ios","iPhone"],["android","Android"]] : dev === "pad" ? [["ipad","iPad"],["atab","Android"]] : [["chrome","Chrome · Edge"],["safari","Mac Safari"]];
+  return `<div class="otabs" role="group">${o.map(([k, l]) => `<button type="button" data-os="${dev}:${k}" class="${st.os[dev] === k ? "on" : ""}">${l}</button>`).join("")}</div>`; }
+function steps(dev){ const k = st.os[dev] === "atab" ? "android" : st.os[dev]; return `<ol class="steps">${x.steps[k].map(s => `<li><span>${kb(s)}</span></li>`).join("")}</ol>`; }
+function detectChip(dev){ const name = {phone:{ios:"iPhone · Safari",android:"Android · Chrome"},pad:{ipad:"iPad · Safari",atab:"Android 태블릿"},pc:{chrome:"Windows PC · Chrome/Edge",safari:"Mac · Safari"}}[dev][st.os[dev]];
+  return `<span class="detect"><i>${dev === "pc" ? ICON.pc : ICON.phone}</i>${esc(x.det)}: <b>${name}</b></span>`; }
+function downloads(dev){ const ios = (dev === "phone" && st.os.phone === "ios") || (dev === "pad" && st.os.pad === "ipad") || (dev === "pc" && st.os.pc === "safari");
+  return `<div class="dls">
+   <div class="dl"><span class="ic"><img src="img/icon-192.png" alt=""></span><span class="tx"><b>${esc(x.dla)}</b><small>${esc(x.dlad)}</small></span><button type="button" class="go y" data-act="${ios ? "how" : "install"}">${esc(ios ? x.seehow : x.inst)}</button></div>
+   <div class="dl"><span class="ic">${ICON.audio}</span><span class="tx"><b>${esc(x.dlv)}</b><small>${esc(x.dlvd)}</small></span><button type="button" class="go" data-act="audio">${esc(x.save)}</button></div>
+   <div class="dl"><span class="ic"><img class="pst" src="img/poster.webp" alt=""></span><span class="tx"><b>${esc(x.dlp)}</b><small>${esc(x.dlpd)}</small></span><button type="button" class="go" data-act="poster">${esc(x.dl)}</button></div>
+  </div>`; }
+function addr(){ return `<div class="addr">${URL_APP}<button type="button" data-act="copy">${esc(x.copy)}</button></div>`; }
+function foot(pic){ return `<div class="foot">${pic ? `<img src="img/try.webp" alt="">` : ""}<div><b>PhasaLAO</b> · <span class="lo">ຮຽນ ພາສາລາວ</span><div>${esc(x.foot)}</div><div>${URL_APP} · v4.16 · Copyleft</div></div></div>`; }
+function isDark(){ if (st.theme === "dark") return true; if (st.theme === "light") return false; const r = document.documentElement.getAttribute("data-theme"); if (r) return r === "dark"; return matchMedia("(prefers-color-scheme: dark)").matches; }
+function cta(){ return `<button type="button" class="btn pri" data-act="start">${esc(x.start)} ${ICON.arrow}</button>`; }
+function howBtn(cls){ return `<button type="button" class="btn ${cls}" data-act="how">${esc(x.how)}</button>`; }
+
+function phone(){ return `
+ <div class="hero"><img class="bg" src="img/r-thatluang.jpg" alt="탓루앙">
+  <div class="top">${brand()}<span class="freepill"><i></i>${x.free}</span></div>
+  <div class="copy">${heroCopy()}</div></div>
+ <div class="sec">${step(1, "s1")}${pass("p", false)}</div>
+ <div class="sec">${step(2, "s2", "s2n")}${how3()}</div>
+ <div class="sec"><div class="sh"><div><h2>${esc(x.inside)} <span class="kosub lo">${LO.inside}</span></h2></div></div>${menus()}</div>
+ <div class="inst"><img class="bg" src="img/r-sunset.jpg" alt="">
+  ${detectChip("phone")}<h2>${esc(x.it)}</h2><p style="margin:0;opacity:.85;font-size:.88em">${esc(x.itn)}</p>
+  ${osTabs("phone")}${steps("phone")}${downloads("phone")}${addr()}</div>
+ ${foot(true)}
+ <div class="sticky">${cta()}</div>`; }
+
+function pad(){ return `
+ <div class="hero"><img class="bg" src="img/r-lpb.jpg" alt="루앙프라방 왕궁 사원과 야시장">
+  <div class="top">${brand()}${free()}</div>
+  <div class="copy">${heroCopy()}</div></div>
+ <div class="wrap">
+  <div class="duo">
+   <div class="lcard">${step(0, "s2", "s2n")}${how3()}</div>
+   ${pass("t", false)}
+  </div>
+  <div class="ctarow" style="margin-top:-8px">${howBtn("sec")}${cta()}</div>
+  <div style="display:grid;gap:12px"><h2 style="font-size:1.25em">${esc(x.inside)} <span class="kosub lo">${LO.inside}</span></h2>${menus()}</div>
+ </div>
+ <div class="inst"><img class="bg" src="img/r-sunset.jpg" alt="">
+  <div style="display:grid;gap:14px;align-content:start">${detectChip("pad")}<h2 style="font-size:1.4em">${esc(x.it)}</h2><p style="margin:0;opacity:.85;font-size:.9em">${esc(x.itn)}</p>${osTabs("pad")}${steps("pad")}</div>
+  <div style="display:grid;gap:12px;align-content:start"><h3 style="font-size:1em;opacity:.9">${esc(x.dlt)}</h3>${downloads("pad")}${addr()}</div>
+ </div>
+ <div class="frow">${foot(false)}<img src="img/happy.webp" alt="" style="width:130px;height:auto"></div>`; }
+
+function pc(){ return `
+ <div class="hero"><img class="bg" src="img/r-nongkhiaw.jpg" alt="농키아우"><span class="glow1"></span><span class="glow2"></span>
+  <div class="nav">${brand()}<a href="#" data-act="noop">기초회화</a><a href="#" data-act="noop">문자학습</a><a href="#" data-act="noop">라오스</a><a href="#" data-act="noop">도움말</a><span class="sp"></span>${free()}${cta()}</div>
+  <div class="hgrid">
+   <div class="copy">${heroCopy()}<div class="cta">${cta()}${howBtn("ghost")}</div>
+    <div class="strip"><img src="img/r-thatluang.jpg" alt="탓루앙"><img src="img/r-patuxai.jpg" alt="빠뚜싸이"><img src="img/r-lpb.jpg" alt="루앙프라방"><img src="img/r-sunset.jpg" alt="노을"></div></div>
+   <div class="passwrap"><img class="elep" src="img/main.webp" alt="">${pass("d", true)}</div>
+  </div></div>
+ <div class="band">
+  <div style="display:grid;gap:14px;align-content:start"><h2>${esc(x.s2)} <span class="kosub lo">${LO.s2}</span></h2><p style="margin:0;color:var(--mm);font-size:.92em">${esc(x.s2n)} ${esc(x.s1n)}</p>${how3()}</div>
+  <div><h2 style="margin-bottom:12px">${esc(x.inside)} <span class="kosub lo">${LO.inside}</span></h2>${menus()}<div class="gal"><img src="img/r-patuxai.jpg" alt="빠뚜싸이 분수"><img src="img/alms.jpg" alt="탁발"><img src="img/sinh.jpg" alt="씬" style="object-position:center 25%"></div></div>
+ </div>
+ <div class="inst"><img class="bg" src="img/r-sunset.jpg" alt="">
+  <div style="display:grid;gap:14px;align-content:start">${detectChip("pc")}<h2 style="font-size:1.5em">${esc(x.it)}</h2><p style="margin:0;opacity:.85;font-size:.92em">${esc(x.itn)}</p>${osTabs("pc")}${steps("pc")}</div>
+  <div style="display:grid;gap:12px;align-content:start;justify-items:start"><h3 style="font-size:1em">${esc(x.qr)}</h3><div class="qrbox" id="qr"></div><p style="margin:0;opacity:.85;font-size:.85em">${esc(x.qrd)}</p>${addr()}</div>
+  <div style="display:grid;gap:12px;align-content:start"><h3 style="font-size:1em;opacity:.9">${esc(x.dlt)}</h3>${downloads("pc")}</div>
+ </div>
+ <div class="frow">${foot(false)}<img src="img/happy.webp" alt="" style="width:140px;height:auto"></div>`; }
+
+const SIZES = {phone:[414, 844], pad:[860, 1140], pc:[1280, 864]};
+const NOTES = {
+ phone:"<b>폰</b>: RYU님 탓루앙 사진 위에 PhasaLAO 배지와 큰 라오 글자 제목 ‘ຮຽນ ພາສາລາວ’, 소개와 숫자(735 묶음 · 4,506 단어 · 16,889 문장 · 10 메뉴). 그 아래 ① 씬 치맛단 무늬를 두른 ‘PhasaLAO PASS’ 설정 카드 → ② 공부 방법(예문보기 S → 단어공부 W → 확인퀴즈 E, 코끼리 3컷) → 메뉴 10개 → 설치 안내. ‘시작하기’ 단추는 아래에 늘 붙어 있어요.",
+ pad:"<b>아이패드</b>: 루앙프라방 왕궁 사원과 야시장 사진 위 제목, 왼쪽 공부 방법 카드와 오른쪽 설정 카드를 나란히. 메뉴는 3칸, 설치 안내는 단계와 내려받기를 두 칸으로.",
+ pc:"<b>PC</b>: 농키아우 강마을 사진 위에 앱 제목 상자와 같은 호박색·갈색 빛을 덮고, 왼쪽 소개와 라오스 사진 4장, 오른쪽 설정 카드 옆에 코끼리. 아래 공부 방법 + 메뉴와 사진, 설치 안내는 ‘휴대폰으로 열기’ QR 포함 3칸."};
+function frameHTML(){ const d = st.dev, body = d === "phone" ? phone() : d === "pad" ? pad() : pc();
+  const m = `<div class="m ${d === "phone" ? "P" : d === "pad" ? "T" : "D"}${isDark() ? " dk" : ""}" lang="ko" style="--fz:${st.fz}">${body}</div>`;
+  if (d === "pc") return `<div class="frame pc"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url">🔒 ${URL_APP}<span class="inst" title="Install">${ICON.inst.replace("<svg", '<svg width="18" height="18"')}</span></span></div><div class="screen" id="scr">${m}</div></div>`;
+  return `<div class="frame ${d}"><div class="screen" id="scr">${m}</div></div>`; }
+
+const $ = id => document.getElementById(id);
+let lastDev = null, playing = false;
+function render(){
+  const scr = $("scr"), y = scr && lastDev === st.dev ? scr.scrollTop : 0;
+  $("scaler").innerHTML = frameHTML();
+  const s2 = $("scr"); if (s2) s2.scrollTop = y;
+  lastDev = st.dev;
+  ["phone","pad","pc"].forEach(d => { const b = $("t-" + d); b.classList.toggle("on", d === st.dev); b.setAttribute("aria-selected", d === st.dev); });
+  $("vnote").innerHTML = NOTES[st.dev] + " 언어 선택과 동영상은 없어요. 카드에서 고른 반복·배속·한국어 음성·화면·글자 크기는 앱 설정에 그대로 저장되고(세 기기 시안에도 똑같이 반영), ▶ 들어 보기는 앱에 있는 실제 음성을 그 설정대로 들려줘요. 설치 안내는 접속한 기기를 알아보고 맞는 방법을 먼저 보여 줘요(지금 이 기기: <b>" + REAL_NAME + "</b>). 시안이라 다른 단추는 모양만 있어요.";
+  $("zoom").textContent = st.zoom ? "화면에 맞춤" : "실제 크기";
+  const q = $("qr"); if (q && window.QRCode) { try { new QRCode(q, {text: "https://" + URL_APP + "/", width: 264, height: 264, colorDark: "#3A1C08", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M}); } catch (e) {} }
+  fit(); keep();
+}
+function fit(){
+  const stage = $("stage"), sc = $("scaler"), [w, h] = SIZES[st.dev];
+  stage.classList.toggle("fit", !st.zoom);
+  if (st.zoom){ sc.style.transform = "none"; sc.style.width = w + "px"; sc.style.height = "auto"; stage.style.height = "auto"; return; }
+  const avail = stage.clientWidth || w, k = Math.min(1, avail / w);
+  sc.style.transform = "scale(" + k + ")"; sc.style.width = w + "px"; stage.style.height = Math.ceil(h * k) + "px";
+}
+window.addEventListener("resize", fit);
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (st.theme === "auto") render(); }); } catch (e) {}
+new MutationObserver(() => { if (st.theme === "auto") render(); }).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]});
+
+function toast(msg){ const scr = $("scr"); if (!scr) return; const old = scr.querySelector(".toast"); if (old) old.remove();
+  const el = document.createElement("div"); el.className = "toast"; el.textContent = msg; el.style.position = "sticky"; el.style.bottom = "100px"; el.style.margin = "0 auto"; el.style.width = "max-content"; el.style.maxWidth = "90%";
+  scr.querySelector(".m").appendChild(el); setTimeout(() => el.remove(), 2400); }
+
+/* sample: the app's own clips. Lao (repeat × at the chosen speed), the Korean meaning once after the first when 한국어 음성 is on */
+const ALO = new Audio("img/s-lo.mp3"), AKO = new Audio("img/s-ko.mp3");
+let cur = null;
+function playOne(a, rate){ return new Promise(res => { cur = a; a.currentTime = 0; a.playbackRate = rate; try { a.preservesPitch = true; } catch (e) {} a.onended = res; a.onerror = res; const p = a.play(); if (p && p.catch) p.catch(res); }); }
+async function sample(){
+  if (playing){ playing = false; if (cur) cur.pause(); render(); return; }
+  playing = true; render(); const n = +st.rep || 1;
+  for (let i = 0; i < n && playing; i++){ await playOne(ALO, +st.rate || 1); if (i === 0 && st.voice && playing) await playOne(AKO, 1); }
+  playing = false; render();
+}
+
+document.addEventListener("click", ev => {
+  const b = ev.target.closest("button,a"); if (!b) return;
+  if (b.dataset.dev){ st.dev = b.dataset.dev; render(); return; }
+  if (b.id === "zoom"){ st.zoom = !st.zoom; fit(); $("zoom").textContent = st.zoom ? "화면에 맞춤" : "실제 크기"; return; }
+  if (b.dataset.rep){ st.rep = b.dataset.rep; render(); return; }
+  if (b.dataset.theme){ st.theme = b.dataset.theme; render(); return; }
+  if (b.dataset.fz){ st.fz = +b.dataset.fz; render(); return; }
+  if (b.hasAttribute("data-voice")){ st.voice = !st.voice; render(); return; }
+  if (b.dataset.os){ const [d, k] = b.dataset.os.split(":"); st.os[d] = k; render(); return; }
+  const a = b.dataset.act; if (!a) return;
+  ev.preventDefault();
+  if (a === "sample") sample();
+  else if (a === "copy"){ const done = () => toast(x.copied); try { navigator.clipboard.writeText("https://" + URL_APP + "/").then(done, done); } catch (e) { done(); } }
+  else if (a === "start") toast("→ 앱 첫 화면 (" + st.rep + "회 · ×" + (+st.rate).toFixed(1) + (st.voice ? " · 한국어 음성" : "") + ")");
+  else if (a === "install") toast("시안: 실제 앱에서는 설치 창이 떠요");
+  else if (a === "audio") toast("시안: 앱의 ‘음성 전체 저장’과 같아요");
+  else if (a === "poster") toast("시안: PhasaLAO 포스터(A4)를 받아요");
+  else if (a === "how"){ const el = $("scr").querySelector(".steps"); if (el) el.scrollIntoView({behavior: "smooth", block: "center"}); }
+});
+document.addEventListener("input", ev => { if (ev.target.matches("[data-rate]")){ st.rate = (+ev.target.value).toFixed(1).replace(/\.0$/, ""); const o = ev.target.parentNode.querySelector("output"); if (o) o.textContent = "×" + (+st.rate).toFixed(1); keep(); } });
+document.addEventListener("change", ev => { if (ev.target.matches("[data-rate]")) render(); });
+render();
+})();
+</script>

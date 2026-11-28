@@ -1,0 +1,126 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+Lao+Looped:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1200px;background:#faf6ee;font-family:'Noto Sans KR',sans-serif;color:#2b2620;word-break:keep-all}
+.top{background:linear-gradient(135deg,#7a4c0c,#c08a2e);color:#fff;padding:46px 56px 50px;position:relative;overflow:hidden}
+.top .row{display:flex;align-items:center;gap:30px}
+.top img{width:120px;height:120px;border-radius:28px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.top h1{font-size:64px;font-weight:900;letter-spacing:-1px;line-height:1.1}
+.top .lao{font-family:'Noto Sans Lao Looped';font-size:32px;opacity:.95;margin-top:4px}
+.top p{font-size:30px;font-weight:500;margin-top:24px;line-height:1.45}
+.free{position:absolute;right:46px;top:40px;width:190px;height:190px;border-radius:50%;background:#fff;color:#c0392b;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(10deg);box-shadow:0 8px 26px rgba(0,0,0,.25);border:6px solid #f6d36b}
+.free b{font-size:56px;font-weight:900;line-height:1}
+.free span{font-size:19px;font-weight:700;color:#7a4c0c;margin-top:6px;text-align:center;line-height:1.3}
+.stats{display:flex;gap:18px;margin:-26px 56px 0;position:relative}
+.stats>div{flex:1;background:#fff;border-radius:22px;padding:18px 10px;text-align:center;box-shadow:0 4px 14px rgba(80,60,20,.12)}
+.stats b{display:block;font-size:44px;font-weight:900;color:#8a5a12;line-height:1.1}
+.stats span{font-size:20px;color:#6b6157;font-weight:500}
+h2.sec{font-size:34px;font-weight:900;margin:40px 56px 18px;color:#5a3a08}
+h2.sec small{font-size:20px;font-weight:500;color:#8a7f73;margin-left:10px}
+.parts{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:0 56px}
+.parts>div{background:#fff;border-radius:18px;padding:16px 14px;border-top:8px solid var(--c);box-shadow:0 2px 8px rgba(80,60,20,.08)}
+.parts b{font-size:24px;font-weight:900;color:var(--c);display:block}
+.parts i{font-style:normal;font-size:16px;color:#8a7f73;font-weight:700}
+.parts p{font-size:17px;line-height:1.45;margin-top:6px;color:#4a423a}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin:0 56px}
+.shot{background:#fff;border-radius:26px;padding:16px 16px 20px;box-shadow:0 2px 10px rgba(80,60,20,.08)}
+.shot .ph{border:3px solid #2b2620;border-radius:26px;overflow:hidden;height:420px;background:#f3eee6}
+.shot .ph img{width:100%;display:block}
+.shot h3{font-size:26px;font-weight:900;margin:16px 4px 6px;color:var(--c)}
+.shot p{font-size:18px;line-height:1.5;margin:0 4px;color:#4a423a}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 56px}
+.feat>div{background:#fff;border-radius:20px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;box-shadow:0 2px 8px rgba(80,60,20,.07)}
+.feat .e{font-size:38px;line-height:1;flex:none;width:46px;text-align:center}
+.feat b{font-size:22px;font-weight:900;display:block;margin-bottom:3px}
+.feat p{font-size:18px;line-height:1.45;color:#4a423a}
+.bottom{margin:36px 56px 0;background:linear-gradient(135deg,#fff3dc,#ffe9bf);border:3px solid #e2b45a;border-radius:28px;padding:26px 30px;display:flex;align-items:center;gap:30px}
+.bottom img{width:170px;height:170px;background:#fff;border-radius:16px;padding:6px}
+.bottom h3{font-size:34px;font-weight:900;color:#c0392b}
+.bottom p{font-size:22px;line-height:1.55;margin-top:6px}
+.bottom .url{font-size:26px;font-weight:700;color:#8a5a12}
+.foot{margin-top:30px;padding:20px;text-align:center;font-size:18px;color:#9a9087;border-top:1px solid #eadfcf}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;margin:0 56px}
+.col{background:#fff;border-radius:26px;padding:26px 24px 28px;box-shadow:0 2px 10px rgba(80,60,20,.08);border-top:10px solid var(--c)}
+.col h2{font-size:29px;white-space:nowrap;font-weight:900;color:var(--c);display:flex;align-items:center;gap:12px}
+.col h2 svg{width:42px;height:42px}
+.col .br{font-size:19px;color:#7a7066;margin:6px 0 18px;font-weight:500}
+.st{display:flex;gap:12px;margin-bottom:18px;align-items:flex-start}
+.n{flex:none;width:40px;height:40px;border-radius:50%;background:var(--c);color:#fff;font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center}
+.st div{font-size:21px;line-height:1.45}
+.st b{color:var(--c)}
+.k{display:inline-flex;align-items:center;gap:5px;border:2px solid #d9cfc2;border-radius:10px;padding:1px 9px;font-weight:700;background:#faf7f2;font-size:19px;white-space:nowrap}
+.k svg{width:22px;height:22px}
+.mock{margin-top:6px;border:2px solid #e6ddd0;border-radius:16px;padding:10px 12px;background:#fbf9f5;font-size:17px;color:#6b6157}
+.ios{--c:#2d6fd2}.and{--c:#2f9a4b}.pc{--c:#8a46c7}
+.last{margin:6px 56px 0;background:#fff3dc;border:3px dashed #c08a2e;border-radius:26px;padding:24px 32px;display:flex;gap:24px;align-items:center}
+.last .big{font-size:56px}
+.last h3{font-size:29px;font-weight:900;color:#8a5a12;margin-bottom:6px}
+.last p{font-size:21px;line-height:1.5}
+.last .lnk{color:#1f6fb8;font-weight:700}
+.last{margin-top:18px}
+</style></head><body>
+<div class="top">
+ <div class="row"><img src="icon-192.png"><div><h1>LAO Lang</h1><div class="lao">ຮຽນ ພາສາລາວ · 라오스어 공부 앱</div></div></div>
+ <p>헷갈리는 라오스어 단어를 <b>묶어서</b> 듣고, 보고, 외우는 앱.<br>휴대폰·태블릿·PC 어디서나, 인터넷이 없어도 공부해요.</p>
+ <div class="free"><b>무료</b><span>광고 없음<br>가입 없음</span></div>
+</div>
+<div class="stats">
+ <div><b>579</b><span>묶음</span></div><div><b>3,409</b><span>단어</span></div><div><b>14,003</b><span>예문</span></div><div><b>5</b><span>공부 갈래</span></div>
+</div>
+
+<h2 class="sec">다섯 갈래로 묶어서 공부해요</h2>
+<div class="parts">
+ <div style="--c:#a06a10"><b>주제별</b><i>89묶음</i><p>인사, 식당, 시장, 병원, 여행처럼 상황별 낱말</p></div>
+ <div style="--c:#6a4fb0"><b>짝모음</b><i>57묶음</i><p>반대말, 숫자, 색, 가족처럼 짝을 이루는 말</p></div>
+ <div style="--c:#b0475a"><b>닮은말</b><i>100묶음</i><p>뜻이 비슷해서 헷갈리는 말 구별하기</p></div>
+ <div style="--c:#3d7a55"><b>말뿌리</b><i>155묶음</i><p>같은 뿌리 말로 단어를 넓혀 가기</p></div>
+ <div style="--c:#1f5f9a"><b>말소리</b><i>178묶음</i><p>성조, 긴·짧은 모음처럼 비슷한 소리 구별</p></div>
+</div>
+
+<h2 class="sec">세 가지 공부 화면<small>묶음마다 바로 바꿔 볼 수 있어요</small></h2>
+<div class="shots">
+ <div class="shot" style="--c:#1f5f9a"><div class="ph"><img src="s_cards.png"></div><h3>단어공부 · 낱말카드</h3><p>글자 위 <b>색깔 성조 표시</b>(교재 6성조)로 높낮이를 한눈에. 누르면 뒤집혀 뜻과 예문이 나와요.</p></div>
+ <div class="shot" style="--c:#a06a10"><div class="ph"><img src="s_dlg.png"></div><h3>예문보기</h3><p>단어마다 예문 2개와 실생활 문장, <b>한글 독음</b>과 뜻, 문장 속 다른 낱말 풀이(※)까지.</p></div>
+ <div class="shot" style="--c:#b0475a"><div class="ph"><img src="s_quiz.png"></div><h3>확인퀴즈</h3><p>4지선다로 뜻 고르기. 배운 것을 바로 확인해요.</p></div>
+</div>
+
+<h2 class="sec">듣기가 강한 앱</h2>
+<div class="feat">
+ <div><span class="e">🔊</span><div><b>모든 단어·문장에 라오스어 음성</b><p>여자·남자 목소리로 읽어 주고, 한국어 뜻도 소리로 들려줘요.</p></div></div>
+ <div><span class="e">🔁</span><div><b>연속 재생 · 묶음 재생</b><p>틀어 두면 라오스어 → 한국어 뜻 순서로 계속 읽어 줘요. 걸으면서, 운전하면서도.</p></div></div>
+ <div><span class="e">⏩</span><div><b>반복 횟수와 빠르기</b><p>1~5번 반복, 0.8배부터 2배까지 속도 조절.</p></div></div>
+ <div><span class="e">📴</span><div><b>오프라인에서도 소리가 나요</b><p>음성을 한 번 내려받으면 인터넷 없이 공부해요.</p></div></div>
+ <div><span class="e">🔍</span><div><b>검색</b><p>라오스어, 한글 독음, 뜻 어느 것으로도 찾아요.</p></div></div>
+ <div><span class="e">📱</span><div><b>설치형 웹앱</b><p>아이폰·아이패드·안드로이드·PC 홈 화면에 앱처럼 설치. 새 버전은 저절로 반영.</p></div></div>
+</div>
+
+<h2 class="sec">무료 설치 방법<small>앱스토어 없이 웹 주소에서 바로 설치해요</small></h2>
+<div class="grid">
+<div class="col ios"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>아이폰·아이패드</h2><div class="br">꼭 <b>Safari</b>로 열어 주세요</div>
+<div class="st"><span class="n">1</span><div><b>Safari</b>에서 앱 주소를 열어요.</div></div>
+<div class="st"><span class="n">2</span><div>아래(아이패드는 위)의 <span class="k"><svg viewBox="0 0 24 24" fill="none" stroke="#2d6fd2" stroke-width="2"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11v9h12v-9"/></svg>공유</span> 버튼을 눌러요.</div></div>
+<div class="st"><span class="n">3</span><div>목록을 내려서 <span class="k">⊞ 홈 화면에 추가</span>를 눌러요.</div></div>
+<div class="st"><span class="n">4</span><div>오른쪽 위 <b>추가</b>를 누르면 끝!<div class="mock">홈 화면에 LAO Lang 아이콘이 생겨요.</div></div></div>
+</div>
+
+<div class="col and"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>안드로이드폰</h2><div class="br"><b>Chrome</b>(크롬)으로 열어 주세요</div>
+<div class="st"><span class="n">1</span><div><b>Chrome</b>에서 앱 주소를 열어요.</div></div>
+<div class="st"><span class="n">2</span><div>오른쪽 위 <span class="k">⋮</span> 메뉴를 눌러요.</div></div>
+<div class="st"><span class="n">3</span><div><span class="k">홈 화면에 추가</span> 또는 <span class="k">앱 설치</span>를 눌러요.</div></div>
+<div class="st"><span class="n">4</span><div><b>설치</b>를 누르면 끝!<div class="mock">삼성 인터넷은 ≡ 메뉴 → 현재 페이지 추가 → 홈 화면</div></div></div>
+</div>
+
+<div class="col pc"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>PC (윈도우·맥)</h2><div class="br"><b>Chrome</b> 또는 <b>Edge</b>로 열어 주세요</div>
+<div class="st"><span class="n">1</span><div>Chrome이나 Edge에서 앱 주소를 열어요.</div></div>
+<div class="st"><span class="n">2</span><div>주소창 오른쪽 끝의 <span class="k"><svg viewBox="0 0 24 24" fill="none" stroke="#8a46c7" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 7v6M9 10l3 3 3-3"/></svg>설치</span> 아이콘을 눌러요.</div></div>
+<div class="st"><span class="n">3</span><div>아이콘이 안 보이면 <span class="k">⋮</span> 또는 <span class="k">…</span> 메뉴 → <b>앱</b> → <b>설치</b>를 찾아요.</div></div>
+<div class="st"><span class="n">4</span><div><b>설치</b>를 누르면 끝!<div class="mock">바탕화면·시작 메뉴에서 앱처럼 열려요.</div></div></div>
+</div>
+</div>
+
+<div class="last"><div class="big">🎧</div><div><h3>설치한 뒤 한 번만: 음성 내려받기</h3><p>앱을 열고 화면 맨 아래의 <span class="lnk">↓ 음성 mp3 내려받기 (오프라인용)</span>를 눌러요.<br>와이파이에서 받으세요. 다 받으면 <b>(완료)</b>가 보이고, 인터넷이 없어도 소리가 나요.</p></div></div>
+
+<div class="bottom"><img src="qr.svg"><div><h3>지금 무료로 시작하세요!</h3><p>카메라로 QR 코드를 비추거나 주소를 입력한 뒤, 위 설치 방법을 따라 하세요.<br><span class="url">insoo-commits.github.io/lao-app</span><br>앱스토어 없이, 회원가입 없이 바로 써요.</p></div></div>
+<div class="foot">LAO Lang · 라오스어, 주제별로 공부하기 · Claude AI로 제작</div>
+</body></html>

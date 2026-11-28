@@ -1,0 +1,90 @@
+diff --git a/app.js b/app.js
+index 77f7059ef..9115db2cb 100644
+--- a/app.js
++++ b/app.js
+@@ -214,14 +214,46 @@ const bhead=(id,withIntro)=>{const b=B[id];return `<div class="bhead"><span clas
+ try{document.fonts.ready.then(()=>{if(S.mode==="dlg")fitNotes()})}catch(e){}
+ function fitNotes(){document.querySelectorAll(".line .nt").forEach(e=>{const lh=parseFloat(getComputedStyle(e).lineHeight)||18;let g=0;while(e.offsetHeight>lh*2.4&&g++<20){const ni=[...e.querySelectorAll(".ni")];if(ni.length<2)break;ni.sort((a,b)=>(+b.dataset.f)-(+a.dataset.f)||a.textContent.length-b.textContent.length);ni[0].remove()}})}
+ /* RYU v12.73: card words same size + same height; shrink only very long ones to fit one line (min 17px, then wrap) */
+-function fitBig(){document.querySelectorAll(".cards .face .big").forEach(e=>{e.style.fontSize="";e.style.whiteSpace="nowrap";let f=parseFloat(getComputedStyle(e).fontSize),m=f*0.6;while(e.scrollWidth>e.clientWidth+1&&f>m){f-=1;e.style.fontSize=f+"px"}if(e.scrollWidth>e.clientWidth+1)e.style.whiteSpace="normal"})}
++/* RYU v2.3: tone marks above each syllable's first consonant on word cards (Vientiane table, same as 말소리 성조 묶음) */
++const TN=(()=>{const I='(ຫ[ງຍນມລວ]|ຫຼ|[ກຂຄງຈສຊຍດຕຖທນບປຜຝພຟມຢຣລວຫອຮໜໝ])(ວ(?=[າັ])|ວ(?=[່້]?າ))?',WQ='(ວ(?=[າັ])|ວ(?=[່້]?າ))?',T='([່້໊໋]?)',F='([ກງຍດນບມວ])';
++const P=[['ເ'+I+'ິ'+T+F,'S'],['ເ'+I+'ີ'+T+F+'?','L'],['ເ'+I+'[ຶື]'+T+'ອ'+F+'?','L'],['ເ'+I+T+'ົ'+T+'າ','A'],['ເ'+I+T+'າະ','S'],['ເ'+I+'ັ'+T+F,'S'],['ເ'+I+T+'ະ','S'],['ເ'+I+T+'ຍ','L'],['ເ'+I+T+F+'?','L'],['ແ'+I+T+'ະ','S'],['ແ'+I+'ັ'+T+F,'S'],['ແ'+I+T+F+'?','L'],['ໂ'+I+T+'ະ','S'],['ໂ'+I+T+F+'?','L'],['[ໄໃ]'+I+T,'A'],[I+'ັ'+T+'ອ'+F,'S'],[I+'ັ'+T+F,'S'],[I+'ົ'+T+'ວ','L'],[I+'ົ'+T+F,'S'],[I+T+'ະ','S'],[I+T+'າ'+F+'?','L'],[I+T+'ຳ','A'],[I+T+'ໍ'+T,'L'],[I+'ິ'+T+F+'?','S'],[I+'ີ'+T+F+'?','L'],[I+'ຶ'+T+F+'?','S'],[I+'ື'+T+F+'?','L'],[I+'ຸ'+T+F+'?','S'],[I+'ູ'+T+F+'?','L'],[I+T+'ອ'+F,'L'],[I+T+'ຽ'+F,'L'],[I+T+'ວ'+F,'L'],['ແ([ກຂຄ])(ວ)'+T+F,'L'],[I+'ໍ'+T+'າ','A'],[I+'ົ'+T+'ວະ','S'],['ເ'+I+'ິ'+T,'S']].flatMap(([p,l])=>p.endsWith(F+'?')?[[p.slice(0,-1),l],[p.slice(0,-F.length-1),l]]:[[p,l]]).flatMap(([p,l])=>[[p,l],[p.replace(WQ,'()'),l]]).map(([p,l])=>[new RegExp('^(?:'+p+')'),l]);
++const H='ຂສຖຜຝຫໜໝ',M='ກຈດຕບປຢອ';
++const cls=i=>i.length>1||H.includes(i)?'H':M.includes(i)?'M':'L';
++/* all syllable parses starting at s */
++const at=(s)=>{const r=[];for(const [rx,l] of P){const m=rx.exec(s);if(m){const g=m.slice(1),ini=g[0],rest=g.slice(2).filter(Boolean),t=rest.filter(x=>'່້໊໋'.includes(x)).join(''),fin=rest.filter(x=>!'່້໊໋'.includes(x)).join('');r.push({n:m[0].length,ini:ini,ci:m[0].indexOf(ini),t:t,fin:fin,len:l})}}return r};
++const tone=(y)=>{const c=cls(y.ini),t=y.t,dead='ກດບ'.includes(y.fin)&&y.fin!==''||(y.len==='S'&&!y.fin);
++  if(t==='່')return 'mid';if(t==='້')return c==='H'?'lf':'hf';
++  if(dead){if(y.len==='L')return c==='L'?'hf':'lf';return c==='L'?'mid':'hi'}
++  return {H:'rise',M:'low',L:'hi'}[c]};
++/* best cover of a word: max chars covered, then fewest syllables */
++const seg=(w)=>{const n=w.length,best=new Array(n+1).fill(null);best[n]={c:0,k:0,p:[]};
++  for(let i=n-1;i>=0;i--){let b={c:best[i+1].c,k:best[i+1].k,p:best[i+1].p};
++    for(const y of at(w.slice(i))){const nx=best[i+y.n];if(!nx)continue;const c=nx.c+y.n,k=nx.k+1;if(c>b.c||c===b.c&&k<b.k)b={c:c,k:k,p:[{i:i,...y}].concat(nx.p)}}
++    best[i]=b}
++  /* loanwords: leading cluster consonant (ກຣາມ, ຄລິກ) carries the class; a trailing ສ closes the syllable (ເຟສ) */
++  const p=best[0].p;let e=0;for(const y of p){if(y.i>e&&y.ci===0&&/[ກຂຄຕທປຜພຝຟບດສ]/.test(w[y.i-1])&&'ຣລ'.includes(y.ini)){y.i--;y.n++;y.ini=w[y.i]}
++    if(!y.fin&&w[y.i+y.n]==='ສ'&&w[y.i+y.n+1]!=='໌'&&!at(w.slice(y.i+y.n)).length){y.fin='ດ';y.n++}e=y.i+y.n}
++  return p};
++const MK={hi:'M2 2H14',mid:'M2 6H14',low:'M2 10H14',rise:'M2 10L14 2',hf:'M2 6L7 2L14 10',lf:'M2 5L14 10'};
++return {seg:seg,tone:tone,MK:MK}})();
++function toneHtml(lo){const ys=TN.seg(lo);if(!ys.length)return esc(lo);let h='',p=0;
++  for(const y of ys){if(y.i>p)h+=esc(lo.slice(p,y.i));const s=lo.slice(y.i,y.i+y.n),tn=TN.tone(y);h+=`<span class="sy" data-tn="${tn}" data-ci="${y.ci}" data-cl="${y.ini.length}">${esc(s)}</span>`;p=y.i+y.n}
++  return h+esc(lo.slice(p))}
++function placeTones(root){(root||document).querySelectorAll(".cards .face .big").forEach(big=>{big.querySelectorAll(".tm").forEach(e=>e.remove());const br=big.getBoundingClientRect(),zk=br.width?big.offsetWidth/br.width:1;
++  big.querySelectorAll(".sy").forEach(sy=>{const tn=sy.firstChild;if(!tn)return;const ci=+sy.dataset.ci,cl=+sy.dataset.cl,r=document.createRange();r.setStart(tn,ci);r.setEnd(tn,ci+cl);const rc=r.getBoundingClientRect();
++    const m=document.createElement("span");m.className="tm";m.dataset.tn=sy.dataset.tn;m.innerHTML=`<svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[sy.dataset.tn]}"/></svg>`;m.style.left=(rc.left-br.left+rc.width/2)*zk+"px";m.style.top=(rc.top-br.top)*zk+"px";big.appendChild(m)})})}
++if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(typeof S!=="undefined"&&S.mode==="cards")fitBig()});
++const TONE_IDS=new Set(["5-01-03"]);
++const TLEG=[["hi","높게"],["mid","중간"],["low","낮게"],["rise","올라감"],["hf","높은 데서 떨어짐"],["lf","낮게 떨어짐"]];
++const toneLegend=()=>`<div class="tleg" aria-label="성조 표시 안내">${TLEG.map(([k,t])=>`<span data-tn="${k}"><svg viewBox="0 0 18 12" aria-hidden="true"><path class="st" d="M16 1V11"/><path d="${TN.MK[k]}"/></svg>${t}</span>`).join("")}</div>`;
++function fitBig(){document.querySelectorAll(".cards .face .big").forEach(e=>{e.style.fontSize="";e.style.whiteSpace="nowrap";let f=parseFloat(getComputedStyle(e).fontSize),m=f*0.6;while(e.scrollWidth>e.clientWidth+1&&f>m){f-=1;e.style.fontSize=f+"px"}if(e.scrollWidth>e.clientWidth+1)e.style.whiteSpace="normal"});placeTones()}
+ addEventListener("resize",()=>{clearTimeout(fitBig.t);fitBig.t=setTimeout(()=>{if(S.mode==="cards")fitBig()},150)});
+ function renderCards(){
+   const ids=scopeB(),ws=ids.flatMap(id=>B[id].w.map(w=>[id,w])),n=ws.filter(([id,w])=>known[kk(id,w[0])]).length,pct=ws.length?Math.round(n/ws.length*100):0;
+   /* RYU v12.68: cards only (no 단어 반복 button, no bundle title/word list, no 외웠어요) */
+-  return `${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
++  return `${ids.some(id=>TONE_IDS.has(id))?toneLegend():""}${ids.map(id=>`${ids.length>1?bhead(id,false):""}<div class="cards">${B[id].w.map((w,wi)=>{const [lo,hint,rd,ko,ex]=w,key=kk(id,lo),f=S.flipped[key],k=known[key];
+     return `<div class="card${f?" flipped":""}${k?" known":""}" id="cd-${id}-${wi}">
+-      <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big">${esc(lo)}</span><span class="hint">${hintHtml(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span><span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span></span></button>
++      <button class="face" data-flip="${esc(key)}" aria-label="${esc(lo)} 카드 뒤집기"><span class="fr"${f?' aria-hidden="true"':""}><span class="big${TONE_IDS.has(id)?" tn":""}">${TONE_IDS.has(id)?toneHtml(lo):esc(lo)}</span><span class="hint">${hintHtml(hint)}</span></span><span class="bk"${f?"":' aria-hidden="true"'}><span class="rd">${esc(rd)}</span><span class="ko">${esc(ko)}</span><span class="ex"><span class="lo">${hl(ex[0][0],lo)}</span><br>${esc(ex[0][2])}</span></span></button>
+       <div class="card-foot">${spkBtn(lo,rd,lo+" 발음 듣기")}</div>${(id==="2-04-10"||id==="2-04-11")&&SWATCH[lo]?`<span class="swatch" style="background:${SWATCH[lo]}" aria-hidden="true"></span>`:""}</div>`}).join("")}</div>`).join("")}`;
+ }
+ /* v14.3 RYU: color bar on 색 cards */
+diff --git a/index.html b/index.html
+index 3e0ee0c4e..e75589bdb 100644
+--- a/index.html
++++ b/index.html
+@@ -50,7 +50,7 @@ html.tab .olab{font-size:18px}
+ .card.playing,.card.playing .face,.card.playing.flipped .face{background:var(--play-soft)!important}
+ .card.playing{border-color:var(--play)!important}
+ @media not ((hover:hover) and (pointer:fine)){html:not(.tab) .band .bigsel{padding-left:10px!important;padding-right:28px!important}}
+-.cards .face .big{margin-top:0!important;display:block;overflow:hidden;line-height:1.6}.cards .face .hint{margin-bottom:0!important}.cards .face>.fr{justify-content:flex-start}
++.cards .face .big{margin-top:0!important;display:block;overflow:hidden;line-height:1.6}.cards .face .big.tn{position:relative;padding-top:.74em}.tm .st,.tleg .st{stroke:#b9b2a8;stroke-width:1.3}.tleg{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;margin:0 0 12px;font-size:12.5px;color:var(--muted,#6b6b6b)}.tleg span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.tleg span{color:var(--tc)}.tleg svg{width:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.big .tm{position:absolute;transform:translate(-50%,-150%);width:.62em;line-height:0;pointer-events:none}.big .tm svg{display:block;width:100%;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}[data-tn=hi]{--tc:#d9304a}[data-tn=mid]{--tc:#2b8a3e}[data-tn=low]{--tc:#1c6fc4}[data-tn=rise]{--tc:#e06c00}[data-tn=hf]{--tc:#8f3bb8}[data-tn=lf]{--tc:#0b8a8f}.big .tm{color:var(--tc)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) [data-tn=hi]{--tc:#ff8fa0}:root:not([data-theme="light"]) [data-tn=mid]{--tc:#7fd88f}:root:not([data-theme="light"]) [data-tn=low]{--tc:#7fbcff}:root:not([data-theme="light"]) [data-tn=rise]{--tc:#ffb04d}:root:not([data-theme="light"]) [data-tn=hf]{--tc:#d7a0f5}:root:not([data-theme="light"]) [data-tn=lf]{--tc:#6fdadf}}:root[data-theme="dark"] [data-tn=hi]{--tc:#ff8fa0}:root[data-theme="dark"] [data-tn=mid]{--tc:#7fd88f}:root[data-theme="dark"] [data-tn=low]{--tc:#7fbcff}:root[data-theme="dark"] [data-tn=rise]{--tc:#ffb04d}:root[data-theme="dark"] [data-tn=hf]{--tc:#d7a0f5}:root[data-theme="dark"] [data-tn=lf]{--tc:#6fdadf}.cards .face .hint{margin-bottom:0!important}.cards .face>.fr{justify-content:flex-start}
+ .sub{min-width:0!important;padding:6px 10px 7px!important}
+ .box.rel ul{margin:0;padding:0 0 0 1.1em;display:flex;flex-direction:column;gap:0}
+ .box.rel li{line-height:1.35;padding:1px 0}
+@@ -394,10 +394,10 @@ html.tab .voice{font-size:18px}
+     <div class="body" id="view"></div>
+   </section>
+   <div class="player" id="player" hidden><span class="t" id="pt"></span><button id="ppause">❙❙ 일시정지</button><button id="pstop" class="pcancel">■ 취소</button></div>
+-  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-17 v2.2 · Claude AI로 제작</div></div>
++  <div class="fbox"><p class="note foot"><svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg> 듣기 · <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 반복 (1–5회) 정한 횟수만큼 반복합니다. 학습 기록은 이 기기에만 저장됩니다.</p><p class="voice" id="voiceNote"></p><div class="ver">2026-11-17 v2.3 · Claude AI로 제작</div></div>
+ </div>
+ 
+ 
+ 
+-<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.2";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
++<script>/* load data only after the first screen is painted (iPhone waited for 2 MB of data before showing anything) */(function(){var AV="app.js?v=2.3";/* v14.13: show the last screen at once from the saved snapshot; app.js re-renders the same thing when it arrives */try{var sn=JSON.parse(localStorage.getItem("lao-snap")||"null"),se=JSON.parse(localStorage.getItem("lao-sel")||"null"),ap=document.getElementById("app");if(sn&&se&&sn.v===AV&&sn.h&&sn.sig===[se.part,se.sub,(se.bun||{})[se.sub]||"",se.mode||"dlg",innerWidth].join("|")){sn.h.forEach(function(x){document.getElementById(x[0]).innerHTML=x[1]});ap.className=sn.c;ap.setAttribute("data-g",sn.g);document.documentElement.classList.remove("pre");[["groups",'[aria-pressed="true"]'],["subs",'[aria-selected="true"]']].forEach(function(q){var c=document.getElementById(q[0]),e=c&&c.querySelector(q[1]);if(!e)return;var l=e.offsetLeft-(e.offsetParent===c?0:c.offsetLeft),r=l+e.offsetWidth;if(l-28<c.scrollLeft)c.scrollLeft=Math.max(0,l-28);else if(r+28>c.scrollLeft+c.clientWidth)c.scrollLeft=r+28-c.clientWidth})}}catch(e){}function go(){var a=document.createElement("script");a.src="audio/index.js";a.onload=a.onerror=function(){var s=document.createElement("script");s.src=AV;document.body.appendChild(s)};document.body.appendChild(a)}function later(){requestAnimationFrame(function(){setTimeout(go,60)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",later);else later()})()</script>
+ </body></html>
+diff --git a/sw.js b/sw.js
+index c755070f8..9f4ae29e9 100644
+--- a/sw.js
++++ b/sw.js
+@@ -1,4 +1,4 @@
+-const SHELL="lao-shell-v2.2",AUD="lao-audio-v2";
++const SHELL="lao-shell-v2.3",AUD="lao-audio-v2";
+ const JS="lao-js";/* versioned app.js?v=… lives here, kept across versions, only newest entry kept */
+ const FILES=["./","index.html","manifest.webmanifest","audio/index.js","icon-180.png","icon-192.png","icon-512.png","header.svg","header-day.svg"];
+ /* Audio clips live in IndexedDB ("lao-audio" / store "c", key = clip name, value = ArrayBuffer).
