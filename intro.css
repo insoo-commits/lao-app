@@ -252,3 +252,6 @@ html.introon,html.introon body{overflow:hidden}
 /* speed and volume sliders line up (RYU 2026-11-28): same label and value widths */
 #intro .rate .lab{flex:0 0 5.6em;min-width:0;overflow-wrap:anywhere}
 #intro .rate output{min-width:3.8em;flex:none}
+/* v4.32 RYU: the "2회 · ×1.0 / 들어 보기" note keeps its words whole; the sample text wraps instead */
+#intro .sample>div:not(.s3){flex:1;min-width:0}
+#intro .sample .s3{flex:0 0 auto;white-space:nowrap}
