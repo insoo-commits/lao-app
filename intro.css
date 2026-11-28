@@ -261,3 +261,6 @@ html.introon,html.introon body{overflow:hidden}
 #intro.m.T,#intro.m.D{font-size:calc(17.5px * var(--fz,1))}
 #intro.T .row .lab small,#intro.D .row .lab small,#intro.T .lopt .nm small,#intro.T .mt .t small,#intro.D .mt .t small,#intro.T .kosub,#intro.D .kosub{font-size:.84em}
 #intro.D .lgrid .lchip{font-size:.72em}
+/* iPad/iPhone home-screen app: the strip under the status bar (safe-area-inset-top padding of .wrapin) showed the light page colour,
+   which looked like a hazy band over the top of the photo (RYU 2026-11-28). Paint that strip in the hero's deep colour. */
+#intro .wrapin{background:linear-gradient(var(--deep),var(--deep)) top/100% env(safe-area-inset-top,0px) no-repeat}
