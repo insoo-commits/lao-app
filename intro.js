@@ -249,8 +249,8 @@ document.addEventListener("keydown", ev => { if (!box) return; if (ev.key === "E
   const b = document.createElement("button"); b.type = "button"; b.className = "pb"; b.innerHTML = '<img src="icon-192.png" alt="" style="width:18px;height:18px;border-radius:5px;vertical-align:-4px"> PhasaLAO 첫 화면';
   b.addEventListener("click", open); p.appendChild(b); pf.after(p); } }
 
-/* open: not yet closed in this visit; a refresh keeps whichever screen was showing */
+/* open: no bundle link in the address and not yet closed in this visit; a refresh keeps whichever screen was showing (v4.48, like PhasaKAO) */
 let st = null; try { st = sessionStorage.getItem("pl-intro"); } catch (e) {}
-if (st !== "closed") open();
+if (st === "open" || (location.hash.length <= 1 && st !== "closed")) open();
 window.PL_INTRO = open;
 })();
