@@ -1,0 +1,4 @@
+/* 시안 A: 라오 블루 (국기의 남색·흰 달·붉은 띠) */
+:root{--L-bg:#EEF2F7;--L-line:#E0E6EE;--L-line2:#CCD7E4;--L-tint:#EDF3FB;--L-now:#DCE8F7;--L-segbg:#E4EBF3;--L-a1:#1A3F86;--L-a2:#2E6BC4;--L-soft:#DCE8F7;
+  --T1:#2E6BC4;--T2:#1A3F86;--T3:#0C1F4A;--G1a:#FFFFFF;--G1b:rgba(235,242,255,.75);--G2:#E0313F;--Ttitle:#FFFFFF;--Tart:#FFFFFF;
+  --D-bg:#0E1420;--D-sheet:#161F2E;--D-line:#25324A;--D-line2:#33445F;--D-tint:#1A2740;--D-now:#1F3456;--D-acc:#9DBDF0;--D-soft:#1F3456}

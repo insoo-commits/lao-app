@@ -1,0 +1,143 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>PhasaLAO 사용 안내</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+Lao+Looped:wght@400;600;700&display=swap">
+<style>
+@page{size:A4;margin:0}
+*{box-sizing:border-box}
+:root{--bg:#F5F1EA;--ink:#16202A;--muted:#5D6873;--line:#EAE1D3;--teak:#8A4A16;--gold:#C0801F;--dark:#4E220C;--soft:#F6E6C8}
+html,body{margin:0;background:#fff}
+body{font-family:"IBM Plex Sans KR","Noto Sans Lao Looped",sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact;word-break:keep-all}
+.lo{font-family:"Noto Sans Lao Looped",sans-serif}
+.page{width:210mm;height:297mm;padding:6mm 9mm 5mm;display:flex;flex-direction:column;gap:3mm;background:var(--bg);overflow:hidden}
+.page>*{flex:none}
+.hero{position:relative;overflow:hidden;border-radius:5mm;color:#fff;padding:4.6mm 6.5mm;display:flex;gap:5mm;align-items:center;
+  background:radial-gradient(120% 150% at 0% 0%,#D49A2E 0%,#9A4E15 48%,#4E220C 100%)}
+.hero .art{position:absolute;right:37mm;bottom:0;width:62mm;opacity:.3}
+.hero .txt{flex:1;z-index:1}
+.kick{font-size:10.5pt;opacity:.95}.kick .logo{display:inline-block;font:700 9pt/1 "Space Grotesk",sans-serif;padding:1mm 2mm .7mm;border-radius:1.5mm;background:#fff;color:#8A4A16;margin-right:1.5mm;vertical-align:.3mm}h1 .k1{font-family:"IBM Plex Sans KR",sans-serif;letter-spacing:-.3pt}h1 .l2{font-size:15pt;font-weight:600;opacity:.85;margin-left:1.5mm}
+h1{margin:.4mm 0 .4mm;font-family:"Noto Sans Lao Looped";font-size:28pt;font-weight:700;line-height:1.25}
+.sub{font-size:11.5pt;font-weight:600;line-height:1.45}
+.sub small{display:block;font-size:9.4pt;font-weight:500;opacity:.88}
+.stats{display:flex;gap:1.8mm;flex-wrap:wrap;margin-top:2.4mm}
+.stats span{background:rgba(255,255,255,.18);border-radius:10mm;padding:.8mm 3mm;font-size:9.2pt}
+.stats b{font-family:"Space Grotesk";font-weight:700;margin-right:.8mm}
+.qr{z-index:1;background:#fff;border-radius:4mm;padding:2.4mm 2.4mm 1.6mm;text-align:center;color:var(--ink);width:33mm;flex:none}
+.qr img{width:27mm;height:27mm;display:block;margin:0 auto}
+.qr .cap{font-size:8.4pt;font-weight:700;margin-top:1.2mm;color:var(--teak)}
+.url{background:#fff;border:.5mm solid var(--teak);border-radius:3mm;padding:1.8mm 4mm;display:flex;align-items:center;gap:3mm}
+.url b{font-family:"Space Grotesk";font-size:16pt;color:var(--teak)}
+.url .lab{background:var(--teak);color:#fff;border-radius:2mm;padding:.6mm 2.4mm;font-weight:700;font-size:9pt;white-space:nowrap}
+.url .no{margin-left:auto;color:var(--muted);font-size:8.2pt;text-align:right;line-height:1.4}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:2.4mm;align-content:start}
+.card{background:#fff;border-radius:4mm;padding:2.8mm 4mm 3.2mm;border-top:1.3mm solid var(--c,var(--teak));display:flex;flex-direction:column;gap:1.6mm}
+.wide{grid-column:1/-1}
+h2{margin:0;font-size:12.5pt;display:flex;align-items:center;gap:2mm;line-height:1.25}
+.n{width:7mm;height:7mm;border-radius:50%;background:var(--c,var(--teak));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-family:"Space Grotesk";font-size:10.5pt;flex:none}
+p,li{margin:0;font-size:9.3pt;line-height:1.5}
+ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:1mm}
+li{padding-left:3.4mm;position:relative}
+li:before{content:"";position:absolute;left:0;top:2.2mm;width:1.5mm;height:1.5mm;border-radius:50%;background:var(--c,var(--teak))}
+.btn{display:inline-block;border:.4mm solid var(--c,var(--teak));color:var(--c,var(--teak));background:var(--cs,var(--soft));border-radius:2mm;padding:0 1.8mm;font-weight:700;font-size:8.8pt;white-space:nowrap;line-height:1.55}
+.btn.solid{background:var(--teak);border-color:var(--teak);color:#fff}
+.k{display:inline-block;border:.3mm solid #9aa5a2;border-radius:1mm;padding:0 1.1mm;font-size:7.4pt;font-family:"Space Grotesk";color:var(--muted);margin-left:.6mm;background:#fff;line-height:1.35}
+.os{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.6mm}
+.os div{background:var(--cs,var(--soft));border-radius:2.4mm;padding:1.6mm 2mm;font-size:8.5pt;line-height:1.65}
+.os div b{display:block;color:var(--c,var(--teak));font-size:9pt}
+.hint{background:var(--cs,var(--soft));border-radius:2.4mm;padding:1.6mm 2.6mm;font-size:8.8pt;line-height:1.45}
+.hint b{color:var(--c,var(--teak))}
+.menus{display:grid;grid-template-columns:repeat(5,1fr);gap:1.4mm}
+.menus div{border:.35mm solid #E2C9A0;background:#FBF5EA;border-radius:2.2mm;padding:1.1mm 1.4mm;text-align:center;line-height:1.3}
+.menus b{display:block;color:var(--teak);font-size:9.4pt}
+.menus span{font-size:7.6pt;color:var(--muted)}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:2mm}
+.modes div{border:.35mm solid var(--line);border-radius:2.6mm;overflow:hidden;background:#fff}
+.modes img{width:100%;height:18mm;object-fit:cover;display:block}
+.modes .t{padding:1.4mm 2.2mm 1.8mm;font-size:8.6pt;line-height:1.42}
+.modes .t b{display:block;font-size:10pt;color:var(--teak)}
+.play{display:grid;grid-template-columns:auto 1fr;gap:1.1mm 2.4mm;align-items:center;font-size:9pt;line-height:1.35}
+.swipe{display:flex;align-items:center;gap:4mm}
+.tip{background:#FFF6E0;border:.4mm dashed #C99A2E;border-radius:4mm;padding:2.2mm 4mm;display:flex;gap:3mm;align-items:center}
+.tip .ic{font-size:17pt}
+.tip p b{color:#8a5a00}
+.foot{display:flex;justify-content:space-between;align-items:center;font-size:8pt;color:var(--muted)}
+.foot img{width:5.5mm;height:5.5mm;border-radius:1.2mm;vertical-align:middle;margin-right:1.4mm}
+</style></head><body><div class="page">
+
+<header class="hero">
+  <img class="art" src="hart.svg" alt="">
+  <div class="txt">
+    <div class="kick"><span class="logo">PhasaLAO</span> 라오스어, 주제별로 공부하기</div>
+    <h1>ຮຽນ ພາສາລາວ</h1>
+    <div class="sub">듣고, 보고, 외우는 라오스어 앱<small>휴대폰·태블릿·PC 어디서나 · 무료 · 회원가입 없음</small></div>
+    <div class="stats"><span><b>735</b>묶음</span><span><b>4,506</b>단어</span><span><b>16,889</b>문장</span><span>🔊 원어민 음성 + 한국어 뜻</span></div>
+  </div>
+  <div class="qr"><img src="qr.svg" alt="QR"><div class="cap">카메라로 찍어서 열기</div></div>
+</header>
+
+<div class="url"><span class="lab">주소</span><b>phasalao.pages.dev</b><span class="no">iPhone은 Safari, 안드로이드는 Chrome으로<br>예비 주소: insoo-commits.github.io/lao-app</span></div>
+
+<div class="grid">
+
+  <section class="card wide" style="--c:#1F5F8F;--cs:#E3EEF7">
+    <h2><span class="n">1</span>홈 화면에 앱으로 설치 <span style="font-size:9.4pt;color:#5D6873;font-weight:500">한 번 설치하면 아이콘을 눌러 바로 열어요</span></h2>
+    <div class="os">
+      <div><b>📱 iPhone · iPad (Safari)</b><span class="btn">공유 ⬆</span> → <span class="btn">홈 화면에 추가</span> → 오른쪽 위 <b style="display:inline">추가</b></div>
+      <div><b>📱 안드로이드 (Chrome)</b><span class="btn">⋮</span> 메뉴 → <span class="btn">앱 설치</span> 또는 <span class="btn">홈 화면에 추가</span> → 설치</div>
+      <div><b>💻 PC (Chrome · Edge)</b>주소창 오른쪽 끝 <span class="btn">⊕ 설치</span> 아이콘 → 설치. 바탕화면에서 앱처럼 열려요.</div>
+    </div>
+  </section>
+
+  <section class="card" style="--c:#1E7F4F;--cs:#E1F3E9">
+    <h2><span class="n">2</span>음성 내려받기 (오프라인용)</h2>
+    <ul>
+      <li>묶음 화면 <b>맨 아래</b>의 <span class="btn">↓ 음성 mp3 내려받기 (오프라인용)</span> 누르기</li>
+      <li><b>(완료)</b>가 나오면 끝! 인터넷 없이도 소리가 나요.</li>
+      <li>“새 음성 있음”이 보이면 한 번 더 누르세요.</li>
+    </ul>
+    <div class="hint"><b>꼭 와이파이에서!</b> 전체 약 260MB. 안 받아도 연 묶음의 소리는 바로 나와요.</div>
+  </section>
+
+  <section class="card" style="--c:#A23B57;--cs:#F8E6EB">
+    <h2><span class="n">3</span>듣기 버튼 사용법</h2>
+    <div class="play">
+      <span class="btn solid">🔊 누르기</span><span>그 문장만 <b>계속 반복</b> (다시 누르면 멈춤)</span>
+      <span class="btn">묶음 재생 <span class="k">G</span></span><span>지금 묶음을 처음부터 끝까지 반복</span>
+      <span class="btn">연속 재생 <span class="k">C</span></span><span>다음 묶음으로 쭉 이어서</span>
+      <span class="btn">⟲ 2회 ▾</span><span>반복 횟수 1~5회</span>
+      <span class="btn">x 1.0 ▾</span><span>배속 x0.7 ~ x2.0</span>
+      <span class="btn">☑ 한국어 음성 <span class="k">K</span></span><span>켜면 한국어 뜻도 읽어 줘요</span>
+    </div>
+  </section>
+
+  <section class="card wide">
+    <h2><span class="n">4</span>메뉴 → 소분류 → 묶음 고르기</h2>
+    <div class="menus">
+      <div><b>기초회화</b><span>인사·식당·시장·교통…</span></div>
+      <div><b>문자학습</b><span>자음·모음·받침·성조</span></div>
+      <div><b>문장규칙</b><span>어순·부정·시제·분류사</span></div>
+      <div><b>짝말비교</b><span>반대말·짝을 이루는 말</span></div>
+      <div><b>비슷한말</b><span>뜻이 비슷해 헷갈리는 말</span></div>
+      <div><b>단어가족</b><span>같은 뿌리에서 넓혀 가기</span></div>
+      <div><b>발음구별</b><span>성조·긴 모음·된소리</span></div>
+      <div><b>듣기연습</b><span>대화·이야기 듣고 풀기</span></div>
+      <div><b>라오스</b><span>나라·문화 읽을거리</span></div>
+      <div><b>도움말</b><span>앱 사용법 전체</span></div>
+    </div>
+    <p>위쪽 메뉴를 옆으로 밀어 고르고 → 소분류(예: <b>01 인사·기본 표현</b>) → 제목 띠의 <b>▼</b>로 묶음 선택. 처음이면 <b>문자학습</b>(글자·성조) → <b>기초회화 › 인사</b>부터!</p>
+    <p>📲 화면을 <b>왼쪽으로 밀면 다음 묶음</b>, <b>오른쪽은 이전 묶음</b>. 🔍 검색은 라오스어·독음·뜻 모두 돼요 (<span class="lo">ໝາກ</span>, 막, 과일).</p>
+    <div class="modes">
+      <div><img src="P5-C.svg" alt=""><div class="t"><b>예문보기 <span class="k">S</span></b>낱말마다 예문 2개와 실생활 문장, 한글 독음과 뜻, ※ 낱말 풀이까지.</div></div>
+      <div><img src="P6-A.svg" alt=""><div class="t"><b>단어공부 <span class="k">W</span></b>낱말카드. 글자 위 <b style="display:inline;font-size:inherit">색깔 성조 표시</b>로 높낮이를 한눈에. 누르면 뒤집혀 뜻이 나와요.</div></div>
+      <div><img src="P9-A.svg" alt=""><div class="t"><b>확인퀴즈 <span class="k">E</span></b>4지선다로 뜻 고르기. 배운 것을 바로 확인해요.</div></div>
+    </div>
+  </section>
+
+  <section class="tip wide">
+    <span class="ic">🔈</span>
+    <p><b>소리가 안 나요?</b> 처음엔 화면을 <b>한 번 눌러야</b> 소리가 나요. 볼륨과 블루투스 연결을 확인하세요.
+    새 버전은 앱을 완전히 닫았다가 다시 열면 반영돼요. 궁금한 건 메뉴 끝의 <b>도움말</b>에!</p>
+  </section>
+
+</div>
+
+<div class="foot"><span><img src="icon.png" alt="">PhasaLAO v4.16 (2026-11-26) · phasalao.pages.dev</span><span>매일 한 묶음, 듣고 → 따라 말하고 → 퀴즈로 확인!</span></div>
+</div></body></html>
