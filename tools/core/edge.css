@@ -1,4 +1,4 @@
-/* core edge v1.2 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO (RYU 2026-11-28).
+/* core edge v1.3 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO (RYU 2026-11-28).
    Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
    The top edge of the screen: the menu bar that sticks to the top (.stick, driven by core stick.js) and the intro's strip under the status bar.
    Comes before each app's own CSS, so an app can still change sizes, zoom and spacing inside the bar (.stick .stin …).
@@ -20,6 +20,7 @@ html.tab .stick{-webkit-backdrop-filter:none!important;backdrop-filter:none!impo
 #intro .wrapin{padding-top:var(--sat);padding-bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(var(--deep),var(--deep)) top/100% var(--sat) no-repeat}
 /* v1.1: status-bar strip (see above) */
 :root{--sat:max(env(safe-area-inset-top,0px),var(--sat-min,0px));padding-top:var(--sat)}
-@media (display-mode:standalone){html.tab{--sat-min:36px}}
+/* v1.3 (RYU 2026-11-28): the 36px iPad strip of v1.2 was too thick and stacked oddly with pull-to-refresh; RYU: keep iPadOS's own blur instead.
+   --sat-min stays 0, so on iPad the top is as before v1.2; iPhone still gets its status-bar strip from env(). */
 body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);background:var(--bg);z-index:24;pointer-events:none}
 html.introon body::before{background:var(--intro-deep,#000);z-index:2147483000}
