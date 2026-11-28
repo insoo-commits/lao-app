@@ -54,6 +54,36 @@ window.APPCFG = {
     upd();
   });
 })();
+/* core mine v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus and PhasaLAO.
+   Edit only this master, raise the version, then run  node tools/core-copy.js.
+   The sums behind the 내 학습 card under the search box (KoJey v1.4, RYU 2026-11-25): the day string, days with study,
+   days in a row, how many lessons were opened, today's counts and the next new lesson. Only the sums live here;
+   the card itself (words, layout) and where the records are saved stay in each app, because the saved formats differ:
+     PhasaKAO / JeyCampus: S.seen {code: first day}, S.days [day…], S.td {d, l: lessons opened today, q: quizzes}
+     PhasaLAO: lao-seen, lao-days, lao-td {d, s: {lesson: 1}, q}
+   The storage keys and formats must not change: learners' progress is in them. */
+(function(){
+  if (window.MINE) return;
+  /* local date as "2026-11-28" */
+  var day = function(d){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+  /* the list of days with study, with day t added once at the end (newest 400 kept); returns the same array when t was already last */
+  function addDay(days, t){ days = days || []; if (days[days.length - 1] !== t){ days.push(t); days = days.slice(-400); } return days; }
+  /* days in a row up to today, or up to yesterday when today has no study yet */
+  function streak(days){
+    var set = new Set(days || []), d = new Date(), n = 0;
+    if (!set.has(day(d))) d.setDate(d.getDate() - 1);
+    while (set.has(day(d))){ n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  /* today's counts: td when it is from today (t, default now), else make(t) */
+  function fresh(td, make, t){ t = t || day(new Date()); return td && td.d === t ? td : make(t); }
+  /* L = the lessons that count (no reading pages), seen(x) = opened before; pct with one decimal, bar = the bar's width in % */
+  function prog(L, seen){ var n = L.filter(seen).length, pct = L.length ? Math.round(1000 * n / L.length) / 10 : 0;
+    return {n: n, all: L.length, pct: pct, bar: Math.max(pct, n ? 1.5 : 0)}; }
+  /* the next lesson not yet opened after position at (wrapping round); if all are opened, simply the next one */
+  function next(L, at, seen){ return L.slice(at + 1).concat(L.slice(0, at + 1)).find(function(x){ return !seen(x); }) || L[(at + 1) % L.length]; }
+  window.MINE = {day: day, addDay: addDay, streak: streak, fresh: fresh, prog: prog, next: next};
+})();
 /* core prefs v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO.
    Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
    Screen theme (auto / light / dark) and text size (A− A A+ A++), kept on this device (KoJey v1.4, RYU).
@@ -929,11 +959,11 @@ addEventListener("resize",close);
    폰 팁 접기, 제목 누르면 처음으로, 아기 코끼리, 도움말 포스터, 익명 사용 통계·설문(Apps Script 시트). 기록은 이 기기에만 저장. */
 const STATS_URL="https://script.google.com/macros/s/AKfycbzBXdj9CzEfE0YMj-6gySDfHw3Sketrw4-5WnS4uLMd-LljN8ck7NNblAtf4gFjlLj3/exec";/* RYU 2026-11-26: 라오어 앱 전용 시트 (tools/stats/Code.gs) */
 const APPVER=((document.querySelector(".ver")||{}).textContent||"").split("·")[0].trim();
-const dayStr=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const dayStr=MINE.day;/* 내 학습 카드 계산은 공용 부품 core mine (2026-11-28) */
 let SEEN=store.get("lao-seen",{}),DAYS=store.get("lao-days",[]),TD=store.get("lao-td",null),PREF=store.get("lao-pref",{});
 const LORDER=()=>PARTS.flatMap(p=>p.subs.flatMap(s=>s.b)).filter(id=>B[id]&&!B[id].info);
 const isSeen=id=>!!(SEEN[id]||DONE[id]);
-const today=()=>{const t=dayStr(new Date());if(!TD||TD.d!==t)TD={d:t,s:{},q:0};return TD};
+const today=()=>TD=MINE.fresh(TD,t=>({d:t,s:{},q:0}));
 const bname=id=>(BLAB[id]||[B[id]?B[id].t:id])[0];
 const ele=(n,c)=>`<img class="${c}" src="img/ele/${n}.webp" alt="" loading="lazy">`;
 
@@ -1039,16 +1069,15 @@ const STP=(()=>{const CK="lao-statspage",NS="http://www.w3.org/2000/svg",PAL=["#
 {const sr=document.querySelector(".search");if(sr&&!document.getElementById("mine")){sr.insertAdjacentHTML("afterend",`<div class="mine" id="mine"></div><div id="svbox"></div>`)}
  const hd=document.querySelector("#app header");if(hd&&!hd.querySelector(".elehd"))hd.insertAdjacentHTML("beforeend",`<img class="elehd" src="img/ele/main.webp" width="268" height="290" alt="">`)}
 function track(id){if(!id||!B[id])return;/* v4.13: 도움말·라오스 같은 읽을거리도 통계에는 보냄 (phasaKAO처럼), 내 진도에는 넣지 않음 */if(B[id].info){ST.lesson(id);return}const t=today();if(!SEEN[id]){SEEN[id]=t.d;store.set("lao-seen",SEEN)}
-  if(DAYS[DAYS.length-1]!==t.d){DAYS.push(t.d);DAYS=DAYS.slice(-400);store.set("lao-days",DAYS)}
+  {const nd=MINE.addDay(DAYS,t.d);if(nd!==DAYS){DAYS=nd;store.set("lao-days",DAYS)}}
   if(!t.s[id]){t.s[id]=1;store.set("lao-td",t)}ST.lesson(id)}
-function streak(){const set=new Set(DAYS),d=new Date();let n=0;if(!set.has(dayStr(d)))d.setDate(d.getDate()-1);while(set.has(dayStr(d))){n++;d.setDate(d.getDate()-1)}return n}
+const streak=()=>MINE.streak(DAYS);
 function drawMine(){const box=document.getElementById("mine");if(!box)return;
-  const L=LORDER(),n=L.filter(isSeen).length,pct=L.length?Math.round(1000*n/L.length)/10:0,cb=curBun(),at=L.indexOf(cb);
-  const nx=L.slice(at+1).concat(L.slice(0,at+1)).find(id=>!isSeen(id))||L[(at+1)%L.length];
+  const L=LORDER(),{n,pct,bar}=MINE.prog(L,isSeen),nx=MINE.next(L,L.indexOf(curBun()),isSeen);
   const t=today(),tl=Object.keys(t.s).length,st=streak(),rv=revKeys().length;
   SV.offer(document.getElementById("svbox"),Object.keys(SEEN).length,DAYS.length);
   box.innerHTML=`<div class="mn mn-st${st?" on":""}"><b><span class="fire" aria-hidden="true">🔥</span>${st}일</b><span>연속 학습</span></div>`+
-   `<div class="mn mn-pr"><b>${pct}%</b><span>${n.toLocaleString()} / ${L.length.toLocaleString()} 묶음</span><small>내 진도</small><div class="mbar"><i style="width:${Math.max(pct,n?1.5:0)}%"></i></div></div>`+
+   `<div class="mn mn-pr"><b>${pct}%</b><span>${n.toLocaleString()} / ${L.length.toLocaleString()} 묶음</span><small>내 진도</small><div class="mbar"><i style="width:${bar}%"></i></div></div>`+
    `<div class="mn mn-td"><b>${tl}묶음</b><span>오늘 공부${t.q?" · 퀴즈 "+t.q+"번":""}</span></div>`+
    (nx?`<button class="mn mn-nx" type="button" data-mine="next" data-id="${nx}"><small>다음 새 묶음</small><span>${esc(bname(nx))}</span><i aria-hidden="true">→</i>${ele("think","nxele")}</button>`:"")+
    (rv?`<button class="mn mn-wb" type="button" data-mine="rev"><small>오답·별표 복습</small><span>${rv}단어</span><i aria-hidden="true">→</i></button>`:"")}
