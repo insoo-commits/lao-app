@@ -5,6 +5,8 @@ window.APPCFG = {
   app: "PhasaLAO",
   store: "lao-",                /* this app's storage prefix (lao-snap …); core parts that save new things use it */
   ptr: { bg: "rgba(40,44,52,.88)", go: "rgba(26,115,232,.95)" },   /* core ptr: pull-to-refresh button colour, and once far enough */
+  stick: { title: function(){ var o = document.querySelector("#bsel option:checked"); return o ? (o.dataset.ko || o.textContent || "").trim() : ""; },
+           watch: ["band"], strip: ["data-part"], stop: true },   /* core stick: lesson line from the lesson select; the band refreshes it */
   vol: { sub: "작게 · 크게" }   /* core vol: small Korean label under the volume slider's title */
 };
 /* core ptr v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO.
@@ -65,6 +67,42 @@ window.APPCFG = {
   function end(){if(!on)return;on=false;if(!pull)return;pull=false;if(d>=TH)refresh();else hide();d=0}
   document.addEventListener("touchend",end,{passive:true});
   document.addEventListener("touchcancel",function(){on=false;if(pull){pull=false;hide()}d=0},{passive:true});
+})();
+/* core stick v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO.
+   Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
+   The menu bar that stays at the top while reading down (design A, RYU 2026-11-24; first in the hotel English app v1.51).
+   Needs in the page: #stick (hidden) > … #stickG (empty nav), #stickT, #stickQ, and the page menu .menubox > #groups, .search, #q.
+   It takes over exactly when the page menu row reaches the bar's menu row, in both directions (JeyCampus v1.31.23, RYU),
+   checked on scroll once per frame. A tap on the bar's menu presses the same button in the page menu.
+   The look (position, size, colour, no blur on iPad) is each app's own CSS, because the apps zoom the page differently.
+   Per-app values from window.APPCFG.stick (app-config.js):
+     title()  text for the bar's lesson line (#stickT)       watch  ids of more elements whose change refreshes the bar
+     strip    attributes removed from the copied buttons      stop   true = taps on the bar do not reach the page's click handlers */
+(function(){
+  if (window.__stick) return; window.__stick = 1;
+  var C = (window.APPCFG && window.APPCFG.stick) || {}, $ = function(id){ return document.getElementById(id); };
+  var st = $("stick"), mb = document.querySelector(".menubox"), sg = $("stickG"), g = $("groups");
+  if (!st || !mb || !sg || !g) return;
+  var sync = function(){
+    sg.innerHTML = g.innerHTML;
+    sg.querySelectorAll(".glide").forEach(function(x){ x.remove(); });
+    (C.strip || []).forEach(function(a){ sg.querySelectorAll("[" + a + "]").forEach(function(b){ b.removeAttribute(a); }); });
+    var t = $("stickT"); if (t && C.title) t.textContent = C.title();
+    var on = sg.querySelector('[aria-pressed="true"]'); if (on && !st.hidden) on.scrollIntoView({block: "nearest", inline: "center"});
+  };
+  var T = 8, raf = 0;
+  var check = function(){ raf = 0; var show = g.getBoundingClientRect().top <= T + 0.5; if (show === !st.hidden) return; st.hidden = !show;
+    if (show){ sync(); var r = st.querySelector(".groups"); if (r){ var t = r.getBoundingClientRect().top; if (t > 0 && t < 80) T = t; } } };
+  addEventListener("scroll", function(){ if (!raf) raf = requestAnimationFrame(check); }, {passive: true});
+  addEventListener("resize", function(){ st.hidden = true; T = 8; check(); });
+  check();
+  var re = function(){ if (!st.hidden) sync(); };
+  new MutationObserver(re).observe(g, {childList: true, subtree: true, attributes: true});
+  (C.watch || []).forEach(function(id){ var e = $(id); if (e) new MutationObserver(re).observe(e, {childList: true, subtree: true, characterData: true}); });
+  sg.addEventListener("click", function(e){ var t = e.target.closest(".group"); if (!t) return; if (C.stop) e.stopPropagation();
+    var i = [].indexOf.call(sg.querySelectorAll(".group"), t), o = g.querySelectorAll(".group")[i]; if (o) o.click();
+    document.querySelector(".search").scrollIntoView({block: "start"}); });
+  var q = $("stickQ"); if (q) q.addEventListener("click", function(e){ if (C.stop) e.stopPropagation(); window.scrollTo(0, 0); $("q").focus(); });
 })();
 /* core vol v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO.
    Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
@@ -797,18 +835,7 @@ addEventListener("resize",close);
   const s2=document.getElementById("sheet");if(s2){s2.style.transition="none";s2.style.transform="translateX("+(dx<0?36:-36)+"px)";s2.style.opacity=".4";requestAnimationFrame(()=>requestAnimationFrame(()=>{s2.style.transition="transform .2s ease-out,opacity .2s";s2.style.transform="";s2.style.opacity=""}))}},{passive:true});
  document.addEventListener("touchend",()=>{ok=false},{passive:true})})();
 
-// v3.30 RYU: 아래로 읽을 때 대분류 메뉴를 화면 맨 위에 고정 (호텔서비스 영어 v1.51과 같은 방식)
-(function(){
-  const st=document.getElementById("stick"),mb=document.querySelector(".menubox"),sg=document.getElementById("stickG"),g=document.getElementById("groups");
-  if(!st||!mb||!sg||!g||!("IntersectionObserver" in window))return;
-  const title=()=>{const o=document.querySelector("#bsel option:checked");return o?(o.dataset.ko||o.textContent||"").trim():""};
-  const sync=()=>{sg.innerHTML=g.innerHTML;sg.querySelectorAll(".glide").forEach(x=>x.remove());sg.querySelectorAll("[data-part]").forEach(b=>b.removeAttribute("data-part"));document.getElementById("stickT").textContent=title();const on=sg.querySelector('[aria-pressed="true"]');if(on&&!st.hidden)on.scrollIntoView({block:"nearest",inline:"center"})};
-  new IntersectionObserver(es=>{const e=es[0];const show=!e.isIntersecting&&e.boundingClientRect.bottom<0;if(show===!st.hidden)return;st.hidden=!show;if(show)sync()}).observe(mb);
-  new MutationObserver(()=>{if(!st.hidden)sync()}).observe(g,{childList:true,subtree:true,attributes:true});
-  const band=document.getElementById("band");if(band)new MutationObserver(()=>{if(!st.hidden)sync()}).observe(band,{childList:true,subtree:true});
-  sg.addEventListener("click",e=>{const t=e.target.closest(".group");if(!t)return;e.stopPropagation();const i=[...sg.querySelectorAll(".group")].indexOf(t);const o=g.querySelectorAll(".group")[i];if(o)o.click();document.querySelector(".search").scrollIntoView({block:"start"})});
-  document.getElementById("stickQ").addEventListener("click",e=>{e.stopPropagation();window.scrollTo(0,0);document.getElementById("q").focus()});
-})();
+// v3.30 RYU: 아래로 읽을 때 대분류 메뉴를 화면 맨 위에 고정 → 공용 부품 core stick (tools/core/stick.js, 위 core 블록, 2026-11-28)
 
 // v3.31 RYU: PC - 대분류 위에 마우스를 올리면 연한 바탕과 밑줄이 따라 움직임 (호텔서비스 영어 v1.55)
 (function(){
