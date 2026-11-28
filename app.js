@@ -54,7 +54,7 @@ window.APPCFG = {
     upd();
   });
 })();
-/* core mine v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus and PhasaLAO.
+/* core mine v1.1 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus and PhasaLAO.
    Edit only this master, raise the version, then run  node tools/core-copy.js.
    The sums behind the 내 학습 card under the search box (KoJey v1.4, RYU 2026-11-25): the day string, days with study,
    days in a row, how many lessons were opened, today's counts and the next new lesson. Only the sums live here;
@@ -82,7 +82,10 @@ window.APPCFG = {
     return {n: n, all: L.length, pct: pct, bar: Math.max(pct, n ? 1.5 : 0)}; }
   /* the next lesson not yet opened after position at (wrapping round); if all are opened, simply the next one */
   function next(L, at, seen){ return L.slice(at + 1).concat(L.slice(0, at + 1)).find(function(x){ return !seen(x); }) || L[(at + 1) % L.length]; }
-  window.MINE = {day: day, addDay: addDay, streak: streak, fresh: fresh, prog: prog, next: next};
+  /* a quiz was finished: every finished quiz counts on today's record, the 오답·별표 review too (JeyCampus way, RYU 2026-11-28, v1.1);
+     make(t) = the app's empty record for day t. Returns today's record. */
+  function quiz(td, make){ td = fresh(td, make); td.q = (td.q || 0) + 1; return td; }
+  window.MINE = {day: day, addDay: addDay, streak: streak, fresh: fresh, prog: prog, next: next, quiz: quiz};
 })();
 /* core prefs v1.0 (from kor-app; copy, do not edit here). Shared by PhasaKAO, JeyCampus, PhasaLAO.
    Edit only this master, raise the version, then run  node tools/core-copy.js  to copy it to the other apps.
@@ -1101,7 +1104,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t||
 const _renderAutoQuiz=renderAutoQuiz;renderAutoQuiz=function(){const Q=S.quiz;
   if(!Q||!Q.qs||!Q.qs.length||Q.i<Q.qs.length||!!Q.rev!==(S.qkind==="rev"))return _renderAutoQuiz();
   const N=Q.qs.length,R=Q.score,pct=N?Math.round(100*R/N):0,wrong=Q.qs.filter(q=>q.got===false);
-  if(!Q.logged){Q.logged=1;if(!Q.rev&&!Q.again){const t=today();t.q++;store.set("lao-td",t);ST.log("quiz",curBun(),R,N)}setTimeout(drawMine,0)}
+  if(!Q.logged){Q.logged=1;TD=MINE.quiz(TD,t=>({d:t,s:{},q:0}));store.set("lao-td",TD);/* 오늘 퀴즈 수 = 끝낸 퀴즈 모두, 복습·틀린 것만 다시도 (JeyCampus 방식, RYU 2026-11-28 v4.50) */if(!Q.rev&&!Q.again)ST.log("quiz",curBun(),R,N);setTimeout(drawMine,0)}
   const C=2*Math.PI*52,msg=pct===100?"완벽해요!":pct>=80?"잘했어요!":pct>=50?"좋아요, 조금만 더!":"다시 해 봐요.";
   const wq=q=>{const i=(q.key||"").indexOf("::"),bid=i>0?q.key.slice(0,i):"",w=bid&&B[bid]?B[bid].w.find(w=>w[0]===q.key.slice(i+2)):null;return w?[w[0],w[2],w[3]]:[q.answer,"",""]};
   return `${Q.rev?`<p class="qrev">오답·별표 복습 · 남은 단어 ${revKeys().length}개</p>`:""}<div class="qend"><div class="qringw"><svg viewBox="0 0 120 120" class="qring"><circle cx="60" cy="60" r="52" class="qr0"/><circle cx="60" cy="60" r="52" class="qr1${pct>=80?" hi":pct<50?" lo":""}" stroke-dasharray="${C*pct/100} ${C}" transform="rotate(-90 60 60)"/></svg><div class="qrt"><b>${pct}%</b><span>${R} / ${N}</span></div></div><p class="qmsg">${msg}</p>${ele(pct>=80?"happy":pct>=50?"think":"try","qele")}</div>`+
