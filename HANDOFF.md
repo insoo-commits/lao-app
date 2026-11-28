@@ -28,6 +28,11 @@ PhasaLAO(라오스 사람용이 아니라 **한국 사람이 라오스어를 배
 5. 기능을 바꾸면 **도움말(HELPINFO, app.js)도 같은 배포에서 고침**(RYU가 확인함). 도움말 스크린샷: `tools/help_shots.js`(저장소를 :8811로 열고 실행).
 6. 포스터: 앱 숫자·버전·주소가 바뀌면 `tools/source/poster/src/`로 다시 그림(Playwright A4, 하단 1123px 안).
 
+## 0-3a. 공용 부품 (2026-11-28, v4.33~)
+- 세 앱이 같이 쓰는 기능은 PhasaKAO 저장소(`insoo-commits/kor-app`)의 `src/core/<이름>.js`가 원본. 지금은 음량(vol) 하나.
+- 이 앱에서는 `app.js` 맨 위 `core BEGIN` ~ `core END` 사이에 들어 있음. **그 사이는 손으로 고치지 말 것.** 원본을 고친 뒤 kor-app에서 `node tools/core-copy.js ../lao-app`을 돌리면 `tools/core/<이름>.js` 사본과 app.js 안이 함께 바뀜(`--check`는 뒤처졌는지만 봄). 그다음 평소처럼 버전 세 곳을 올림.
+- 이 앱만의 값(저장 접두어 lao-, 음량 아래 작은 글자 "작게 · 크게")은 `tools/core/app-config.js` 한 곳.
+
 ## 0-4. 예전 프로젝트 폴더에만 있던 자료 → 이제 저장소 `tools/source/`
 
 2026-11-28에 예전 공유 폴더 `/mnt/project-files/lao-app/`의 작업 자료를 저장소 `tools/source/`로 옮겼습니다(약 21MB, 243개). `tools/`는 Cloudflare 빌드에서 빠지므로 앱에는 영향이 없습니다.
